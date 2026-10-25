@@ -2,7 +2,7 @@
 
 Updated: 2026-10-25 | Session #: 1
 Current phase/task: P4.6/P4.7 — final acceptance | Status: implementation/reproduction complete; acceptance pending
-Last commit: `de348a4` — [P0.3] Track package initializers and results marker
+Last commit: `3e89637` — [P4.7] Refresh handoff after final audit
 
 ## Do next (exact)
 1. Obtain the original paper/source repository and the author's decision on whether to revise or qualify the unsupported full-policy and recipe-dependent stress-test claims in `docs/state/BLOCKERS.md`.
