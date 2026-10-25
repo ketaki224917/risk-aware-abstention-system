@@ -1,27 +1,38 @@
 # HANDOFF
 
 Updated: 2026-10-25 | Session #: 1
-Current phase/task: P0.3 — project foundations | Status: in progress
-Last commit: none (workspace was not a Git repository)
+Current phase/task: P4.6/P4.7 — final acceptance | Status: implementation/reproduction complete; acceptance pending
+Last commit: `00efd6b` — [P3] Reproduce and reconcile RAA experiments
 
 ## Do next (exact)
-1. Check available runtimes/package tools and create the Python project scaffold, Makefile, and pinned dependency declarations.
-2. Implement the RAA pipeline and tests in small tasks, updating this handoff and state files after each.
-3. Run the required checks and reproduction; record exact commands and outputs, then update the handoff with remaining blockers.
+1. Obtain the original paper/source repository and the author's decision on whether to revise or qualify the unsupported full-policy and recipe-dependent stress-test claims in `docs/state/BLOCKERS.md`.
+2. In an environment with GNU Make, install the locked dependencies with `make setup`, then run `make test`, `make reproduce`, and `make app`; record the results.
+3. Update reconciliation and final acceptance status from the source details and clean-environment checks; do not tune fixed parameters to match targets.
 
 ## Environment state
-- Workspace initially empty; no repository, code, ZIP, paper, data files, or prior results were present.
-- `git` is installed; `git status` and `git log` failed because this directory was not a repository.
-- `make test` was attempted; PowerShell reports `make` is unavailable.
-- `python` is unavailable and `py --version` reports no installed Python interpreters.
-- Prompt attachment copied verbatim to root `AGENTS.md`.
+- Workspace initially had no repository or source; user prompt saved verbatim as `AGENTS.md`.
+- Git initialized. Initial state commit exists; most implementation and results are currently uncommitted.
+- Workspace-local Python 3.13.17 embeddable runtime and uv 0.13.5 are under ignored `.tools/`; `uv.lock` pins the project dependency graph.
+- `uv sync --all-groups` completed; 54 packages installed in `.venv`.
+- GNU Make is unavailable in PowerShell. Direct uv equivalents were run instead.
+- Run `raa-20261025-01` generated 30 splits and 3,420 test cases. Output: `results/runs/raa-20261025-01/`.
+- Streamlit server started at port 8765; `/_stcore/health` returned HTTP 200 and `ok`.
 
 ## WIP / uncommitted
-- Initial state files and `AGENTS.md`; no implementation code yet.
+- Demo app and documentation package plus final updated state records; these are being committed in the P4 phase.
+- The project scaffold, core pipeline, explanation layer, and experiment/results have phase-sized local commits.
+- Local generated/runtime files under `.tools/` and `.venv/` are ignored.
 
 ## Failing tests / issues
-- No test suite exists. Required smoke test could not run because `make` and Python are absent.
+- `uv run pytest -q`: 12 passed.
+- `uv run ruff check .`: All checks passed.
+- `make test` could not start because GNU Make is absent; the equivalent pytest command passed.
+- Reproduction does not support the ≈0.70% full-policy error target: pooled error was 1.493%, and uncertainty-only outperformed full policy by 0.783 percentage points on paired split means.
+- Pooled AUROC over the 12 documented synthetic shift variants was 0.731; the source paper's exact recipe is unavailable. The 10-feature/2σ variant was 0.921.
+- Author decisions SOURCE-001 and CLAIM-001 remain open.
 
 ## Gotchas learned
-- There is no original project to preserve or reported-results path to trace; do not imply paper results have been reproduced.
-- Source and data archive absence means code/results must be treated as a fresh implementation and targets as comparison values only.
+- Python.org installer registration failed with access denied, so a verified embeddable distribution was unpacked locally and pip bootstrapped from a SHA-256-verified official wheel.
+- uv needed `--system-certs` for PyPI and a workspace-local `--cache-dir` in this sandbox.
+- No original paper, consequence values, bootstrap-member size, stress recipe, or checker figure was available. Those gaps are explicitly logged; do not present assumptions as recovered paper settings.
+- The test partition contains 114 cases for each seed; the 30-split pooled count is 3,420.
