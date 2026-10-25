@@ -2,7 +2,7 @@
 
 Updated: 2026-10-25 | Session #: 1
 Current phase/task: P4.6/P4.7 — final acceptance | Status: implementation/reproduction complete; acceptance pending
-Last commit: `00efd6b` — [P3] Reproduce and reconcile RAA experiments
+Last commit: `758f19b` — [P4] Ship demo and documentation package
 
 ## Do next (exact)
 1. Obtain the original paper/source repository and the author's decision on whether to revise or qualify the unsupported full-policy and recipe-dependent stress-test claims in `docs/state/BLOCKERS.md`.
@@ -19,8 +19,8 @@ Last commit: `00efd6b` — [P3] Reproduce and reconcile RAA experiments
 - Streamlit server started at port 8765; `/_stcore/health` returned HTTP 200 and `ok`.
 
 ## WIP / uncommitted
-- Demo app and documentation package plus final updated state records; these are being committed in the P4 phase.
-- The project scaffold, core pipeline, explanation layer, and experiment/results have phase-sized local commits.
+- None. Project source, tests, docs, state files, and generated run artifacts are committed.
+- `.tools/` and `.venv/` are ignored local runtime/setup files.
 - Local generated/runtime files under `.tools/` and `.venv/` are ignored.
 
 ## Failing tests / issues
