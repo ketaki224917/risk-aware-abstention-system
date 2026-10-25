@@ -1,0 +1,67 @@
+project:
+  name: risk-aware-abstention
+  version: 0.1.0
+  disclaimer: "Research prototype only; not clinically validated and not for real diagnosis."
+
+data:
+  dataset: sklearn.datasets.load_breast_cancer
+  malignant_target: 0
+  benign_target: 1
+  test_fraction: 0.20
+  validation_fraction_of_remainder: 0.25
+  stratified: true
+  base_seed: 2026
+  split_count: 30
+
+classifier:
+  class: sklearn.ensemble.RandomForestClassifier
+  n_estimators: 300
+  random_state_offset: 1000
+  n_jobs: 1
+
+uncertainty:
+  method: bootstrap_probability_disagreement
+  ensemble_members: 30
+  trees_per_member: 50
+  random_state_offset: 2000
+  n_jobs: 1
+
+anomaly:
+  class: sklearn.ensemble.IsolationForest
+  n_estimators: 200
+  contamination: auto
+  random_state_offset: 3000
+  n_jobs: 1
+  score: "-decision_function; larger means more unusual"
+
+consequence:
+  # ASSUMPTION: values were not present in the supplied paper/source files.
+  predicted_malignant: 0.0
+  predicted_benign: 1.0
+
+risk:
+  weights:
+    uncertainty: 0.5
+    anomaly: 0.2
+    consequence: 0.3
+  normalization: "MinMaxScaler fit on validation component scores; consequence is already in [0, 1]."
+
+policy:
+  automatic_percentile: 70
+  assisted_percentile: 90
+  levels:
+    - Automatic
+    - Assisted
+    - Human Review
+
+stress_test:
+  shift_multipliers: [0.5, 1.0, 1.5, 2.0]
+  feature_subset_sizes: [3, 10, 30]
+  seed: 4242
+
+evaluation:
+  bootstrap_replicates: 2000
+  bootstrap_seed: 20261025
+  reliability_bins: 10
+  risk_percentile_sweep: [10, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95]
+
