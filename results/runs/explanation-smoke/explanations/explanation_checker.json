@@ -1,0 +1,40 @@
+{
+  "clean_count": 2,
+  "clean_false_positives": 0,
+  "clean_false_positive_rate": 0.0,
+  "fault_count": 12,
+  "faults_detected": 12,
+  "overall_detection_rate": 1.0,
+  "per_fault": {
+    "wrong_predicted_class": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    },
+    "wrong_decision_level": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    },
+    "wrong_risk_tier": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    },
+    "fabricated_score": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    },
+    "overconfident_language": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    },
+    "missing_caveat": {
+      "detected": 2,
+      "injected": 2,
+      "detection_rate": 1.0
+    }
+  }
+}

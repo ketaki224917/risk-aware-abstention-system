@@ -1,0 +1,7 @@
+fault_type,detected,injected,detection_rate
+wrong_predicted_class,2,2,1.0
+wrong_decision_level,2,2,1.0
+wrong_risk_tier,2,2,1.0
+fabricated_score,2,2,1.0
+overconfident_language,2,2,1.0
+missing_caveat,2,2,1.0
