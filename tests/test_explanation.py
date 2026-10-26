@@ -17,8 +17,22 @@ def test_clean_template_passes_and_all_fault_types_are_detected():
     clean = generate_explanation(record)
     assert check_explanation(record, clean).passed
     for fault in FaultType:
-        injected = inject_fault(clean, record, fault)
-        assert not check_explanation(record, injected).passed, fault.value
+        target = record
+        if fault is FaultType.DROPPED_REASON:
+            target = DecisionRecord(
+                1,
+                0.18,
+                0.31,
+                0.61,
+                1.0,
+                0.71,
+                DecisionLevel.HUMAN_REVIEW,
+                0.35,
+                0.62,
+                "ensemble disagreement (uncertainty)",
+            )
+        injected = inject_fault(generate_explanation(target), target, fault)
+        assert not check_explanation(target, injected).passed, fault.value
 
 
 def test_checker_evaluation_reports_per_type_and_zero_clean_false_positives():

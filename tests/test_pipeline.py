@@ -18,7 +18,7 @@ def small_config():
 
 
 def test_consequence_assumption_weights_benign_prediction_more():
-    assert consequence_score([0, 1]).tolist() == [0.0, 1.0]
+    assert consequence_score([0, 1]).tolist() == [0.4, 1.0]
 
 
 def test_test_partition_cannot_affect_fitted_models_or_validation_thresholds():

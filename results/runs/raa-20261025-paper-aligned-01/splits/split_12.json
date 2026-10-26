@@ -1,0 +1,2663 @@
+{
+  "config_fingerprint": "cb36891b7210b0f778a71021b181c71f7da731b945b016344bc3f940c8d67ff3",
+  "metrics": {
+    "seed": 12,
+    "n": 114,
+    "accuracy": 0.956140350877193,
+    "error_rate": 0.043859649122807015,
+    "false_negatives": 2,
+    "false_positives": 3,
+    "full_automatic_count": 75,
+    "full_automatic_coverage": 0.6578947368421053,
+    "full_selective_accuracy": 0.9866666666666667,
+    "full_selective_error_rate": 0.013333333333333334,
+    "full_assisted_count": 26,
+    "full_human_review_count": 13,
+    "full_review_workload_count": 39,
+    "full_review_workload_fraction": 0.34210526315789475,
+    "full_false_negatives_automatic": 1,
+    "full_false_negatives_routed_away": 1,
+    "full_false_negative_routed_away_rate": 0.5,
+    "uncertainty_error_auroc": 0.8302752293577982,
+    "uncertainty_error_correlation": 0.2860359620220254,
+    "ece": 0.05239766081871347
+  },
+  "ablations": [
+    {
+      "seed": 12,
+      "ablation": "uncertainty_only",
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 26,
+      "human_review_count": 15,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "ablation": "anomaly_only",
+      "n": 114,
+      "automatic_count": 82,
+      "automatic_coverage": 0.7192982456140351,
+      "selective_accuracy": 0.9390243902439024,
+      "selective_error_rate": 0.06097560975609756,
+      "assisted_count": 21,
+      "human_review_count": 11,
+      "review_workload_count": 32,
+      "review_workload_fraction": 0.2807017543859649,
+      "false_negatives_automatic": 2,
+      "false_negatives_routed_away": 0
+    },
+    {
+      "seed": 12,
+      "ablation": "consequence_only",
+      "n": 114,
+      "automatic_count": 114,
+      "automatic_coverage": 1.0,
+      "selective_accuracy": 0.956140350877193,
+      "selective_error_rate": 0.043859649122807015,
+      "assisted_count": 0,
+      "human_review_count": 0,
+      "review_workload_count": 0,
+      "review_workload_fraction": 0.0,
+      "false_negatives_automatic": 2,
+      "false_negatives_routed_away": 0
+    },
+    {
+      "seed": 12,
+      "ablation": "uncertainty_anomaly",
+      "n": 114,
+      "automatic_count": 78,
+      "automatic_coverage": 0.6842105263157895,
+      "selective_accuracy": 0.9871794871794872,
+      "selective_error_rate": 0.01282051282051282,
+      "assisted_count": 20,
+      "human_review_count": 16,
+      "review_workload_count": 36,
+      "review_workload_fraction": 0.3157894736842105,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "ablation": "uncertainty_consequence",
+      "n": 114,
+      "automatic_count": 77,
+      "automatic_coverage": 0.6754385964912281,
+      "selective_accuracy": 0.987012987012987,
+      "selective_error_rate": 0.012987012987012988,
+      "assisted_count": 26,
+      "human_review_count": 11,
+      "review_workload_count": 37,
+      "review_workload_fraction": 0.32456140350877194,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "ablation": "anomaly_consequence",
+      "n": 114,
+      "automatic_count": 81,
+      "automatic_coverage": 0.7105263157894737,
+      "selective_accuracy": 0.9382716049382716,
+      "selective_error_rate": 0.06172839506172839,
+      "assisted_count": 25,
+      "human_review_count": 8,
+      "review_workload_count": 33,
+      "review_workload_fraction": 0.2894736842105263,
+      "false_negatives_automatic": 2,
+      "false_negatives_routed_away": 0
+    },
+    {
+      "seed": 12,
+      "ablation": "full",
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 26,
+      "human_review_count": 13,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    }
+  ],
+  "risk_coverage": [
+    {
+      "seed": 12,
+      "automatic_percentile": 10,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 17,
+      "automatic_coverage": 0.14912280701754385,
+      "selective_accuracy": 1.0,
+      "selective_error_rate": 0.0,
+      "assisted_count": 84,
+      "human_review_count": 13,
+      "review_workload_count": 97,
+      "review_workload_fraction": 0.8508771929824561,
+      "false_negatives_automatic": 0,
+      "false_negatives_routed_away": 2
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 20,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 26,
+      "automatic_coverage": 0.22807017543859648,
+      "selective_accuracy": 1.0,
+      "selective_error_rate": 0.0,
+      "assisted_count": 75,
+      "human_review_count": 13,
+      "review_workload_count": 88,
+      "review_workload_fraction": 0.7719298245614035,
+      "false_negatives_automatic": 0,
+      "false_negatives_routed_away": 2
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 30,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 33,
+      "automatic_coverage": 0.2894736842105263,
+      "selective_accuracy": 1.0,
+      "selective_error_rate": 0.0,
+      "assisted_count": 68,
+      "human_review_count": 13,
+      "review_workload_count": 81,
+      "review_workload_fraction": 0.7105263157894737,
+      "false_negatives_automatic": 0,
+      "false_negatives_routed_away": 2
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 40,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 47,
+      "automatic_coverage": 0.41228070175438597,
+      "selective_accuracy": 0.9787234042553191,
+      "selective_error_rate": 0.02127659574468085,
+      "assisted_count": 54,
+      "human_review_count": 13,
+      "review_workload_count": 67,
+      "review_workload_fraction": 0.5877192982456141,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 50,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 56,
+      "automatic_coverage": 0.49122807017543857,
+      "selective_accuracy": 0.9821428571428571,
+      "selective_error_rate": 0.017857142857142856,
+      "assisted_count": 45,
+      "human_review_count": 13,
+      "review_workload_count": 58,
+      "review_workload_fraction": 0.5087719298245614,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 60,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 65,
+      "automatic_coverage": 0.5701754385964912,
+      "selective_accuracy": 0.9846153846153847,
+      "selective_error_rate": 0.015384615384615385,
+      "assisted_count": 36,
+      "human_review_count": 13,
+      "review_workload_count": 49,
+      "review_workload_fraction": 0.4298245614035088,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "selected_operating_point": true,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 26,
+      "human_review_count": 13,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 75,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 78,
+      "automatic_coverage": 0.6842105263157895,
+      "selective_accuracy": 0.9871794871794872,
+      "selective_error_rate": 0.01282051282051282,
+      "assisted_count": 23,
+      "human_review_count": 13,
+      "review_workload_count": 36,
+      "review_workload_fraction": 0.3157894736842105,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 80,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 89,
+      "automatic_coverage": 0.7807017543859649,
+      "selective_accuracy": 0.9887640449438202,
+      "selective_error_rate": 0.011235955056179775,
+      "assisted_count": 12,
+      "human_review_count": 13,
+      "review_workload_count": 25,
+      "review_workload_fraction": 0.21929824561403508,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 85,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 96,
+      "automatic_coverage": 0.8421052631578947,
+      "selective_accuracy": 0.9791666666666666,
+      "selective_error_rate": 0.020833333333333332,
+      "assisted_count": 5,
+      "human_review_count": 13,
+      "review_workload_count": 18,
+      "review_workload_fraction": 0.15789473684210525,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "automatic_percentile": 90,
+      "assisted_percentile": 90,
+      "selected_operating_point": false,
+      "n": 114,
+      "automatic_count": 101,
+      "automatic_coverage": 0.8859649122807017,
+      "selective_accuracy": 0.9603960396039604,
+      "selective_error_rate": 0.039603960396039604,
+      "assisted_count": 0,
+      "human_review_count": 13,
+      "review_workload_count": 13,
+      "review_workload_fraction": 0.11403508771929824,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    }
+  ],
+  "risk_distribution": [
+    {
+      "seed": 12,
+      "risk": 0.20836418019868422,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2913501992409188,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.36433910446203127,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4172927348198118,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4422061316593927,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.48608713686367216,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.40245714424466933,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.35439869004506985,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.331336343020899,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.673916022721507,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.82,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.24089388299207862,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3892797667284288,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2132865037755028,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6769640363744593,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.30640346124496104,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6628228668058336,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.19216911876560078,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5176996036142286,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.38080665719279516,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3419413741826631,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.19181227519070437,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5691055719974698,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4706920719860625,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4222413971750356,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5589331238301233,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3808434912698011,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3166571409570017,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.39002954352147273,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3800357925583662,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3262580614712605,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.39767452465902675,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5981355616201327,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.24321179081113783,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.829162855719475,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3541160450813353,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6440768128655172,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.40225461987840105,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.8177292283371382,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.8308532145286698,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.38528646670062955,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4526213536022529,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3558148422665461,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.7553869578238627,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4472623673744469,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4626625448601494,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.7587918690640315,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.34603229078076064,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.30552538750767866,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.37091350845835225,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.32589760973766346,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5801412752829957,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.32154217098405224,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4076115407425847,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.9673379543178799,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3471155767056659,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.8493044790181163,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4973434343943103,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.22649859052572635,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3443997038361708,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.22739666810731435,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3501997885949467,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4548419826943855,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.820068299028127,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3459648295862441,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.33343934361260813,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6311568385782306,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5241051130256955,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.366417851448217,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.32966391275721113,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5230871901251285,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.35291289427218225,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3626669573028495,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.31456205455838426,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5895986400096784,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2451181582983774,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2798419177830114,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4162979576632726,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.34713481023748327,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2125053029859637,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3444564441606532,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2590736602432401,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3446450500232017,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.7995112139886061,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.7243326433376338,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2546818565918214,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.494170919299096,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3321479814442885,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3654756219860892,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.22442967181078607,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6378192664382962,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.46989820327066595,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.9373218316098135,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.34150584735211464,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6392945089466043,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6088202835900938,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.8198584745100896,
+      "decision_level": "Human Review"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3178607195763288,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.2590840387437898,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5544836357567899,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3775782268573462,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6766743675951409,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.4923483587560563,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.6068532525653845,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.40266645501260556,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.42981922840912196,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.3920131430494558,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.33839643464611074,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.21499353881926514,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.19375873136567082,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.5730236933210153,
+      "decision_level": "Assisted"
+    },
+    {
+      "seed": 12,
+      "risk": 0.41793728055191326,
+      "decision_level": "Automatic"
+    },
+    {
+      "seed": 12,
+      "risk": 0.17504980362456501,
+      "decision_level": "Automatic"
+    }
+  ],
+  "diagnostics": [
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9966666666666667,
+      "uncertainty": 0.05815102915100158,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.97,
+      "uncertainty": 0.19620794391419238,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.10200365289568543,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.04267118946913841,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0033333333333333335,
+      "uncertainty": 0.1443676045270879,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.02666666666666667,
+      "uncertainty": 0.23819818679181554,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.06770960681868175,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142425,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.55,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.7133333333333334,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.09194485020000628,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.08476896340380916,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.06375228305980345,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.09,
+      "uncertainty": 0.6887371318718096,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.5233333333333333,
+      "uncertainty": 1.0,
+      "error": 1
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.023333333333333334,
+      "uncertainty": 0.4046537750336069,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0033333333333333335,
+      "uncertainty": 0.05131959791131033,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.8533333333333334,
+      "uncertainty": 0.7601026195747435,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.8633333333333333,
+      "uncertainty": 0.5821808782692607,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.023333333333333334,
+      "uncertainty": 0.1525798721787773,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.06333333333333334,
+      "uncertainty": 0.43609544073863316,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0775579997234276,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.07302350249804875,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.10953525374707311,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142436,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.14380344604033712,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.7766666666666666,
+      "uncertainty": 0.8315995989379933,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9833333333333333,
+      "uncertainty": 0.09473168814343362,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.32,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.08997884396852347,
+      "error": 1
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.62,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.06770960681868175,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.25666666666666665,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.42333333333333334,
+      "uncertainty": 1.0,
+      "error": 1
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.02,
+      "uncertainty": 0.1525798721787773,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142425,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.11666666666666667,
+      "uncertainty": 0.6008969740394482,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9666666666666667,
+      "uncertainty": 0.367823602398742,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.023333333333333334,
+      "uncertainty": 0.2601218150312951,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.38,
+      "uncertainty": 0.8636681577116659,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9833333333333333,
+      "uncertainty": 0.18397808766798568,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.2747124270181873,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142422,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.03070716584314243,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.07,
+      "uncertainty": 0.5168576526610877,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.98,
+      "uncertainty": 0.1715398496858443,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.1504337755254386,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.3333333333333333,
+      "uncertainty": 0.9716483767051275,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.03070716584314243,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.3466666666666667,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.03333333333333333,
+      "uncertainty": 0.37634371801627564,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9966666666666667,
+      "uncertainty": 0.0775579997234277,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0426711894691384,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.09194485020000628,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142422,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9266666666666666,
+      "uncertainty": 0.5382142783751465,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.44333333333333336,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.08476896340380914,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0033333333333333335,
+      "uncertainty": 0.051319597911310334,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.83,
+      "uncertainty": 0.9147686226783278,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.09333333333333334,
+      "uncertainty": 0.41276834025460263,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0033333333333333335,
+      "uncertainty": 0.042671189469138386,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.043333333333333335,
+      "uncertainty": 0.3714740007980261,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.06375228305980339,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.06375228305980338,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.99,
+      "uncertainty": 0.08997884396852353,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.5266666666666666,
+      "uncertainty": 0.8973459390381309,
+      "error": 1
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9966666666666667,
+      "uncertainty": 0.09194485020000624,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.99,
+      "uncertainty": 0.12282866337256972,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.8466666666666667,
+      "uncertainty": 0.4533500111492403,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.03070716584314244,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.05815102915100158,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142422,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.25,
+      "uncertainty": 0.8904165230663887,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.5333333333333333,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.04267118946913843,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9166666666666666,
+      "uncertainty": 0.6770000193788741,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.058151029151001545,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.13493814919106872,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.29,
+      "uncertainty": 0.5832131888825798,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.03333333333333333,
+      "uncertainty": 0.21907050749414625,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.2966666666666667,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.6733333333333333,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.8033333333333333,
+      "uncertainty": 0.8987941480724275,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.3433333333333333,
+      "uncertainty": 1.0,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.030707165843142422,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.04267118946913843,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9333333333333333,
+      "uncertainty": 0.46896727151357975,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.0775579997234276,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.5033333333333333,
+      "uncertainty": 1.0,
+      "error": 1
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.03666666666666667,
+      "uncertainty": 0.332686755234147,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.53,
+      "uncertainty": 0.8896858947960954,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.016666666666666666,
+      "uncertainty": 0.12082697593853602,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0033333333333333335,
+      "uncertainty": 0.14071791185376256,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9433333333333334,
+      "uncertainty": 0.48972377617761537,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.0,
+      "uncertainty": 0.05131959791131033,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9966666666666667,
+      "uncertainty": 0.030707165843142464,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 0.9933333333333333,
+      "uncertainty": 0.09194485020000624,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.09666666666666666,
+      "uncertainty": 0.5023097363166865,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 1,
+      "malignant_probability": 0.006666666666666667,
+      "uncertainty": 0.14198307586777018,
+      "error": 0
+    },
+    {
+      "seed": 12,
+      "target": 0,
+      "malignant_probability": 1.0,
+      "uncertainty": 0.0,
+      "error": 0
+    }
+  ],
+  "sensitivity": [
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5714285714285715,
+      "weight_anomaly": 0.14285714285714288,
+      "weight_consequence": 0.2857142857142857,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 25,
+      "human_review_count": 16,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.125,
+      "weight_consequence": 0.37499999999999994,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4444444444444445,
+      "weight_anomaly": 0.11111111111111112,
+      "weight_consequence": 0.4444444444444445,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 78,
+      "automatic_coverage": 0.6842105263157895,
+      "selective_accuracy": 0.9871794871794872,
+      "selective_error_rate": 0.01282051282051282,
+      "assisted_count": 25,
+      "human_review_count": 11,
+      "review_workload_count": 36,
+      "review_workload_fraction": 0.3157894736842105,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.25,
+      "weight_consequence": 0.24999999999999997,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4444444444444445,
+      "weight_anomaly": 0.22222222222222224,
+      "weight_consequence": 0.3333333333333333,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.4,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 74,
+      "automatic_coverage": 0.6491228070175439,
+      "selective_accuracy": 0.9864864864864865,
+      "selective_error_rate": 0.013513513513513514,
+      "assisted_count": 28,
+      "human_review_count": 12,
+      "review_workload_count": 40,
+      "review_workload_fraction": 0.3508771929824561,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4444444444444445,
+      "weight_anomaly": 0.33333333333333337,
+      "weight_consequence": 0.2222222222222222,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 79,
+      "automatic_coverage": 0.6929824561403509,
+      "selective_accuracy": 0.9873417721518988,
+      "selective_error_rate": 0.012658227848101266,
+      "assisted_count": 23,
+      "human_review_count": 12,
+      "review_workload_count": 35,
+      "review_workload_fraction": 0.30701754385964913,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4,
+      "weight_anomaly": 0.30000000000000004,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 28,
+      "human_review_count": 11,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.36363636363636365,
+      "weight_anomaly": 0.27272727272727276,
+      "weight_consequence": 0.36363636363636365,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 72,
+      "automatic_coverage": 0.631578947368421,
+      "selective_accuracy": 0.9861111111111112,
+      "selective_error_rate": 0.013888888888888888,
+      "assisted_count": 31,
+      "human_review_count": 11,
+      "review_workload_count": 42,
+      "review_workload_fraction": 0.3684210526315789,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.625,
+      "weight_anomaly": 0.125,
+      "weight_consequence": 0.24999999999999997,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 70,
+      "automatic_coverage": 0.6140350877192983,
+      "selective_accuracy": 0.9857142857142858,
+      "selective_error_rate": 0.014285714285714285,
+      "assisted_count": 29,
+      "human_review_count": 15,
+      "review_workload_count": 44,
+      "review_workload_fraction": 0.38596491228070173,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5555555555555556,
+      "weight_anomaly": 0.11111111111111112,
+      "weight_consequence": 0.3333333333333333,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 74,
+      "automatic_coverage": 0.6491228070175439,
+      "selective_accuracy": 0.9864864864864865,
+      "selective_error_rate": 0.013513513513513514,
+      "assisted_count": 26,
+      "human_review_count": 14,
+      "review_workload_count": 40,
+      "review_workload_fraction": 0.3508771929824561,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.1,
+      "weight_consequence": 0.4,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 77,
+      "automatic_coverage": 0.6754385964912281,
+      "selective_accuracy": 0.987012987012987,
+      "selective_error_rate": 0.012987012987012988,
+      "assisted_count": 24,
+      "human_review_count": 13,
+      "review_workload_count": 37,
+      "review_workload_fraction": 0.32456140350877194,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5555555555555556,
+      "weight_anomaly": 0.22222222222222224,
+      "weight_consequence": 0.2222222222222222,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 74,
+      "automatic_coverage": 0.6491228070175439,
+      "selective_accuracy": 0.9864864864864865,
+      "selective_error_rate": 0.013513513513513514,
+      "assisted_count": 25,
+      "human_review_count": 15,
+      "review_workload_count": 40,
+      "review_workload_fraction": 0.3508771929824561,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 26,
+      "human_review_count": 13,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.45454545454545453,
+      "weight_anomaly": 0.18181818181818182,
+      "weight_consequence": 0.36363636363636365,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.30000000000000004,
+      "weight_consequence": 0.19999999999999998,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 76,
+      "automatic_coverage": 0.6666666666666666,
+      "selective_accuracy": 0.9868421052631579,
+      "selective_error_rate": 0.013157894736842105,
+      "assisted_count": 26,
+      "human_review_count": 12,
+      "review_workload_count": 38,
+      "review_workload_fraction": 0.3333333333333333,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.45454545454545453,
+      "weight_anomaly": 0.27272727272727276,
+      "weight_consequence": 0.2727272727272727,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 74,
+      "automatic_coverage": 0.6491228070175439,
+      "selective_accuracy": 0.9864864864864865,
+      "selective_error_rate": 0.013513513513513514,
+      "assisted_count": 27,
+      "human_review_count": 13,
+      "review_workload_count": 40,
+      "review_workload_fraction": 0.3508771929824561,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.41666666666666663,
+      "weight_anomaly": 0.25,
+      "weight_consequence": 0.3333333333333333,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 74,
+      "automatic_coverage": 0.6491228070175439,
+      "selective_accuracy": 0.9864864864864865,
+      "selective_error_rate": 0.013513513513513514,
+      "assisted_count": 28,
+      "human_review_count": 12,
+      "review_workload_count": 40,
+      "review_workload_fraction": 0.3508771929824561,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.6666666666666667,
+      "weight_anomaly": 0.11111111111111113,
+      "weight_consequence": 0.22222222222222224,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 71,
+      "automatic_coverage": 0.6228070175438597,
+      "selective_accuracy": 0.9859154929577465,
+      "selective_error_rate": 0.014084507042253521,
+      "assisted_count": 28,
+      "human_review_count": 15,
+      "review_workload_count": 43,
+      "review_workload_fraction": 0.37719298245614036,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.6,
+      "weight_anomaly": 0.1,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 26,
+      "human_review_count": 15,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5454545454545454,
+      "weight_anomaly": 0.09090909090909091,
+      "weight_consequence": 0.36363636363636365,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 76,
+      "automatic_coverage": 0.6666666666666666,
+      "selective_accuracy": 0.9868421052631579,
+      "selective_error_rate": 0.013157894736842105,
+      "assisted_count": 25,
+      "human_review_count": 13,
+      "review_workload_count": 38,
+      "review_workload_fraction": 0.3333333333333333,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.6,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.19999999999999998,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 26,
+      "human_review_count": 15,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5454545454545454,
+      "weight_anomaly": 0.18181818181818182,
+      "weight_consequence": 0.2727272727272727,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.16666666666666669,
+      "weight_consequence": 0.33333333333333337,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5454545454545454,
+      "weight_anomaly": 0.27272727272727276,
+      "weight_consequence": 0.1818181818181818,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 24,
+      "human_review_count": 15,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.25000000000000006,
+      "weight_consequence": 0.25,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "weights",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.4615384615384615,
+      "weight_anomaly": 0.23076923076923078,
+      "weight_consequence": 0.3076923076923077,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 76,
+      "automatic_coverage": 0.6666666666666666,
+      "selective_accuracy": 0.9868421052631579,
+      "selective_error_rate": 0.013157894736842105,
+      "assisted_count": 26,
+      "human_review_count": 12,
+      "review_workload_count": 38,
+      "review_workload_fraction": 0.3333333333333333,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 0.5,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 0.75,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 28,
+      "human_review_count": 11,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.25,
+      "predicted_benign_consequence": 0.5,
+      "n": 114,
+      "automatic_count": 72,
+      "automatic_coverage": 0.631578947368421,
+      "selective_accuracy": 0.9861111111111112,
+      "selective_error_rate": 0.013888888888888888,
+      "assisted_count": 28,
+      "human_review_count": 14,
+      "review_workload_count": 42,
+      "review_workload_fraction": 0.3684210526315789,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.25,
+      "predicted_benign_consequence": 0.75,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.25,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 27,
+      "human_review_count": 12,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.5,
+      "predicted_benign_consequence": 0.5,
+      "n": 114,
+      "automatic_count": 78,
+      "automatic_coverage": 0.6842105263157895,
+      "selective_accuracy": 0.9871794871794872,
+      "selective_error_rate": 0.01282051282051282,
+      "assisted_count": 20,
+      "human_review_count": 16,
+      "review_workload_count": 36,
+      "review_workload_fraction": 0.3157894736842105,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.5,
+      "predicted_benign_consequence": 0.75,
+      "n": 114,
+      "automatic_count": 72,
+      "automatic_coverage": 0.631578947368421,
+      "selective_accuracy": 0.9861111111111112,
+      "selective_error_rate": 0.013888888888888888,
+      "assisted_count": 28,
+      "human_review_count": 14,
+      "review_workload_count": 42,
+      "review_workload_fraction": 0.3684210526315789,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "consequence",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.5,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 73,
+      "automatic_coverage": 0.6403508771929824,
+      "selective_accuracy": 0.9863013698630136,
+      "selective_error_rate": 0.0136986301369863,
+      "assisted_count": 28,
+      "human_review_count": 13,
+      "review_workload_count": 41,
+      "review_workload_fraction": 0.35964912280701755,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 60,
+      "assisted_percentile": 80,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 65,
+      "automatic_coverage": 0.5701754385964912,
+      "selective_accuracy": 0.9846153846153847,
+      "selective_error_rate": 0.015384615384615385,
+      "assisted_count": 24,
+      "human_review_count": 25,
+      "review_workload_count": 49,
+      "review_workload_fraction": 0.4298245614035088,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 60,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 65,
+      "automatic_coverage": 0.5701754385964912,
+      "selective_accuracy": 0.9846153846153847,
+      "selective_error_rate": 0.015384615384615385,
+      "assisted_count": 36,
+      "human_review_count": 13,
+      "review_workload_count": 49,
+      "review_workload_fraction": 0.4298245614035088,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 60,
+      "assisted_percentile": 95,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 65,
+      "automatic_coverage": 0.5701754385964912,
+      "selective_accuracy": 0.9846153846153847,
+      "selective_error_rate": 0.015384615384615385,
+      "assisted_count": 40,
+      "human_review_count": 9,
+      "review_workload_count": 49,
+      "review_workload_fraction": 0.4298245614035088,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 70,
+      "assisted_percentile": 80,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 14,
+      "human_review_count": 25,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 70,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 26,
+      "human_review_count": 13,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 70,
+      "assisted_percentile": 95,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 75,
+      "automatic_coverage": 0.6578947368421053,
+      "selective_accuracy": 0.9866666666666667,
+      "selective_error_rate": 0.013333333333333334,
+      "assisted_count": 30,
+      "human_review_count": 9,
+      "review_workload_count": 39,
+      "review_workload_fraction": 0.34210526315789475,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 80,
+      "assisted_percentile": 90,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 89,
+      "automatic_coverage": 0.7807017543859649,
+      "selective_accuracy": 0.9887640449438202,
+      "selective_error_rate": 0.011235955056179775,
+      "assisted_count": 12,
+      "human_review_count": 13,
+      "review_workload_count": 25,
+      "review_workload_fraction": 0.21929824561403508,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    },
+    {
+      "seed": 12,
+      "scenario": "percentiles",
+      "automatic_percentile": 80,
+      "assisted_percentile": 95,
+      "weight_uncertainty": 0.5,
+      "weight_anomaly": 0.2,
+      "weight_consequence": 0.3,
+      "predicted_malignant_consequence": 0.0,
+      "predicted_benign_consequence": 1.0,
+      "n": 114,
+      "automatic_count": 89,
+      "automatic_coverage": 0.7807017543859649,
+      "selective_accuracy": 0.9887640449438202,
+      "selective_error_rate": 0.011235955056179775,
+      "assisted_count": 16,
+      "human_review_count": 9,
+      "review_workload_count": 25,
+      "review_workload_fraction": 0.21929824561403508,
+      "false_negatives_automatic": 1,
+      "false_negatives_routed_away": 1
+    }
+  ]
+}

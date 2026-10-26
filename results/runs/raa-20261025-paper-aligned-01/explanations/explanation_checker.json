@@ -1,0 +1,40 @@
+{
+  "clean_count": 114,
+  "clean_false_positives": 0,
+  "clean_false_positive_rate": 0.0,
+  "fault_count": 570,
+  "faults_detected": 570,
+  "overall_detection_rate": 1.0,
+  "per_fault": {
+    "wrong_decision_level": {
+      "detected": 114,
+      "injected": 114,
+      "detection_rate": 1.0
+    },
+    "wrong_predicted_class": {
+      "detected": 114,
+      "injected": 114,
+      "detection_rate": 1.0
+    },
+    "altered_numeric_value": {
+      "detected": 114,
+      "injected": 114,
+      "detection_rate": 1.0
+    },
+    "unsupported_diagnostic_claim": {
+      "detected": 114,
+      "injected": 114,
+      "detection_rate": 1.0
+    },
+    "dropped_referral_reason": {
+      "detected": 31,
+      "injected": 31,
+      "detection_rate": 1.0
+    },
+    "policy_contradiction": {
+      "detected": 83,
+      "injected": 83,
+      "detection_rate": 1.0
+    }
+  }
+}

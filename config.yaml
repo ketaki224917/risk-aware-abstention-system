@@ -10,33 +10,33 @@ data:
   test_fraction: 0.20
   validation_fraction_of_remainder: 0.25
   stratified: true
-  base_seed: 2026
+  base_seed: 0
   split_count: 30
+  main_split_seed: 42
 
 classifier:
   class: sklearn.ensemble.RandomForestClassifier
   n_estimators: 300
-  random_state_offset: 1000
+  random_state_offset: 0
   n_jobs: 1
 
 uncertainty:
   method: bootstrap_probability_disagreement
   ensemble_members: 30
   trees_per_member: 50
-  random_state_offset: 2000
+  random_state_offset: 0
   n_jobs: 1
 
 anomaly:
   class: sklearn.ensemble.IsolationForest
   n_estimators: 200
   contamination: auto
-  random_state_offset: 3000
+  random_state_offset: 0
   n_jobs: 1
-  score: "-decision_function; larger means more unusual"
+  score: "-score_samples; larger means more unusual"
 
 consequence:
-  # ASSUMPTION: values were not present in the supplied paper/source files.
-  predicted_malignant: 0.0
+  predicted_malignant: 0.4
   predicted_benign: 1.0
 
 risk:
@@ -44,7 +44,8 @@ risk:
     uncertainty: 0.5
     anomaly: 0.2
     consequence: 0.3
-  normalization: "MinMaxScaler fit on validation component scores; consequence is already in [0, 1]."
+  uncertainty_normalization: "min(U / validation_p95, 1)"
+  anomaly_normalization: "(A - training_min) / (training_p99 - training_min), clipped to [0, 1]"
 
 policy:
   automatic_percentile: 70
@@ -55,8 +56,10 @@ policy:
     - Human Review
 
 stress_test:
-  shift_multipliers: [0.5, 1.0, 1.5, 2.0]
-  feature_subset_sizes: [3, 10, 30]
+  feature_count: 8
+  shift_magnitude_sigma: 3.0
+  shift_signs: "random per case and selected feature"
+  clip_minimum: 0.0
   seed: 4242
 
 evaluation:

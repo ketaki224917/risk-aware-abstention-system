@@ -63,7 +63,7 @@ def stratified_split(
     train, validation = train_test_split(
         train_validation,
         test_size=validation_fraction_of_remainder,
-        random_state=seed + 1,
+        random_state=seed,
         stratify=targets[train_validation],
     )
     split = DataSplit(

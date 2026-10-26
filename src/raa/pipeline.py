@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 
 from raa.explain.record import DecisionRecord
 from raa.models.anomaly import anomaly_score, fit_anomaly_detector
@@ -24,6 +25,7 @@ class BatchDecisions:
 
     predicted_class: NDArray[np.int64]
     malignant_probability: NDArray[np.float64]
+    confidence_risk: NDArray[np.float64]
     uncertainty: NDArray[np.float64]
     anomaly: NDArray[np.float64]
     consequence: NDArray[np.float64]
@@ -37,6 +39,7 @@ class DecisionSystem:
 
     classifier: RandomForestClassifier
     uncertainty_model: BootstrapUncertainty
+    anomaly_scaler: StandardScaler
     anomaly_model: IsolationForest
     normalizer: ComponentNormalizer
     thresholds: PolicyThresholds
@@ -57,6 +60,13 @@ class DecisionSystem:
                 level=DecisionLevel(str(batch.level[i])),
                 automatic_threshold=self.thresholds.automatic_max,
                 assisted_threshold=self.thresholds.assisted_max,
+                referral_reason=_referral_reason(
+                    float(batch.uncertainty[i]),
+                    float(batch.anomaly[i]),
+                    float(batch.consequence[i]),
+                    DecisionLevel(str(batch.level[i])),
+                    self.weights,
+                ),
             )
             for i in range(len(batch.predicted_class))
         )
@@ -67,19 +77,24 @@ class DecisionSystem:
         predicted = np.asarray(self.classifier.predict(x), dtype=np.int64)
         probability = malignant_probability(self.classifier, x)
         uncertainty = self.uncertainty_model.disagreement(x)
-        anomaly = anomaly_score(self.anomaly_model, x)
+        anomaly = self.score_anomaly(x)
         consequence = consequence_score(predicted, **self.consequence_values)
         components = self.normalizer.transform(uncertainty, anomaly, consequence)
         risk = weighted_risk(components, self.weights)
         return BatchDecisions(
             predicted,
             probability,
+            1.0 - np.maximum(probability, 1.0 - probability),
             components["uncertainty"],
             components["anomaly"],
             components["consequence"],
             risk,
             self.thresholds.route(risk),
         )
+
+    def score_anomaly(self, features: ArrayLike) -> NDArray[np.float64]:
+        """Score rows after the training-fitted anomaly feature standardization."""
+        return anomaly_score(self.anomaly_model, self.anomaly_scaler.transform(features))
 
 
 def fit_system(
@@ -116,19 +131,22 @@ def fit_system(
         trees_per_member=int(uc["trees_per_member"]),
         seed=seed + int(uc["random_state_offset"]),
     )
+    anomaly_scaler = StandardScaler().fit(x[train])
+    anomaly_train = anomaly_scaler.transform(x[train])
     detector = fit_anomaly_detector(
-        x[train],
+        anomaly_train,
         n_estimators=int(ac["n_estimators"]),
         random_state=seed + int(ac["random_state_offset"]),
     )
     vx = x[val]
     vu = ensemble.disagreement(vx)
-    va = anomaly_score(detector, vx)
+    va_train = anomaly_score(detector, anomaly_train)
+    va = anomaly_score(detector, anomaly_scaler.transform(vx))
     vc = consequence_score(
         classifier.predict(vx),
         **{key: float(value) for key, value in config["consequence"].items()},
     )
-    normalizer = ComponentNormalizer.fit(vu, va)
+    normalizer = ComponentNormalizer.fit(vu, va_train)
     components = normalizer.transform(vu, va, vc)
     weights = {key: float(value) for key, value in config["risk"]["weights"].items()}
     risk = weighted_risk(components, weights)
@@ -141,9 +159,28 @@ def fit_system(
     return DecisionSystem(
         classifier,
         ensemble,
+        anomaly_scaler,
         detector,
         normalizer,
         thresholds,
         weights,
         {key: float(value) for key, value in config["consequence"].items()},
     )
+
+
+def _referral_reason(
+    uncertainty: float,
+    anomaly: float,
+    consequence: float,
+    level: DecisionLevel,
+    weights: dict[str, float],
+) -> str:
+    """Name the largest weighted risk contributor for referred cases."""
+    if level is DecisionLevel.AUTOMATIC:
+        return ""
+    contributions = {
+        "ensemble disagreement (uncertainty)": weights["uncertainty"] * uncertainty,
+        "anomaly evidence": weights["anomaly"] * anomaly,
+        "the consequence term": weights["consequence"] * consequence,
+    }
+    return max(contributions, key=contributions.get)

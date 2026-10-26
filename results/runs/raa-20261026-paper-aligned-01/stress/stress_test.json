@@ -1,0 +1,614 @@
+{
+  "seed": 4242,
+  "split_seed_range": [
+    0,
+    29
+  ],
+  "test_cases": 3420,
+  "recipe": "For every held-out case, independently select 8 random features and add a seeded random +/-3 training-standard-deviation shift to each; clip values below 0. The Isolation Forest and feature scaler are fitted on training data only. This resolves the paper's unspecified perturbation RNG.",
+  "confidence_interval_method": "Paired cluster bootstrap over original dataset row IDs; each sampled row keeps its clean and shifted scores together across all split occurrences.",
+  "score_summaries": {
+    "anomaly": {
+      "mean": 0.9118382579255154,
+      "std": 0.019530236427968185,
+      "pooled_auroc": 0.91027474265586,
+      "cluster_bootstrap_ci95": [
+        0.892026037798103,
+        0.9274681301865637
+      ]
+    },
+    "uncertainty": {
+      "mean": 0.8029932286857494,
+      "std": 0.034506236227516404,
+      "pooled_auroc": 0.8030129356041176,
+      "cluster_bootstrap_ci95": [
+        0.7782742965006239,
+        0.8278851072710832
+      ]
+    },
+    "risk": {
+      "mean": 0.8461064943059403,
+      "std": 0.025445728680278796,
+      "pooled_auroc": 0.8452527273349065,
+      "cluster_bootstrap_ci95": [
+        0.8256918118301201,
+        0.8647773082016432
+      ]
+    }
+  },
+  "perturbed_always_predict_accuracy_mean": 0.9286549707602341,
+  "variants": [
+    {
+      "seed": 0,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4242,
+      "anomaly_auroc": 0.9256694367497691,
+      "uncertainty_auroc": 0.7794706063404124,
+      "risk_auroc": 0.842797783933518,
+      "test_count": 114
+    },
+    {
+      "seed": 1,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4243,
+      "anomaly_auroc": 0.9063173284087411,
+      "uncertainty_auroc": 0.8437211449676824,
+      "risk_auroc": 0.8624961526623578,
+      "test_count": 114
+    },
+    {
+      "seed": 2,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4244,
+      "anomaly_auroc": 0.9311326562019083,
+      "uncertainty_auroc": 0.8124038165589411,
+      "risk_auroc": 0.8570329332102186,
+      "test_count": 114
+    },
+    {
+      "seed": 3,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4245,
+      "anomaly_auroc": 0.8874269005847953,
+      "uncertainty_auroc": 0.8034395198522623,
+      "risk_auroc": 0.8369498307171437,
+      "test_count": 114
+    },
+    {
+      "seed": 4,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4246,
+      "anomaly_auroc": 0.8846568174823023,
+      "uncertainty_auroc": 0.8115958756540473,
+      "risk_auroc": 0.8381809787626961,
+      "test_count": 114
+    },
+    {
+      "seed": 5,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4247,
+      "anomaly_auroc": 0.9150892582333026,
+      "uncertainty_auroc": 0.8034779932286857,
+      "risk_auroc": 0.8673437980917205,
+      "test_count": 114
+    },
+    {
+      "seed": 6,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4248,
+      "anomaly_auroc": 0.9412511542012927,
+      "uncertainty_auroc": 0.8773853493382578,
+      "risk_auroc": 0.9105109264389043,
+      "test_count": 114
+    },
+    {
+      "seed": 7,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4249,
+      "anomaly_auroc": 0.8741151123422591,
+      "uncertainty_auroc": 0.7891274238227146,
+      "risk_auroc": 0.82979378270237,
+      "test_count": 114
+    },
+    {
+      "seed": 8,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4250,
+      "anomaly_auroc": 0.930209295167744,
+      "uncertainty_auroc": 0.8152508464142814,
+      "risk_auroc": 0.8521083410280086,
+      "test_count": 114
+    },
+    {
+      "seed": 9,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4251,
+      "anomaly_auroc": 0.8909279778393352,
+      "uncertainty_auroc": 0.7950138504155125,
+      "risk_auroc": 0.8337180670975685,
+      "test_count": 114
+    },
+    {
+      "seed": 10,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4252,
+      "anomaly_auroc": 0.9150507848568791,
+      "uncertainty_auroc": 0.7355340104647584,
+      "risk_auroc": 0.8324099722991689,
+      "test_count": 114
+    },
+    {
+      "seed": 11,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4253,
+      "anomaly_auroc": 0.937980917205294,
+      "uncertainty_auroc": 0.8392582333025546,
+      "risk_auroc": 0.8743459526008002,
+      "test_count": 114
+    },
+    {
+      "seed": 12,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4254,
+      "anomaly_auroc": 0.9425207756232687,
+      "uncertainty_auroc": 0.7556171129578332,
+      "risk_auroc": 0.8289473684210527,
+      "test_count": 114
+    },
+    {
+      "seed": 13,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4255,
+      "anomaly_auroc": 0.9238996614342876,
+      "uncertainty_auroc": 0.8224453678054785,
+      "risk_auroc": 0.8458756540473993,
+      "test_count": 114
+    },
+    {
+      "seed": 14,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4256,
+      "anomaly_auroc": 0.8696906740535548,
+      "uncertainty_auroc": 0.7980147737765466,
+      "risk_auroc": 0.8264850723299477,
+      "test_count": 114
+    },
+    {
+      "seed": 15,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4257,
+      "anomaly_auroc": 0.9241305016928285,
+      "uncertainty_auroc": 0.7957063711911357,
+      "risk_auroc": 0.8354878424130502,
+      "test_count": 114
+    },
+    {
+      "seed": 16,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4258,
+      "anomaly_auroc": 0.9205524776854417,
+      "uncertainty_auroc": 0.8231763619575254,
+      "risk_auroc": 0.8694983071714374,
+      "test_count": 114
+    },
+    {
+      "seed": 17,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4259,
+      "anomaly_auroc": 0.9245921822099107,
+      "uncertainty_auroc": 0.8176746691289628,
+      "risk_auroc": 0.8615727916281933,
+      "test_count": 114
+    },
+    {
+      "seed": 18,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4260,
+      "anomaly_auroc": 0.9240535549399815,
+      "uncertainty_auroc": 0.783471837488458,
+      "risk_auroc": 0.8396429670667899,
+      "test_count": 114
+    },
+    {
+      "seed": 19,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4261,
+      "anomaly_auroc": 0.8832333025546322,
+      "uncertainty_auroc": 0.8269082794706063,
+      "risk_auroc": 0.8845029239766081,
+      "test_count": 114
+    },
+    {
+      "seed": 20,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4262,
+      "anomaly_auroc": 0.9092028316405047,
+      "uncertainty_auroc": 0.8072483841181902,
+      "risk_auroc": 0.8424899969221299,
+      "test_count": 114
+    },
+    {
+      "seed": 21,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4263,
+      "anomaly_auroc": 0.8962757771622039,
+      "uncertainty_auroc": 0.7940135426285011,
+      "risk_auroc": 0.8392582333025547,
+      "test_count": 114
+    },
+    {
+      "seed": 22,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4264,
+      "anomaly_auroc": 0.9118959679901508,
+      "uncertainty_auroc": 0.6830563250230841,
+      "risk_auroc": 0.7548476454293629,
+      "test_count": 114
+    },
+    {
+      "seed": 23,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4265,
+      "anomaly_auroc": 0.9153585718682672,
+      "uncertainty_auroc": 0.8252154509079717,
+      "risk_auroc": 0.8459526008002463,
+      "test_count": 114
+    },
+    {
+      "seed": 24,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4266,
+      "anomaly_auroc": 0.914973838104032,
+      "uncertainty_auroc": 0.7949369036626655,
+      "risk_auroc": 0.8319482917820868,
+      "test_count": 114
+    },
+    {
+      "seed": 25,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4267,
+      "anomaly_auroc": 0.896660510926439,
+      "uncertainty_auroc": 0.820906432748538,
+      "risk_auroc": 0.8598030163127117,
+      "test_count": 114
+    },
+    {
+      "seed": 26,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4268,
+      "anomaly_auroc": 0.9016620498614958,
+      "uncertainty_auroc": 0.819867651585103,
+      "risk_auroc": 0.8484148968913512,
+      "test_count": 114
+    },
+    {
+      "seed": 27,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4269,
+      "anomaly_auroc": 0.9203601108033241,
+      "uncertainty_auroc": 0.7926669744536781,
+      "risk_auroc": 0.8466451215758695,
+      "test_count": 114
+    },
+    {
+      "seed": 28,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4270,
+      "anomaly_auroc": 0.9320560172360727,
+      "uncertainty_auroc": 0.8207910126192675,
+      "risk_auroc": 0.8539550630963374,
+      "test_count": 114
+    },
+    {
+      "seed": 29,
+      "feature_subset_rule": "8 random features per case",
+      "feature_subset_seed": 4271,
+      "anomaly_auroc": 0.9042012927054478,
+      "uncertainty_auroc": 0.8024007386888273,
+      "risk_auroc": 0.8301785164666051,
+      "test_count": 114
+    }
+  ],
+  "policy_behavior": [
+    {
+      "seed": 0,
+      "clean_automatic_fraction": 0.6929824561403509,
+      "perturbed_automatic_fraction": 0.07894736842105263,
+      "perturbed_assisted_fraction": 0.4649122807017544,
+      "perturbed_human_review_fraction": 0.45614035087719296,
+      "perturbed_escalated_fraction": 0.9210526315789473,
+      "perturbed_always_predict_accuracy": 0.9210526315789473,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 1,
+      "clean_automatic_fraction": 0.7017543859649122,
+      "perturbed_automatic_fraction": 0.06140350877192982,
+      "perturbed_assisted_fraction": 0.7543859649122807,
+      "perturbed_human_review_fraction": 0.18421052631578946,
+      "perturbed_escalated_fraction": 0.9385964912280702,
+      "perturbed_always_predict_accuracy": 0.9385964912280702,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 2,
+      "clean_automatic_fraction": 0.7456140350877193,
+      "perturbed_automatic_fraction": 0.14035087719298245,
+      "perturbed_assisted_fraction": 0.34210526315789475,
+      "perturbed_human_review_fraction": 0.5175438596491229,
+      "perturbed_escalated_fraction": 0.8596491228070176,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 3,
+      "clean_automatic_fraction": 0.7719298245614035,
+      "perturbed_automatic_fraction": 0.19298245614035087,
+      "perturbed_assisted_fraction": 0.5701754385964912,
+      "perturbed_human_review_fraction": 0.23684210526315788,
+      "perturbed_escalated_fraction": 0.8070175438596491,
+      "perturbed_always_predict_accuracy": 0.8771929824561403,
+      "perturbed_automatic_selective_accuracy": 0.9545454545454546
+    },
+    {
+      "seed": 4,
+      "clean_automatic_fraction": 0.6842105263157895,
+      "perturbed_automatic_fraction": 0.043859649122807015,
+      "perturbed_assisted_fraction": 0.5701754385964912,
+      "perturbed_human_review_fraction": 0.38596491228070173,
+      "perturbed_escalated_fraction": 0.956140350877193,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 5,
+      "clean_automatic_fraction": 0.7017543859649122,
+      "perturbed_automatic_fraction": 0.07894736842105263,
+      "perturbed_assisted_fraction": 0.45614035087719296,
+      "perturbed_human_review_fraction": 0.4649122807017544,
+      "perturbed_escalated_fraction": 0.9210526315789473,
+      "perturbed_always_predict_accuracy": 0.9298245614035088,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 6,
+      "clean_automatic_fraction": 0.7894736842105263,
+      "perturbed_automatic_fraction": 0.08771929824561403,
+      "perturbed_assisted_fraction": 0.4824561403508772,
+      "perturbed_human_review_fraction": 0.4298245614035088,
+      "perturbed_escalated_fraction": 0.9122807017543859,
+      "perturbed_always_predict_accuracy": 0.9473684210526315,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 7,
+      "clean_automatic_fraction": 0.6929824561403509,
+      "perturbed_automatic_fraction": 0.12280701754385964,
+      "perturbed_assisted_fraction": 0.34210526315789475,
+      "perturbed_human_review_fraction": 0.5350877192982456,
+      "perturbed_escalated_fraction": 0.8771929824561403,
+      "perturbed_always_predict_accuracy": 0.9385964912280702,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 8,
+      "clean_automatic_fraction": 0.7456140350877193,
+      "perturbed_automatic_fraction": 0.16666666666666666,
+      "perturbed_assisted_fraction": 0.5964912280701754,
+      "perturbed_human_review_fraction": 0.23684210526315788,
+      "perturbed_escalated_fraction": 0.8333333333333334,
+      "perturbed_always_predict_accuracy": 0.9473684210526315,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 9,
+      "clean_automatic_fraction": 0.7192982456140351,
+      "perturbed_automatic_fraction": 0.12280701754385964,
+      "perturbed_assisted_fraction": 0.6842105263157895,
+      "perturbed_human_review_fraction": 0.19298245614035087,
+      "perturbed_escalated_fraction": 0.8771929824561403,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 10,
+      "clean_automatic_fraction": 0.6666666666666666,
+      "perturbed_automatic_fraction": 0.06140350877192982,
+      "perturbed_assisted_fraction": 0.34210526315789475,
+      "perturbed_human_review_fraction": 0.5964912280701754,
+      "perturbed_escalated_fraction": 0.9385964912280702,
+      "perturbed_always_predict_accuracy": 0.9210526315789473,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 11,
+      "clean_automatic_fraction": 0.7192982456140351,
+      "perturbed_automatic_fraction": 0.06140350877192982,
+      "perturbed_assisted_fraction": 0.6666666666666666,
+      "perturbed_human_review_fraction": 0.2719298245614035,
+      "perturbed_escalated_fraction": 0.9385964912280702,
+      "perturbed_always_predict_accuracy": 0.9210526315789473,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 12,
+      "clean_automatic_fraction": 0.5877192982456141,
+      "perturbed_automatic_fraction": 0.017543859649122806,
+      "perturbed_assisted_fraction": 0.39473684210526316,
+      "perturbed_human_review_fraction": 0.5877192982456141,
+      "perturbed_escalated_fraction": 0.9824561403508771,
+      "perturbed_always_predict_accuracy": 0.9122807017543859,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 13,
+      "clean_automatic_fraction": 0.7192982456140351,
+      "perturbed_automatic_fraction": 0.14035087719298245,
+      "perturbed_assisted_fraction": 0.41228070175438597,
+      "perturbed_human_review_fraction": 0.4473684210526316,
+      "perturbed_escalated_fraction": 0.8596491228070176,
+      "perturbed_always_predict_accuracy": 0.9210526315789473,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 14,
+      "clean_automatic_fraction": 0.7017543859649122,
+      "perturbed_automatic_fraction": 0.08771929824561403,
+      "perturbed_assisted_fraction": 0.5526315789473685,
+      "perturbed_human_review_fraction": 0.35964912280701755,
+      "perturbed_escalated_fraction": 0.9122807017543859,
+      "perturbed_always_predict_accuracy": 0.9298245614035088,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 15,
+      "clean_automatic_fraction": 0.7280701754385965,
+      "perturbed_automatic_fraction": 0.15789473684210525,
+      "perturbed_assisted_fraction": 0.5087719298245614,
+      "perturbed_human_review_fraction": 0.3333333333333333,
+      "perturbed_escalated_fraction": 0.8421052631578947,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 16,
+      "clean_automatic_fraction": 0.7105263157894737,
+      "perturbed_automatic_fraction": 0.043859649122807015,
+      "perturbed_assisted_fraction": 0.49122807017543857,
+      "perturbed_human_review_fraction": 0.4649122807017544,
+      "perturbed_escalated_fraction": 0.956140350877193,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 17,
+      "clean_automatic_fraction": 0.7982456140350878,
+      "perturbed_automatic_fraction": 0.15789473684210525,
+      "perturbed_assisted_fraction": 0.3684210526315789,
+      "perturbed_human_review_fraction": 0.47368421052631576,
+      "perturbed_escalated_fraction": 0.8421052631578947,
+      "perturbed_always_predict_accuracy": 0.9385964912280702,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 18,
+      "clean_automatic_fraction": 0.631578947368421,
+      "perturbed_automatic_fraction": 0.017543859649122806,
+      "perturbed_assisted_fraction": 0.5087719298245614,
+      "perturbed_human_review_fraction": 0.47368421052631576,
+      "perturbed_escalated_fraction": 0.9824561403508771,
+      "perturbed_always_predict_accuracy": 0.9122807017543859,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 19,
+      "clean_automatic_fraction": 0.7192982456140351,
+      "perturbed_automatic_fraction": 0.05263157894736842,
+      "perturbed_assisted_fraction": 0.543859649122807,
+      "perturbed_human_review_fraction": 0.40350877192982454,
+      "perturbed_escalated_fraction": 0.9473684210526315,
+      "perturbed_always_predict_accuracy": 0.9298245614035088,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 20,
+      "clean_automatic_fraction": 0.7192982456140351,
+      "perturbed_automatic_fraction": 0.10526315789473684,
+      "perturbed_assisted_fraction": 0.40350877192982454,
+      "perturbed_human_review_fraction": 0.49122807017543857,
+      "perturbed_escalated_fraction": 0.8947368421052632,
+      "perturbed_always_predict_accuracy": 0.956140350877193,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 21,
+      "clean_automatic_fraction": 0.7017543859649122,
+      "perturbed_automatic_fraction": 0.16666666666666666,
+      "perturbed_assisted_fraction": 0.4824561403508772,
+      "perturbed_human_review_fraction": 0.3508771929824561,
+      "perturbed_escalated_fraction": 0.8333333333333334,
+      "perturbed_always_predict_accuracy": 0.8947368421052632,
+      "perturbed_automatic_selective_accuracy": 0.9473684210526315
+    },
+    {
+      "seed": 22,
+      "clean_automatic_fraction": 0.5877192982456141,
+      "perturbed_automatic_fraction": 0.16666666666666666,
+      "perturbed_assisted_fraction": 0.4649122807017544,
+      "perturbed_human_review_fraction": 0.3684210526315789,
+      "perturbed_escalated_fraction": 0.8333333333333334,
+      "perturbed_always_predict_accuracy": 0.9035087719298246,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 23,
+      "clean_automatic_fraction": 0.7105263157894737,
+      "perturbed_automatic_fraction": 0.017543859649122806,
+      "perturbed_assisted_fraction": 0.23684210526315788,
+      "perturbed_human_review_fraction": 0.7456140350877193,
+      "perturbed_escalated_fraction": 0.9824561403508771,
+      "perturbed_always_predict_accuracy": 0.9298245614035088,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 24,
+      "clean_automatic_fraction": 0.5789473684210527,
+      "perturbed_automatic_fraction": 0.03508771929824561,
+      "perturbed_assisted_fraction": 0.5350877192982456,
+      "perturbed_human_review_fraction": 0.4298245614035088,
+      "perturbed_escalated_fraction": 0.9649122807017544,
+      "perturbed_always_predict_accuracy": 0.9035087719298246,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 25,
+      "clean_automatic_fraction": 0.7719298245614035,
+      "perturbed_automatic_fraction": 0.11403508771929824,
+      "perturbed_assisted_fraction": 0.35964912280701755,
+      "perturbed_human_review_fraction": 0.5263157894736842,
+      "perturbed_escalated_fraction": 0.8859649122807017,
+      "perturbed_always_predict_accuracy": 0.9298245614035088,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 26,
+      "clean_automatic_fraction": 0.7368421052631579,
+      "perturbed_automatic_fraction": 0.15789473684210525,
+      "perturbed_assisted_fraction": 0.42105263157894735,
+      "perturbed_human_review_fraction": 0.42105263157894735,
+      "perturbed_escalated_fraction": 0.8421052631578947,
+      "perturbed_always_predict_accuracy": 0.8771929824561403,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 27,
+      "clean_automatic_fraction": 0.7105263157894737,
+      "perturbed_automatic_fraction": 0.08771929824561403,
+      "perturbed_assisted_fraction": 0.37719298245614036,
+      "perturbed_human_review_fraction": 0.5350877192982456,
+      "perturbed_escalated_fraction": 0.9122807017543859,
+      "perturbed_always_predict_accuracy": 0.8947368421052632,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 28,
+      "clean_automatic_fraction": 0.6929824561403509,
+      "perturbed_automatic_fraction": 0.09649122807017543,
+      "perturbed_assisted_fraction": 0.49122807017543857,
+      "perturbed_human_review_fraction": 0.41228070175438597,
+      "perturbed_escalated_fraction": 0.9035087719298246,
+      "perturbed_always_predict_accuracy": 0.9649122807017544,
+      "perturbed_automatic_selective_accuracy": 1.0
+    },
+    {
+      "seed": 29,
+      "clean_automatic_fraction": 0.6842105263157895,
+      "perturbed_automatic_fraction": 0.08771929824561403,
+      "perturbed_assisted_fraction": 0.5701754385964912,
+      "perturbed_human_review_fraction": 0.34210526315789475,
+      "perturbed_escalated_fraction": 0.9122807017543859,
+      "perturbed_always_predict_accuracy": 0.9385964912280702,
+      "perturbed_automatic_selective_accuracy": 1.0
+    }
+  ]
+}

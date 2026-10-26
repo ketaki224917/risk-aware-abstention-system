@@ -30,7 +30,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 
 ## Phase 3 — Experiments
 - [x] P3.1 Resumable 30-split pooled evaluation (3,420 test cases)
-- [x] P3.2 Main results and paper reconciliation (claim wording remains an author blocker)
+- [x] P3.2 Main results and paper reconciliation (source-aligned; result wording question recorded in BLOCKERS.md)
 - [x] P3.3 Paired ablations
 - [x] P3.4 Risk-coverage curve and percentile-pair sweep
 - [x] P3.5 Uncertainty diagnostics, reliability, and ECE
@@ -43,8 +43,8 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 ## Phase 4 — App and documentation
 - [x] P4.1 Demo app with three levels and clinical-use disclaimer (server health returned HTTP 200)
 - [x] P4.2 Risk-by-level, risk-coverage, ablation, reliability, and stress ROC figures generated
-- [x] P4.3 README with architecture, quickstart, real results, limitations, reported-results path
+- [x] P4.3 README with architecture, quickstart, source-aligned results, limitations, reported-results path
 - [x] P4.4 Method, limitations, and results documentation
 - [x] P4.5 Viva guide with walkthrough, 25 questions, and claim boundaries
 - [!] P4.6 Fresh-environment `make setup && make reproduce && make app` not verified; GNU Make is unavailable in this environment
-- [!] P4.7 Final acceptance held for author claim wording/source-paper decision and direct Make-target verification
+- [!] P4.7 Final acceptance held for author review of run-vs-paper differences and direct Make-target verification

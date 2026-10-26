@@ -1,4 +1,4 @@
-"""Validation-fitted min-max normalization for uncertainty and anomaly scores."""
+"""Paper-defined scaling for validation uncertainty and training anomaly scores."""
 
 from __future__ import annotations
 
@@ -12,35 +12,47 @@ FloatArray = NDArray[np.float64]
 
 @dataclass(frozen=True)
 class ComponentNormalizer:
-    """Component ranges learned from validation data, never from the test set."""
+    """Scale U by validation p95 and A by training min/p99, never using test data."""
 
-    uncertainty_min: float
-    uncertainty_max: float
+    uncertainty_p95: float
     anomaly_min: float
-    anomaly_max: float
+    anomaly_p99: float
 
     @classmethod
-    def fit(cls, uncertainty: ArrayLike, anomaly: ArrayLike) -> ComponentNormalizer:
-        """Fit component ranges on validation predictions only."""
-        u = np.asarray(uncertainty, dtype=np.float64)
-        a = np.asarray(anomaly, dtype=np.float64)
+    def fit(
+        cls, validation_uncertainty: ArrayLike, training_anomaly: ArrayLike
+    ) -> ComponentNormalizer:
+        """Fit U's p95 on validation and A's min/p99 on training scores."""
+        u = np.asarray(validation_uncertainty, dtype=np.float64)
+        a = np.asarray(training_anomaly, dtype=np.float64)
         if u.size == 0 or a.size == 0 or not np.isfinite(u).all() or not np.isfinite(a).all():
-            raise ValueError("Validation component scores must be nonempty and finite")
-        return cls(float(u.min()), float(u.max()), float(a.min()), float(a.max()))
+            raise ValueError("Fitting component scores must be nonempty and finite")
+        return cls(
+            float(np.percentile(u, 95)),
+            float(a.min()),
+            float(np.percentile(a, 99)),
+        )
 
     @staticmethod
-    def _scale(values: ArrayLike, minimum: float, maximum: float) -> FloatArray:
+    def _scale_anomaly(values: ArrayLike, minimum: float, maximum: float) -> FloatArray:
         x = np.asarray(values, dtype=np.float64)
         if maximum <= minimum:
             return np.zeros_like(x)
         return np.clip((x - minimum) / (maximum - minimum), 0.0, 1.0)
 
+    @staticmethod
+    def _scale_uncertainty(values: ArrayLike, percentile_95: float) -> FloatArray:
+        x = np.asarray(values, dtype=np.float64)
+        if percentile_95 <= 0:
+            return np.zeros_like(x)
+        return np.clip(x / percentile_95, 0.0, 1.0)
+
     def transform(
         self, uncertainty: ArrayLike, anomaly: ArrayLike, consequence: ArrayLike
     ) -> dict[str, FloatArray]:
-        """Normalize U/A using validation ranges; C is already specified in [0, 1]."""
-        u = self._scale(uncertainty, self.uncertainty_min, self.uncertainty_max)
-        a = self._scale(anomaly, self.anomaly_min, self.anomaly_max)
+        """Scale U by validation p95 and A by training min/p99; C is already [0, 1]."""
+        u = self._scale_uncertainty(uncertainty, self.uncertainty_p95)
+        a = self._scale_anomaly(anomaly, self.anomaly_min, self.anomaly_p99)
         c = np.asarray(consequence, dtype=np.float64)
         if not np.isfinite(c).all() or np.any((c < 0) | (c > 1)):
             raise ValueError("Consequence values must be finite and in [0, 1]")

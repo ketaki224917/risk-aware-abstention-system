@@ -19,6 +19,7 @@ def evaluate_sensitivity(
     test: BatchDecisions,
     targets: Any,
     base_weights: Mapping[str, float],
+    base_consequences: Mapping[str, float],
 ) -> list[dict[str, Any]]:
     """Run predefined sensitivity grids; cutoffs are re-fit on validation each time."""
     rows: list[dict[str, Any]] = []
@@ -39,12 +40,12 @@ def evaluate_sensitivity(
                 "automatic_percentile": 70,
                 "assisted_percentile": 90,
                 **{f"weight_{key}": value for key, value in weights.items()},
-                "predicted_malignant_consequence": 0.0,
-                "predicted_benign_consequence": 1.0,
+                "predicted_malignant_consequence": float(base_consequences["predicted_malignant"]),
+                "predicted_benign_consequence": float(base_consequences["predicted_benign"]),
                 **metrics,
             }
         )
-    for malignant, benign in product((0.0, 0.25, 0.5), (0.5, 0.75, 1.0)):
+    for malignant, benign in product((0.2, 0.4, 0.6), (0.6, 0.8, 1.0)):
         val_components = dict(val_full)
         test_components = dict(test_full)
         val_components["consequence"] = np.where(validation.predicted_class == 0, malignant, benign)
@@ -81,8 +82,8 @@ def evaluate_sensitivity(
                 "automatic_percentile": automatic,
                 "assisted_percentile": assisted,
                 **{f"weight_{key}": float(value) for key, value in base_weights.items()},
-                "predicted_malignant_consequence": 0.0,
-                "predicted_benign_consequence": 1.0,
+                "predicted_malignant_consequence": float(base_consequences["predicted_malignant"]),
+                "predicted_benign_consequence": float(base_consequences["predicted_benign"]),
                 **metrics,
             }
         )

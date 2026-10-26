@@ -1,14 +1,15 @@
-# Blockers
+# Blockers and author decisions
 
-Human-only questions requiring an author decision are listed below.
+## Environment constraint
 
-## Environment constraints (work around where possible)
-- No system Python is on PATH; a workspace-local CPython 3.13.17 runtime was unpacked under `.tools/` for this run.
-- GNU Make is unavailable in PowerShell.
-- There is no original source, paper file, or results archive to inspect.
+- GNU Make is unavailable in this PowerShell environment. Equivalent `uv` commands were run, but the literal `make setup`, `make test`, `make reproduce`, and `make app` entry points remain unverified here. This is the only outstanding mechanical acceptance check (P4.6).
 
-The equivalent uv test/lint/reproduction/app commands were run directly. P4.6 remains open because the literal GNU Make targets were not invoked.
+## Author review
 
-## Open author decisions
-- [OPEN 2026-10-25] CLAIM-001 Paper wording — needed from human: decide whether to revise or qualify the ≈0.70% full-policy accepted-error and ≈0.91 synthetic anomaly-AUROC claims in light of run `raa-20261025-01`; reproduced full-policy pooled error is 1.493%, and the pooled AUROC over the documented 12-variant stress grid is 0.731 (the 10-feature/2σ variant is 0.921). Workaround meanwhile: report all reproduced values and explicitly mark the paper targets unsupported or recipe-dependent.
-- [OPEN 2026-10-25] SOURCE-001 Original paper/method details — needed from human: provide the paper or original source repository so consequence values, bootstrap member size, exact synthetic-shift recipe, and explanation-checker figure can be traced. Workaround meanwhile: retain ADR-003 assumptions and avoid claiming exact method-level replication.
+- [OPEN 2026-10-26] CLAIM-001 — paper result wording. The source-aligned run reports 13/2,408 accepted errors (0.54%) and 0.912 ± 0.020 Isolation Forest stress AUROC, versus the journal paper's 17/2,419 (0.70%) and 0.911 ± 0.019. It also differs on the main-split Assisted/Human counts and combined-risk shift behavior. The implementation records the differences without tuning. Author decision: retain the published values as results from the original experiment, or revise/qualify the paper to include the independently reproduced values and implementation details. See `docs/state/RECONCILIATION.md`.
+
+## Resolved source questions
+
+- The journal PDF supplied on 2026-10-25 specifies the consequence values, 50-tree bootstrap member size, Isolation Forest scaling, stress-test recipe, main seed, split seed range, and checker fault categories. ADR-009 supersedes the assumptions that were needed before the paper was supplied.
+- The original source repository and raw experiment archive have not been provided. The project is a source-aligned independent implementation, not a claim of bit-identical reproduction of the authors' original code.
+- Five separately supplied papers are catalogued as background literature in `SOURCE_MAP.md`; they are not treated as evidence for this project's numerical results.

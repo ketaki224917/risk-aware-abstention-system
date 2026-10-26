@@ -10,7 +10,8 @@ def test_validation_normalization_is_bounded_and_clips_future_values():
     components = normalizer.transform([0, 2, 4], [0, 20, 40], [0, 0.5, 1])
     assert np.all((components["uncertainty"] >= 0) & (components["uncertainty"] <= 1))
     assert np.all((components["anomaly"] >= 0) & (components["anomaly"] <= 1))
-    assert components["uncertainty"].tolist() == [0, 0.5, 1]
+    assert np.allclose(components["uncertainty"], [0, 2 / 2.9, 1])
+    assert np.allclose(components["anomaly"], [0, 10 / 19.8, 1])
     assert components["consequence"].tolist() == [0, 0.5, 1]
 
 

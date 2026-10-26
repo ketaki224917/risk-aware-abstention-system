@@ -1,0 +1,29 @@
+{
+  "seed": 42,
+  "test_cases": 114,
+  "baseline": {
+    "n": 114,
+    "accuracy": 0.9473684210526315,
+    "error_rate": 0.05263157894736842,
+    "false_negatives": 3,
+    "false_positives": 3
+  },
+  "risk_aware": {
+    "n": 114,
+    "automatic_count": 83,
+    "automatic_coverage": 0.7280701754385965,
+    "selective_accuracy": 1.0,
+    "selective_error_rate": 0.0,
+    "assisted_count": 21,
+    "human_review_count": 10,
+    "review_workload_count": 31,
+    "review_workload_fraction": 0.2719298245614035,
+    "false_negatives_automatic": 0,
+    "false_negatives_routed_away": 3,
+    "false_negative_routed_away_rate": 1.0
+  },
+  "thresholds": {
+    "automatic": 0.5145833446534761,
+    "assisted": 0.7238993497385569
+  }
+}

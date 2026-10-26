@@ -1,0 +1,34 @@
+{
+  "seed": 42,
+  "test_cases": 114,
+  "baseline": {
+    "n": 114,
+    "accuracy": 0.9473684210526315,
+    "error_rate": 0.05263157894736842,
+    "error_count": 6,
+    "false_negatives": 3,
+    "false_positives": 3
+  },
+  "risk_aware": {
+    "n": 114,
+    "automatic_count": 76,
+    "automatic_coverage": 0.6666666666666666,
+    "selective_accuracy": 1.0,
+    "selective_error_rate": 0.0,
+    "accepted_error_count": 0,
+    "assisted_count": 14,
+    "human_review_count": 24,
+    "review_workload_count": 38,
+    "review_workload_fraction": 0.3333333333333333,
+    "false_negatives_automatic": 0,
+    "false_negatives_routed_away": 3,
+    "false_negative_routed_away_rate": 1.0
+  },
+  "ece_all": 0.07070175438596488,
+  "ece_automatic": 0.012412280701754371,
+  "brier_score_all": 0.037280896686159845,
+  "thresholds": {
+    "automatic": 0.45686483007497386,
+    "assisted": 0.6047914821065459
+  }
+}

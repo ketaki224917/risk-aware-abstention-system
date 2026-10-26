@@ -6,18 +6,22 @@ import csv
 import hashlib
 import json
 import logging
+import platform
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+import sklearn
+from sklearn.metrics import roc_auc_score
 
 from raa.data import load_breast_cancer_data, stratified_split
 from raa.eval.ablations import evaluate_ablations
 from raa.eval.metrics import (
     binary_classification_metrics,
     expected_calibration_error,
+    malignant_brier_score,
     selective_metrics,
     uncertainty_diagnostics,
 )
@@ -62,6 +66,13 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
+def _safe_roc_auc(targets: np.ndarray, scores: np.ndarray) -> float:
+    """Return AUROC, or NaN if a test split contains only one outcome class."""
+    if np.unique(targets).size < 2:
+        return float("nan")
+    return float(roc_auc_score(targets, scores))
+
+
 def _metrics_for_split(config: dict[str, Any], seed: int, data: Any) -> dict[str, Any]:
     split = stratified_split(
         data.targets,
@@ -82,10 +93,50 @@ def _metrics_for_split(config: dict[str, Any], seed: int, data: Any) -> dict[str
         if baseline["false_negatives"]
         else float("nan")
     )
+    for level_name in ("Automatic", "Assisted", "Human Review"):
+        mask = test.level == level_name
+        level_slug = level_name.lower().replace(" ", "_")
+        count = int(mask.sum())
+        error_mask = (y != test.predicted_class) & mask
+        selected[f"{level_slug}_count"] = count
+        selected[f"{level_slug}_error_count"] = int(error_mask.sum())
+        selected[f"{level_slug}_error_rate"] = (
+            float(error_mask.sum() / count) if count else float("nan")
+        )
+        selected[f"{level_slug}_false_negatives"] = int(
+            np.sum((y == 0) & (test.predicted_class == 1) & mask)
+        )
     row = {"seed": seed, **baseline, **{f"full_{k}": v for k, v in selected.items() if k != "n"}}
+    error_targets = (y != test.predicted_class).astype(int)
+    row.update(
+        {
+            "confidence_error_auroc": _safe_roc_auc(error_targets, test.confidence_risk),
+            "anomaly_error_auroc": _safe_roc_auc(error_targets, test.anomaly),
+            "uncertainty_anomaly_error_auroc": _safe_roc_auc(
+                error_targets, 0.7 * test.uncertainty + 0.3 * test.anomaly
+            ),
+            "full_risk_error_auroc": _safe_roc_auc(error_targets, test.risk),
+        }
+    )
     row.update(uncertainty_diagnostics(y, test.predicted_class, test.uncertainty))
     row["ece"] = expected_calibration_error(
         y, test.malignant_probability, bins=int(config["evaluation"]["reliability_bins"])
+    )
+    row["brier_score"] = malignant_brier_score(y, test.malignant_probability)
+    automatic = test.level == "Automatic"
+    row["accepted_ece"] = (
+        expected_calibration_error(
+            y[automatic],
+            test.malignant_probability[automatic],
+            bins=int(config["evaluation"]["reliability_bins"]),
+        )
+        if automatic.any()
+        else float("nan")
+    )
+    row["accepted_brier_score"] = (
+        malignant_brier_score(y[automatic], test.malignant_probability[automatic])
+        if automatic.any()
+        else float("nan")
     )
     ablations = evaluate_ablations(
         validation,
@@ -95,22 +146,65 @@ def _metrics_for_split(config: dict[str, Any], seed: int, data: Any) -> dict[str
         automatic_percentile=float(config["policy"]["automatic_percentile"]),
         assisted_percentile=float(config["policy"]["assisted_percentile"]),
     )
-    sensitivity = evaluate_sensitivity(validation, test, y, system.weights)
+    sensitivity = evaluate_sensitivity(
+        validation, test, y, system.weights, system.consequence_values
+    )
     curve_rows: list[dict[str, Any]] = []
     distribution_rows = [
-        {"seed": seed, "risk": float(value), "decision_level": str(level)}
-        for value, level in zip(test.risk, test.level, strict=True)
+        {
+            "seed": seed,
+            "risk": float(value),
+            "uncertainty": float(uncertainty),
+            "anomaly": float(anomaly),
+            "consequence": float(consequence),
+            "decision_level": str(level),
+            "target": int(target),
+            "prediction": int(prediction),
+            "error": int(target != prediction),
+            "false_negative": int(target == 0 and prediction == 1),
+        }
+        for value, uncertainty, anomaly, consequence, level, target, prediction in zip(
+            test.risk,
+            test.uncertainty,
+            test.anomaly,
+            test.consequence,
+            test.level,
+            y,
+            test.predicted_class,
+            strict=True,
+        )
     ]
     diagnostics_rows = [
         {
             "seed": seed,
+            "dataset_row": int(dataset_row),
             "target": int(target),
             "malignant_probability": float(probability),
+            "confidence_risk": float(confidence_risk),
             "uncertainty": float(uncertainty),
+            "anomaly": float(anomaly),
+            "risk": float(risk),
             "error": int(target != prediction),
         }
-        for target, probability, uncertainty, prediction in zip(
-            y, test.malignant_probability, test.uncertainty, test.predicted_class, strict=True
+        for (
+            dataset_row,
+            target,
+            probability,
+            confidence_risk,
+            uncertainty,
+            anomaly,
+            risk,
+            prediction,
+        ) in zip(
+            split.test,
+            y,
+            test.malignant_probability,
+            test.confidence_risk,
+            test.uncertainty,
+            test.anomaly,
+            test.risk,
+            test.predicted_class,
+            strict=True,
         )
     ]
     val_full_risk = validation.risk
@@ -246,16 +340,11 @@ def run_experiments(
             for signature, scores in by_setting.items()
         }
     total_n = sum(int(row["n"]) for row in metrics_rows)
-    pooled_errors = sum(
-        int(row["n"]) - int(round(float(row["accuracy"]) * int(row["n"]))) for row in metrics_rows
-    )
+    pooled_errors = sum(int(row["error_count"]) for row in metrics_rows)
     pooled_fn = sum(int(row["false_negatives"]) for row in metrics_rows)
     pooled_fp = sum(int(row["false_positives"]) for row in metrics_rows)
     automatic_n = sum(int(row["full_automatic_count"]) for row in metrics_rows)
-    automatic_errors = sum(
-        int(round(float(row["full_selective_error_rate"]) * int(row["full_automatic_count"])))
-        for row in metrics_rows
-    )
+    automatic_errors = sum(int(row["full_accepted_error_count"]) for row in metrics_rows)
     fn_away = sum(int(row["full_false_negatives_routed_away"]) for row in metrics_rows)
     pooled = {
         "n": total_n,
@@ -270,6 +359,29 @@ def run_experiments(
         "false_negatives_routed_away": fn_away,
         "false_negatives_routed_away_rate": fn_away / pooled_fn if pooled_fn else None,
     }
+    decision_levels: dict[str, dict[str, Any]] = {}
+    for level in ("Automatic", "Assisted", "Human Review"):
+        selected_rows = [row for row in distribution_rows if row["decision_level"] == level]
+        level_count = len(selected_rows)
+        level_errors = sum(int(row["error"]) for row in selected_rows)
+        decision_levels[level] = {
+            "count": level_count,
+            "share": level_count / total_n,
+            "errors": level_errors,
+            "error_rate": level_errors / level_count if level_count else None,
+            "false_negatives": sum(int(row["false_negative"]) for row in selected_rows),
+        }
+    pooled_diagnostics: dict[str, float] = {}
+    error_targets = np.asarray([int(row["error"]) for row in diagnostics_rows])
+    for key in ("confidence_risk", "uncertainty", "anomaly", "risk"):
+        pooled_diagnostics[f"{key}_error_auroc"] = _safe_roc_auc(
+            error_targets, np.asarray([float(row[key]) for row in diagnostics_rows])
+        )
+    pooled_diagnostics["uncertainty_anomaly_error_auroc"] = _safe_roc_auc(
+        error_targets,
+        0.7 * np.asarray([float(row["uncertainty"]) for row in diagnostics_rows])
+        + 0.3 * np.asarray([float(row["anomaly"]) for row in diagnostics_rows]),
+    )
     metrics_json = {
         "run_id": run_id,
         "split_count": count,
@@ -280,7 +392,12 @@ def run_experiments(
         "source_fingerprint": source_fingerprint,
         "lock_fingerprint": lock_fingerprint,
         "python_version": ".".join(map(str, sys.version_info[:3])),
+        "platform": platform.platform(),
+        "numpy_version": np.__version__,
+        "scikit_learn_version": sklearn.__version__,
         "pooled_case_metrics": pooled,
+        "pooled_error_ranking_auroc": pooled_diagnostics,
+        "pooled_decision_level_metrics": decision_levels,
         "split_metric_mean_std_ci95": summaries,
         "ablation_summary": ablation_summary,
         "sensitivity_summary": sensitivity_summary,
@@ -291,6 +408,7 @@ def run_experiments(
             "risk_distribution.csv",
             "diagnostics.csv",
             "sensitivity.csv",
+            "main_split_metrics.json",
         ],
     }
     (output / "metrics.json").write_text(

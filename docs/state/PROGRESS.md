@@ -133,3 +133,16 @@ Done: Recorded actual results and final blockers; implementation and equivalent 
 Evidence: 12 tests pass; Ruff clean; 30-split reproduction and app health check pass.
 Files: `docs/state/TODO.md`, `docs/state/BLOCKERS.md`, `docs/state/HANDOFF.md`.
 Notes: GNU Make was unavailable, so `make setup && make reproduce && make app` was not verified. Author must decide whether to revise unsupported claims and/or supply original paper/source details. Final acceptance remains pending.
+
+### 2026-10-26 - Source-aligned paper review and reproduction
+Done: Read the author's 16-page journal paper and five supplied background papers, mapped the evidence to project decisions, aligned implementation with specified values/scaling/stress protocol/seeds, and regenerated all result artifacts.
+Evidence: `raa-20261026-paper-aligned-01` has 30 splits and 3,420 test rows; baseline errors match 142 (86 FN); automatic coverage is 70.41%; accepted errors are 13/2,408 (0.54%); baseline FN routed away are 73/86 (84.9%); Isolation Forest stress AUROC is 0.912 +/- 0.020; explanation checker detects 570/570 injected faults. Seed-42 baseline errors and Automatic count match the paper.
+Files: `docs/state/SOURCE_MAP.md`, `docs/state/RECONCILIATION.md`, `docs/state/BLOCKERS.md`, `docs/method.md`, `docs/results.md`, `docs/limitations.md`, `README.md`, `config.yaml`, `src/raa/`, `results/runs/raa-20261026-paper-aligned-01/`.
+Notes: Remaining differences are documented: exact full-policy accepted-error count, seed-42 Assisted/Human allocation and thresholds, and full-risk stress AUROC/escalation. RNG details are not fully specified in the paper. Pytest -> 12 passed; Ruff check -> all checks passed. GNU Make remains unavailable, so its literal targets are unverified.
+
+### 2026-10-26 - Final source-alignment QA
+Done: Rechecked lint, formatting, lock resolution, tests, Streamlit health, and generated figures; updated the run fingerprints and artifact inventory after the final CLI/plot changes.
+Evidence: `ruff check .` passed; `ruff format --check .` found 53 formatted files; `pytest -q` reported 12 passed; `uv lock --check --offline` resolved 57 packages; Streamlit `/_stcore/health` returned HTTP 200 `ok`; `git diff --check` reported no whitespace errors. The ablation figure was visually reviewed after relabeling and switching error bars to split-level standard deviation.
+Command: `uv run python -m raa.cli reproduce --run-id raa-20261026-paper-aligned-01` (executed with workspace-local uv and cache arguments as recorded in `metrics.json`).
+Files: `results/runs/raa-20261026-paper-aligned-01/`, `src/raa/viz/plots.py`, `docs/state/ENVIRONMENT.md`, `docs/state/HANDOFF.md`.
+Notes: `raa-20261025-paper-aligned-01` is retained as an earlier intermediate run; the canonical comparison and final project results use `raa-20261026-paper-aligned-01`.

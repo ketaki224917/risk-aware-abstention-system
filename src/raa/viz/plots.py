@@ -85,17 +85,28 @@ def plot_result_artifacts(run_dir: str | Path) -> list[Path]:
         names = list(grouped_ablation)
         means = [float(np.mean(grouped_ablation[name])) for name in names]
         errors = [
-            float(np.std(grouped_ablation[name], ddof=1) / np.sqrt(len(grouped_ablation[name])))
+            float(np.std(grouped_ablation[name], ddof=1))
             if len(grouped_ablation[name]) > 1
             else 0.0
             for name in names
         ]
+        display_names = {
+            "confidence_only": "Confidence",
+            "uncertainty_only": "Uncertainty",
+            "anomaly_only": "Anomaly",
+            "consequence_only": "Consequence",
+            "uncertainty_anomaly": "Uncertainty\n+ anomaly",
+            "uncertainty_consequence": "Uncertainty\n+ consequence",
+            "anomaly_consequence": "Anomaly\n+ consequence",
+            "full": "Full policy",
+        }
+        labels = [display_names.get(name, name) for name in names]
         fig, ax = plt.subplots(figsize=(8.4, 4.7))
-        ax.bar(names, means, yerr=errors, capsize=3)
+        ax.bar(labels, means, yerr=errors, capsize=3)
         ax.set(
-            ylabel="Selective accuracy (automatic cases)", title="Ablation comparison (mean ± SE)"
+            ylabel="Selective accuracy (automatic cases)", title="Ablation comparison (mean ± SD)"
         )
-        ax.tick_params(axis="x", rotation=28)
+        ax.tick_params(axis="x", labelsize=9)
         ax.set_ylim(0, 1.01)
         ax.grid(axis="y", alpha=0.25)
         path = root / "ablation_accuracy.png"

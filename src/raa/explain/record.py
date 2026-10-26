@@ -20,11 +20,19 @@ class DecisionRecord:
     level: DecisionLevel
     automatic_threshold: float
     assisted_threshold: float
+    referral_reason: str = ""
 
     @property
     def predicted_label(self) -> str:
         """Human-readable predicted class."""
         return "malignant" if self.predicted_class == 0 else "benign"
+
+    @property
+    def confidence(self) -> float:
+        """Model confidence in the predicted class; not calibrated error risk."""
+        if self.predicted_class == 0:
+            return self.malignant_probability
+        return 1.0 - self.malignant_probability
 
     @property
     def risk_tier(self) -> str:

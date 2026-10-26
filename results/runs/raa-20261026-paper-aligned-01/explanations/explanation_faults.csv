@@ -1,0 +1,7 @@
+fault_type,detected,injected,detection_rate
+wrong_decision_level,114,114,1.0
+wrong_predicted_class,114,114,1.0
+altered_numeric_value,114,114,1.0
+unsupported_diagnostic_claim,114,114,1.0
+dropped_referral_reason,38,38,1.0
+policy_contradiction,76,76,1.0

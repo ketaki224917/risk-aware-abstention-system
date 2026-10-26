@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 from numpy.typing import ArrayLike
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, brier_score_loss, roc_auc_score
 
 
 def binary_classification_metrics(
@@ -18,6 +18,7 @@ def binary_classification_metrics(
         "n": int(y.size),
         "accuracy": float(accuracy_score(y, pred)),
         "error_rate": float(np.mean(y != pred)),
+        "error_count": int(np.sum(y != pred)),
         "false_negatives": int(np.sum((y == 0) & (pred == 1))),
         "false_positives": int(np.sum((y == 1) & (pred == 0))),
     }
@@ -41,6 +42,7 @@ def selective_metrics(
         "automatic_coverage": float(automatic.mean()),
         "selective_accuracy": float(1 - accepted_errors / accepted) if accepted else float("nan"),
         "selective_error_rate": float(accepted_errors / accepted) if accepted else float("nan"),
+        "accepted_error_count": accepted_errors,
         "assisted_count": int(assisted.sum()),
         "human_review_count": int(human.sum()),
         "review_workload_count": int(assisted.sum() + human.sum()),
@@ -81,3 +83,12 @@ def expected_calibration_error(
         if mask.any():
             ece += float(mask.mean()) * abs(float(p[mask].mean()) - float(observed[mask].mean()))
     return ece
+
+
+def malignant_brier_score(targets: ArrayLike, malignant_probability: ArrayLike) -> float:
+    """Return Brier score for malignant probability (malignant class is label 0)."""
+    y = (np.asarray(targets) == 0).astype(float)
+    p = np.asarray(malignant_probability, dtype=float)
+    if y.shape != p.shape:
+        raise ValueError("Targets and probabilities must have the same shape")
+    return float(brier_score_loss(y, p))

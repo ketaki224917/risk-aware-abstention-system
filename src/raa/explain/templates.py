@@ -9,13 +9,34 @@ DISCLAIMER = "Research prototype only; not clinically validated and not for real
 
 def generate_explanation(record: DecisionRecord) -> str:
     """Render a factual explanation; this function cannot change model decisions."""
+    label = {
+        "Automatic": "Automatic prediction",
+        "Assisted": "Assisted decision",
+        "Human Review": "Human review",
+    }[record.level.value]
+    common = (
+        f"Decision level: {label}. The classifier's predicted class is "
+        f"{record.predicted_label} (model confidence {record.confidence:.2f}). "
+        f"Uncertainty U={record.uncertainty:.4f}; anomaly score A={record.anomaly:.2f}; "
+        f"risk score R={record.risk:.2f} (thresholds "
+        f"{record.automatic_threshold:.2f} / {record.assisted_threshold:.2f}). "
+    )
+    if record.level.value == "Automatic":
+        decision_text = (
+            "The risk score is below the first threshold, so the prediction is "
+            "returned automatically."
+        )
+    elif record.level.value == "Assisted":
+        decision_text = (
+            f"Additional verification is advised because {record.referral_reason} is high."
+        )
+    else:
+        decision_text = (
+            f"The case is referred for human review because {record.referral_reason} is high."
+        )
     return (
-        f"The model predicted {record.predicted_label} with malignant probability "
-        f"{record.malignant_probability:.3f}. The normalized uncertainty signal is "
-        f"{record.uncertainty:.3f}, the anomaly score is {record.anomaly:.3f}, and the "
-        f"design-assumption consequence value is {record.consequence:.3f}. The combined "
-        f"risk is {record.risk:.3f} ({record.risk_tier} tier), so the policy routes this "
-        f"case to {record.level.value}. Ensemble disagreement is a signal, not a calibrated "
-        f"probability of error; risk weights and consequence values are design assumptions. "
-        f"{DISCLAIMER}"
+        common
+        + decision_text
+        + " This output is a model estimate, not a confirmed diagnosis. "
+        + DISCLAIMER
     )

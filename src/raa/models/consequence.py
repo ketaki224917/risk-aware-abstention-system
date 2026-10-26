@@ -9,7 +9,7 @@ from numpy.typing import ArrayLike, NDArray
 def consequence_score(
     predicted_class: ArrayLike,
     *,
-    predicted_malignant: float = 0.0,
+    predicted_malignant: float = 0.4,
     predicted_benign: float = 1.0,
 ) -> NDArray[np.float64]:
     """Assign greater design consequence to a benign prediction as specified."""

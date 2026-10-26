@@ -25,5 +25,5 @@ def fit_anomaly_detector(
 
 
 def anomaly_score(detector: IsolationForest, features: ArrayLike) -> NDArray[np.float64]:
-    """Negate sklearn's normality score so larger values indicate anomalies."""
-    return np.asarray(-detector.decision_function(features), dtype=np.float64)
+    """Negate sklearn's sample score so larger values indicate anomalies."""
+    return np.asarray(-detector.score_samples(features), dtype=np.float64)

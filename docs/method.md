@@ -2,28 +2,32 @@
 
 ## Data and split
 
-Use `sklearn.datasets.load_breast_cancer`: 569 cases, 30 numeric features, target 0 malignant (212 cases) and target 1 benign (357 cases). Each evaluation seed produces a stratified 60/20/20 train/validation/test split; with the configured fractions, each test partition has 114 cases. There are 30 fixed seeds (`2026` through `2055`), yielding 3,420 pooled test cases. A new split refits all estimators.
+The project uses `sklearn.datasets.load_breast_cancer`: 569 cases, 30 numeric features, and target 0 for malignant (212 cases) or 1 for benign (357 cases). Each run uses stratified 60/20/20 train/validation/test partitions. The 30 repeated evaluation seeds are 0 through 29; the paper's separate illustrative split uses seed 42. The same split seed is used for both train/test and train/validation partitioning.
 
-## Prediction and risk
+## Prediction and risk signals
 
-The main classifier is a 300-tree `RandomForestClassifier`. Predictive uncertainty is the population standard deviation of malignant-class probabilities from 30 Random Forests, each trained on a bootstrap sample of the training rows. Each member uses 50 trees as an explicit assumption because no member size was provided. The standard deviation is a disagreement signal; it is not a calibrated probability of prediction error.
+The base classifier is a 300-tree `RandomForestClassifier`. Its random state is the split seed. Uncertainty is the population standard deviation of malignant probabilities from 30 Random Forest members, each with 50 trees and fit on a bootstrap sample of training rows. Member `b` uses the split seed plus its member index. The bootstrap standard deviation is disagreement, not a calibrated probability of error.
 
-An `IsolationForest` with 200 trees is fit on training features. The anomaly score is `-decision_function`, so larger values mean more unusual. For each split, uncertainty and anomaly min/max values are fit on validation component scores; transformed values are clipped to `[0,1]`. Consequence is already defined in `[0,1]` and does not require a fitted statistic. Its values (0 for malignant predictions, 1 for benign predictions) are assumptions, not clinical costs.
+The anomaly model is a 200-tree `IsolationForest`. A `StandardScaler` is fit on training features and applied to all partitions. The raw anomaly score is `-score_samples`, so larger values mean more unusual. Its scaling range is the minimum and 99th percentile of training anomaly scores; transformed values are clipped to `[0, 1]`. Uncertainty is scaled as `min(U / validation_p95, 1)`. Consequence is 1.0 for a predicted benign class and 0.4 for a predicted malignant class. The paper describes these as design assumptions, not clinical costs.
 
-The full score is `R = 0.5 U + 0.2 A + 0.3 C`. Ablation scores renormalize the included components' original weights to sum to one. For each full or ablation policy, t70 and t90 are selected from that split's validation risk values using linear percentile interpolation:
+The full score is `R = 0.5 U + 0.2 A + 0.3 C`. Ablations re-fit the same policy cutoffs on validation risks; U+A uses `0.7 U + 0.3 A`, and confidence-only uses `1 - max(class probability)`. The 70th and 90th percentiles of validation risk give the two thresholds:
 
 - `R <= t70`: Automatic
 - `t70 < R <= t90`: Assisted
 - `R > t90`: Human Review
 
-Thresholds are never fit on test data.
+The paper does not specify every random generator detail. The exact split seed rule, member seed sequence, and stress generator seed are recorded in `config.yaml` and this run. They are deterministic implementation choices, not recovered source code.
+
+## Synthetic stress test
+
+For each of the 30 splits, every held-out case gets a signed 3-standard-deviation shift on 8 randomly selected features, with standard deviations computed on training data. Negative shifted feature values are clipped to zero. The Isolation Forest and standardizer are never fit on perturbed test data. Since the paper does not give a random generator seed or say whether the selected features/signs vary by case, the implementation uses a fixed run seed and independently samples features/signs per case. Results describe this synthetic stress only, not real-world distribution shift.
 
 ## Explanations
 
-Inference produces an immutable `DecisionRecord` containing prediction, probability, normalized components, risk, thresholds, and routing. A deterministic template reads that record. A separate rule checker compares the rendered prediction, score, risk tier, decision level, caveats, and disclaimer against the same record and blocks overconfident clinical language. Explanation generation does not receive a mutation interface and cannot change prediction or routing.
+Inference produces an immutable `DecisionRecord` containing the predicted class, predicted-class confidence, uncertainty, anomaly score, consequence, risk, thresholds, decision level, and referral reason. A deterministic template reads this record; it cannot change prediction or routing. The checker tests the six paper-listed fault categories and checks record values, decision wording, the referral reason, and the prototype limitation. No live LLM is called.
 
-## Evaluation
+## Evaluation and provenance
 
-The 30-split runner reports classifier metrics and automatic coverage, accepted-case errors, review counts, false negatives routed away from Automatic, uncertainty ranking diagnostics, probability ECE, paired ablations, risk-coverage sweeps, and predeclared sensitivity grids. Confidence intervals are percentile bootstrap intervals over split-level estimates; ablations also report paired split differences against the full policy. Synthetic anomaly stress shifts seeded subsets of held-out test features by positive multiples of training-set standard deviations; the stress data is not used to fit the detector or policy.
+The reproducible run writes pooled and split-level classifier/selective metrics, decision-level error counts, confidence/uncertainty/anomaly/risk error-ranking AUROC, ECE, Brier score, paired ablations, risk-coverage sweeps, sensitivity grids, stress AUROC and escalation behavior, explanation fault results, tables, and figures. The main seed-42 split has its own metrics and records. Outputs are under `results/runs/<run-id>/`; environment and source fingerprints are stored in `metrics.json`.
 
-Every reported table must be generated from the command and configuration recorded with its run ID. Paper target values are comparisons only.
+See [the source map](state/SOURCE_MAP.md) for how the journal paper and five background references inform the implementation. Paper targets are comparisons, never tuning objectives.

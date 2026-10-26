@@ -12,6 +12,7 @@ from raa.risk.engine import weighted_risk
 from raa.risk.policy import PolicyThresholds
 
 ABLATIONS: dict[str, tuple[str, ...]] = {
+    "confidence_only": ("confidence_risk",),
     "uncertainty_only": ("uncertainty",),
     "anomaly_only": ("anomaly",),
     "consequence_only": ("consequence",),
@@ -34,9 +35,22 @@ def evaluate_ablations(
     """Score each ablation, selecting both cutoffs solely from validation risks."""
     rows: list[dict[str, object]] = []
     for name, included in ABLATIONS.items():
+        if name == "confidence_only":
+            policy = PolicyThresholds.fit(
+                validation.confidence_risk,
+                automatic_percentile=automatic_percentile,
+                assisted_percentile=assisted_percentile,
+            )
+            metrics = selective_metrics(
+                targets, test.predicted_class, policy.route(test.confidence_risk)
+            )
+            rows.append({"ablation": name, **metrics})
+            continue
         val_components = {key: getattr(validation, key) for key in included}
         test_components = {key: getattr(test, key) for key in included}
         reduced_weights = {key: weights[key] for key in included}
+        if name == "uncertainty_anomaly":
+            reduced_weights = {"uncertainty": 0.7, "anomaly": 0.3}
         validation_risk = weighted_risk(val_components, reduced_weights)
         risk = weighted_risk(test_components, reduced_weights)
         policy = PolicyThresholds.fit(
