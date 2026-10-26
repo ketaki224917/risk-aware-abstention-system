@@ -2,6 +2,8 @@
 
 Updated: 2026-10-26 | Session #: 2 | Current phase: P4.6/P4.7 final acceptance | Status: source-aligned implementation and reproduction complete; author review and literal Make entry points pending.
 
+Implementation/results commit: `d2f0b78` - `[P3.2] Align RAA with supplied journal paper` | Tag: `phase-3-done`
+
 ## Do next
 
 1. Review `docs/state/RECONCILIATION.md`; decide whether the manuscript retains its published values as the original experiment or is revised to include the independent run.
@@ -25,8 +27,10 @@ Updated: 2026-10-26 | Session #: 2 | Current phase: P4.6/P4.7 final acceptance |
 - Local CPython 3.13.17 and uv 0.13.5 are under ignored `.tools/`; `.venv` is ignored.
 - `uv run python -m pytest -q`: 12 passed.
 - `uv run ruff check .`: all checks passed.
+- `uv run ruff format --check .`: 53 files already formatted.
+- `uv lock --check --offline`: 57 packages resolved.
 - GNU Make is unavailable in this environment; equivalent uv commands ran, but literal Make targets remain unverified.
-- Streamlit health endpoint previously returned HTTP 200; source alignment did not change app code.
+- Streamlit `/_stcore/health` returned HTTP 200 and `ok` on port 8766.
 
 ## Source boundary and limitations
 
@@ -38,4 +42,4 @@ Updated: 2026-10-26 | Session #: 2 | Current phase: P4.6/P4.7 final acceptance |
 
 ## Worktree
 
-Source, tests, docs, and the new run artifacts have changes since the previous handoff commit. `.tools/` and `.venv/` remain ignored local environment folders. Check `git status` before committing.
+The implementation/results worktree was clean after commit `d2f0b78`; this final handoff/progress refresh is committed as a separate state update. `.tools/` and `.venv/` remain ignored local environment folders.

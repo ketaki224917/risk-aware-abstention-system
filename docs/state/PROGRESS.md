@@ -146,3 +146,9 @@ Evidence: `ruff check .` passed; `ruff format --check .` found 53 formatted file
 Command: `uv run python -m raa.cli reproduce --run-id raa-20261026-paper-aligned-01` (executed with workspace-local uv and cache arguments as recorded in `metrics.json`).
 Files: `results/runs/raa-20261026-paper-aligned-01/`, `src/raa/viz/plots.py`, `docs/state/ENVIRONMENT.md`, `docs/state/HANDOFF.md`.
 Notes: `raa-20261025-paper-aligned-01` is retained as an earlier intermediate run; the canonical comparison and final project results use `raa-20261026-paper-aligned-01`.
+
+### 2026-10-26 - Commit source-alignment work
+Done: Committed the source-aligned code, documentation, and run artifacts; tagged the completed experiments phase.
+Evidence: Commit `d2f0b78` (`[P3.2] Align RAA with supplied journal paper`); tag `phase-3-done`; `git status --short --branch` was clean after commit.
+Files: All project changes for the 2026-10-26 source-alignment task.
+Notes: Elevated Git required a command-scoped safe-directory setting and the prior project identity `Codex <codex@localhost>`; no global Git configuration was changed.
