@@ -103,3 +103,84 @@ def test_partial_case_uses_train_fitted_imputer_and_reports_estimation():
     assert result.estimated_feature_count == 24
     assert 0 <= result.risk <= 1
     assert any("TRAIN-only KNN imputer" in warning for warning in result.input_warnings)
+
+
+def test_input_validation_rejects_invalid_measured_values_and_shapes():
+    import pytest
+
+    from raa.explain.record import DecisionRecord
+    from raa.inference import CaseInputError, InferenceContext
+    from raa.risk.policy import DecisionLevel
+
+    class StubPipeline:
+        def predict(self, _features):
+            return (
+                DecisionRecord(
+                    predicted_class=0,
+                    malignant_probability=0.8,
+                    uncertainty=0.1,
+                    anomaly=0.1,
+                    consequence=0.4,
+                    risk=0.2,
+                    level=DecisionLevel.AUTOMATIC,
+                    automatic_threshold=0.4,
+                    assisted_threshold=0.7,
+                ),
+            )
+
+    data = load_breast_cancer_data()
+    low, high = data.features.min(axis=0), data.features.max(axis=0)
+    context = InferenceContext(StubPipeline(), data.feature_names, tuple(low), tuple(high))
+    row = data.features[0].astype(object)
+    mask = np.ones(row.size, dtype=bool)
+
+    for invalid, message in (
+        ("nope", "must be a number"),
+        (np.nan, "finite"),
+        (np.inf, "finite"),
+        (-1, "negative"),
+    ):
+        candidate = row.copy()
+        candidate[0] = invalid
+        with pytest.raises(CaseInputError, match=message):
+            predict_case(candidate, mask, context=context)
+    with pytest.raises(CaseInputError, match="exactly 30"):
+        predict_case(row[:-1], mask, context=context)
+    with pytest.raises(CaseInputError, match="mask must contain exactly 30"):
+        predict_case(row, mask[:-1], context=context)
+
+
+def test_input_range_and_size_consistency_are_friendly_warnings():
+    from raa.explain.record import DecisionRecord
+    from raa.inference import InferenceContext
+    from raa.risk.policy import DecisionLevel
+
+    class StubPipeline:
+        def predict(self, _features):
+            return (
+                DecisionRecord(
+                    predicted_class=1,
+                    malignant_probability=0.2,
+                    uncertainty=0.1,
+                    anomaly=0.1,
+                    consequence=1.0,
+                    risk=0.2,
+                    level=DecisionLevel.AUTOMATIC,
+                    automatic_threshold=0.4,
+                    assisted_threshold=0.7,
+                ),
+            )
+
+    data = load_breast_cancer_data()
+    low, high = data.features.min(axis=0), data.features.max(axis=0)
+    context = InferenceContext(StubPipeline(), data.feature_names, tuple(low), tuple(high))
+    row = data.features[0].copy()
+    radius = data.feature_names.index("mean radius")
+    perimeter = data.feature_names.index("mean perimeter")
+    area = data.feature_names.index("mean area")
+    row[radius], row[perimeter], row[area] = 15.0, 500.0, 10.0
+
+    result = predict_case(row, np.ones(row.size, dtype=bool), context=context)
+
+    assert any("Outside the observed TRAIN range" in warning for warning in result.input_warnings)
+    assert any("approximate circle check" in warning for warning in result.input_warnings)

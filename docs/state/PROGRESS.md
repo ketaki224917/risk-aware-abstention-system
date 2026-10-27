@@ -173,3 +173,8 @@ Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.
 Done: Implemented distance-weighted five-neighbor KNN imputation in `InferenceContext.fit_from_training`, which also derives observed feature bounds from the same supplied TRAIN rows. Partial predictions run the real fitted decision system and include six-of-30 measured/estimated metadata plus an imputation caveat.
 Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 3 passed. The new test confirms the imputer's stored fit matrix and min/max equal only the seed-42 TRAIN partition; a six-feature row returns a finite risk and 6/24 counts.
 Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
+
+### 2026-10-27 - P4.1d - Friendly input validation and plausibility warnings
+Done: Confirmed invalid measured values are rejected with field-specific messages; out-of-training-range measurements and large radius/perimeter/area circle-check differences produce non-blocking warnings. ADR-013 records the 50% approximate geometry tolerance and warning-only policy.
+Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 5 passed; focused Ruff -> all checks passed. Cases cover nonnumeric, NaN, infinity, negative, vector/mask shape, range and geometry.
+Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
