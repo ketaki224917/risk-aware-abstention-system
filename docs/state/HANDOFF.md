@@ -1,30 +1,30 @@
 ﻿# HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current task: P4.1g guided input | Status: Mode A complete; replacement demo in progress.
+Updated: 2026-10-27 | Session #: 4 | Current task: P4.1h CSV batch triage | Status: Mode A/B complete; replacement demo in progress.
 
 ## Do next
 
-1. Implement six-field guided entry with slider and number box per feature, p5-p95 TRAIN ranges, and the TRAIN-only imputer.
-2. Add Mode B AppTest coverage for 6 measured / 24 estimated plus validation and warnings.
-3. Continue Mode C CSV template, batch results, download, row limit, and graceful parse errors.
+1. Add a CSV template with exactly the 30 WDBC numeric fields and a guided download.
+2. Parse CSV in memory, reject malformed/negative/nonfinite values, cap rows, and show decision/risk/reason plus auto/assisted/human percentages.
+3. Add downloadable results and batch edge-case/privacy tests; do not write uploaded inputs to disk.
 
 ## Current state
 
-- Active repository: `D:\ERA CP`; latest task commit is `[P4.1f] Add example-first landing page`.
-- P4.1a-f complete. The app lands on six test-only example cards and includes a shared accessible result panel with traffic-light icons and words, three signals, thresholds, checker, glossary, formula, limits and permanent banner.
-- Saved bundle exists in `results/demo/`; app import/load path does not call model fitting. Artifact load is cache-resource wrapped.
-- Mode A UI AppTest passed: landing page loads, banner is present, one click renders a real case. Example category tests: 2 passed. Inference tests: 5 passed.
-- `README.md` still contains the older partial-form note and needs replacement/update after all modes exist.
-- Guided entry, CSV, what-if, capacity control and full smoke/privacy coverage remain.
-- GNU Make 3.82.90 and `CLAIM-001` remain open blockers.
+- Active repository: D:\ERA CP; latest task commit: [P4.1g] Add six-field guided entry.
+- P4.1a-g complete. Mode A one-click examples and Mode B six sliders plus exact-number boxes are functional. Mode B shows TRAIN p5-p95 ranges and explicitly reports 6 measured / 24 estimated.
+- Mode B AppTest and Mode A AppTest both pass (tests/test_ui.py: 2 passed); partial inference calls the train-only imputer and full pipeline.
+- Results bundle under results/demo/ is loaded only; app page reruns do not train.
+- The Why abstain page reads canonical aggregate numbers from results/runs/raa-20261026-paper-aligned-01/metrics.json.
+- CSV, what-if stress button, capacity thresholds, all-mode UI/privacy coverage and updated README remain.
+- GNU Make 3.82.90 and CLAIM-001 remain open blockers.
 
 ## WIP files
 
-- App source is now a working Mode A page; future mode work will extend it.
-- `README.md` remains earlier uncommitted WIP.
+- README.md still needs final app usage/docs and viva script.
+- src/raa/app/streamlit_app.py is working for examples/guided entry and will be extended with remaining modes.
 
 ## Next 3 commands/actions
 
-- Add guided sliders and synchronized numeric fields using selected features and TRAIN ranges.
-- Verify 6/30 imputation and out-of-range warning with AppTest.
-- Update P4.1g state/commit, then add CSV upload and template.
+- Implement in-memory CSV template/upload/batch/download.
+- Add batch unit tests for empty, malformed, over-limit and valid batches.
+- Update P4.1h state and commit, then implement the synthetic what-if mode.

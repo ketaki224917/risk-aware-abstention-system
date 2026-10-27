@@ -188,3 +188,8 @@ Files: `src/raa/app/demo_assets.py`, `src/raa/app/examples.py`, `src/raa/app/pre
 Done: Replaced the incomplete sample picker with a Mode A landing page that offers six one-click held-out cases and an optional recorded-label reveal. The shared result renderer shows icon plus text, model-lean wording, three signal bars, risk thresholds/gauge, measured count, checked template explanation, glossary, method/limits, and a permanent non-diagnosis banner. The page loads the saved artifact and never trains.
 Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_ui.py` -> 1 passed; AppTest opened a case in one click and checked the banner; focused Ruff passed. Aggregate Why abstain values read `results/runs/raa-20261026-paper-aligned-01/metrics.json`.
 Files: `src/raa/app/streamlit_app.py`, `src/raa/app/copy.py`, `tests/test_ui.py`.
+ 
+### 2026-10-27 - P4.1g - Six-field guided entry
+Done: Added six data-driven mean-feature controls, each with a slider and exact-number box. Controls show TRAIN p5-p95 typical ranges and allow out-of-range numeric values for explicit warning. Submission fills only six measured fields, imputes the remaining 24 using the saved TRAIN-only KNN model, then calls predict_case and the complete RAA pipeline.
+Evidence: uv --cache-dir .tools/uv-cache run pytest -q tests/test_ui.py -> 2 passed; Mode B AppTest confirms exactly six sliders and number inputs and checks the displayed 6/24 note after prediction. Inference tests confirm estimated counts and real pipeline risk. Ruff passed.
+Files: src/raa/app/streamlit_app.py, tests/test_ui.py.

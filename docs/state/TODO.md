@@ -56,14 +56,15 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [ ] P4.1d Input validation, range/geometry warnings
 - [ ] P4.1e Held-out example-case selection and claim tests
 - [x] P4.1f Example-first landing page
-- [>] P4.1g Guided six-feature entry
-- [ ] P4.1h CSV upload/paste batch triage
+- [x] P4.1g Guided six-feature entry
+- [>] P4.1h CSV upload/paste batch triage
 - [ ] P4.1i What-if controls and labeled synthetic stress recipe
 - [ ] P4.1j Exploratory review-capacity thresholds
 - [ ] P4.1k Why-abstain page sourced from results
 - [ ] P4.1l Accessible copy, glossary, safety language
 - [ ] P4.1m UI smoke and privacy tests
 - [ ] P4.1n README screenshots and 90-second viva script
+
 
 
 
