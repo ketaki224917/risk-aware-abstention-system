@@ -178,3 +178,8 @@ Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.
 Done: Confirmed invalid measured values are rejected with field-specific messages; out-of-training-range measurements and large radius/perimeter/area circle-check differences produce non-blocking warnings. ADR-013 records the 50% approximate geometry tolerance and warning-only policy.
 Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 5 passed; focused Ruff -> all checks passed. Cases cover nonnumeric, NaN, infinity, negative, vector/mask shape, range and geometry.
 Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
+
+### 2026-10-27 - P4.1e - Verified held-out examples and saved demo model
+Done: Added six unique example cards: lowest-risk Automatic, highest-risk Human Review, borderline just above validation-p90, top-decile anomaly, classifier baseline error, and deterministic random held-out row. Added an offline artifact builder and a loader that cannot refit, plus a Make target that only prepares the artifact when missing.
+Evidence: `uv --cache-dir .tools/uv-cache run python -m raa.app.prepare_demo_artifact` created a 1,308,233-byte seed-42 model bundle from 341 train / 114 validation / 114 test rows, plus `manifest.json`, `feature_importance.csv`, and `example_cases.json`. `pytest -q tests/test_examples.py` -> 2 passed; category tests verify the claims against actual held-out predictions and recorded WDBC targets; test monkeypatches fit to fail during loading.
+Files: `src/raa/app/demo_assets.py`, `src/raa/app/examples.py`, `src/raa/app/prepare_demo_artifact.py`, `Makefile`, `tests/test_examples.py`, `results/demo/`.

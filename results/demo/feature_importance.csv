@@ -1,0 +1,31 @@
+rank,feature,importance,fit_partition,split_seed
+1,worst concave points,0.14419575347,train,42
+2,worst area,0.13937709921,train,42
+3,worst perimeter,0.136555685933,train,42
+4,mean concave points,0.0941209769825,train,42
+5,worst radius,0.0599047448796,train,42
+6,mean concavity,0.0568818254059,train,42
+7,mean radius,0.0508968188751,train,42
+8,mean perimeter,0.0402237978499,train,42
+9,worst concavity,0.038901250656,train,42
+10,mean area,0.0362878721185,train,42
+11,area error,0.031079256641,train,42
+12,radius error,0.0190876567054,train,42
+13,worst compactness,0.0182189603921,train,42
+14,worst texture,0.0166130911911,train,42
+15,mean compactness,0.0141363629678,train,42
+16,worst smoothness,0.0138082907883,train,42
+17,worst symmetry,0.0118873159694,train,42
+18,perimeter error,0.0107170706727,train,42
+19,mean texture,0.0105584423283,train,42
+20,worst fractal dimension,0.00677734537679,train,42
+21,concave points error,0.00615003375726,train,42
+22,texture error,0.00614337922105,train,42
+23,concavity error,0.00611922774171,train,42
+24,mean smoothness,0.00610277097255,train,42
+25,smoothness error,0.00585321126222,train,42
+26,fractal dimension error,0.00524566517062,train,42
+27,mean symmetry,0.00402458749202,train,42
+28,symmetry error,0.00351839794607,train,42
+29,compactness error,0.00335996652335,train,42
+30,mean fractal dimension,0.0032531415004,train,42

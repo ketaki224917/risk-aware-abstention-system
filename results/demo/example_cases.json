@@ -1,0 +1,38 @@
+{
+  "low_risk": {
+    "title": "Clear low-risk example",
+    "description": "Lowest-risk Automatic case in the held-out test split.",
+    "test_position": 74,
+    "dataset_row": 328
+  },
+  "high_concern": {
+    "title": "Clear high-concern example",
+    "description": "Highest-risk Human Review case in the held-out test split.",
+    "test_position": 37,
+    "dataset_row": 275
+  },
+  "borderline_review": {
+    "title": "Borderline Human Review example",
+    "description": "Human Review case nearest the validation-p90 cutoff from above.",
+    "test_position": 110,
+    "dataset_row": 128
+  },
+  "unusual": {
+    "title": "Unusual example",
+    "description": "A high-anomaly case in the top decile of the held-out test split.",
+    "test_position": 105,
+    "dataset_row": 461
+  },
+  "baseline_wrong": {
+    "title": "Always-predict baseline error",
+    "description": "The classifier made an error on this held-out case; the baseline always accepts it.",
+    "test_position": 53,
+    "dataset_row": 73
+  },
+  "random": {
+    "title": "Random held-out example",
+    "description": "A reproducible random case from the held-out test split.",
+    "test_position": 82,
+    "dataset_row": 70
+  }
+}

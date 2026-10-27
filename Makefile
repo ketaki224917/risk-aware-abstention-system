@@ -1,4 +1,4 @@
-.PHONY: setup test lint reproduce ablate stress explain-eval app all
+﻿.PHONY: setup test lint reproduce ablate stress explain-eval demo-artifact app all
 
 UV ?= uv
 
@@ -23,7 +23,14 @@ stress:
 explain-eval:
 	$(UV) --cache-dir .tools/uv-cache run python -m raa.cli explain-eval
 
-app:
+demo-artifact:
+	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_demo_artifact
+
+results/demo/model_bundle.joblib:
+	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_demo_artifact
+
+app: results/demo/model_bundle.joblib
 	$(UV) --cache-dir .tools/uv-cache run streamlit run src/raa/app/streamlit_app.py
 
 all: test lint reproduce
+
