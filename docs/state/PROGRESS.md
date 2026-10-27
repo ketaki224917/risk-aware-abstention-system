@@ -168,3 +168,8 @@ Notes: UI integration and additional validation/imputation tests remain in P4.1c
 Done: Added a deterministic selector that ranks the ten mean WDBC features by the fixed seed-42 TRAIN-fitted Random Forest importances and returns the top six. ADR-011 records the measured ranking; non-mean fields are never eligible.
 Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 2 passed; focused Ruff -> all checks passed. Importance command: loaded WDBC, created the seed-42 stratified split, and called `fit_system(..., split.train, split.validation, ..., seed=42)`; top six mean importance values are recorded in ADR-011.
 Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
+
+### 2026-10-27 - P4.1c - Train-only partial input imputation
+Done: Implemented distance-weighted five-neighbor KNN imputation in `InferenceContext.fit_from_training`, which also derives observed feature bounds from the same supplied TRAIN rows. Partial predictions run the real fitted decision system and include six-of-30 measured/estimated metadata plus an imputation caveat.
+Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 3 passed. The new test confirms the imputer's stored fit matrix and min/max equal only the seed-42 TRAIN partition; a six-feature row returns a finite risk and 6/24 counts.
+Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
