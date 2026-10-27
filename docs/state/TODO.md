@@ -1,4 +1,4 @@
-﻿# Master TODO
+# Master TODO
 
 Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with reason). Do not delete task IDs.
 
@@ -46,8 +46,8 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.3 README with architecture, quickstart, source-aligned results, limitations, reported-results path
 - [x] P4.4 Method, limitations, and results documentation
 - [x] P4.5 Viva guide with walkthrough, 25 questions, and claim boundaries
-- [!] P4.6 Fresh-environment `make setup && make reproduce && make app` not verified; GNU Make is unavailable in this environment
-- [!] P4.7 Final acceptance held for author review of run-vs-paper differences and direct Make-target verification
+- [ ] P4.6 Fresh-clone setup and reproduction remain unverified; GNU Make 4.4.1 make test, make lint, and make app pass in the active D: project.
+- [!] P4.7 Final acceptance held for author review of paper-versus-run wording and the remaining fresh-clone setup/reproduction check.
 
 ## Phase 4.1 - User-facing demo replacement
 - [x] P4.1a Inference API: `predict_case(features, measured_mask) -> DecisionRecord`
@@ -63,7 +63,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1k Why-abstain page sourced from results
 - [x] P4.1l Accessible copy, glossary, safety language
 - [x] P4.1m UI smoke and privacy tests
-- [>] P4.1n README screenshots and 90-second viva script
+- [x] P4.1n README screenshots and 90-second viva script
 
 
 

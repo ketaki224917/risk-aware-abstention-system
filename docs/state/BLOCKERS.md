@@ -1,15 +1,18 @@
 # Blockers and author decisions
 
-## Environment constraint
+## Open author review
 
-- [OPEN 2026-10-27] MAKE-001 - `C:\MinGW\bin\mingw32-make.exe` 3.82.90 is present, but `mingw32-make -n test` fails before parsing targets with `INTERNAL: readdir: Invalid argument`. D: setup, tests, Ruff, lock check, and app health passed via the equivalent uv commands. Needed to close P4.6: run literal `make setup`, `make test`, `make reproduce`, and `make app` with a compatible GNU Make.
+- [OPEN 2026-10-26] CLAIM-001 - Paper result wording. The source-aligned run reports 13/2,408 accepted errors (0.54%) and 0.912 +/- 0.020 Isolation Forest stress AUROC, versus the journal paper's 17/2,419 (0.70%) and 0.911 +/- 0.019. It also differs on the main-split Assisted/Human counts and combined-risk shift behavior. The implementation records the differences without tuning.
+  - Needed from the author: confirm whether to retain the journal values as the originally published experiment and label the source-aligned run separately as an independent reproduction.
+  - Recommended wording: report the published values as the original experiment and the source-aligned values as an independent reproduction. See docs/state/RECONCILIATION.md.
 
-## Author review
+## Resolved environment issue
 
-- [OPEN 2026-10-26] CLAIM-001 - paper result wording. The source-aligned run reports 13/2,408 accepted errors (0.54%) and 0.912 +/- 0.020 Isolation Forest stress AUROC, versus the journal paper's 17/2,419 (0.70%) and 0.911 +/- 0.019. It also differs on the main-split Assisted/Human counts and combined-risk shift behavior. The implementation records the differences without tuning. Recommended wording: retain the journal values as the originally published experiment and label the source-aligned run separately as an independent reproduction. See `docs/state/RECONCILIATION.md`.
+- [RESOLVED 2026-10-27] MAKE-001 - GNU Make 4.4.1 is available at D:/msys64/usr/bin/make.exe. make test, make lint, and make app passed in the active D: project. The older C:/MinGW/bin/mingw32-make.exe 3.82.90 still fails before parsing targets with INTERNAL: readdir: Invalid argument, but it is no longer the selected make executable.
+- [RESOLVED 2026-10-27] STREAMLIT-001 - A first-run Streamlit activation prompt for email failed under noninteractive Make. The app target now starts headless and disables browser usage statistics; make app starts the server without an email prompt.
 
 ## Resolved source questions
 
 - The journal PDF supplied on 2026-10-25 specifies the consequence values, 50-tree bootstrap member size, Isolation Forest scaling, stress-test recipe, main seed, split seed range, and checker fault categories. ADR-009 supersedes the assumptions that were needed before the paper was supplied.
 - The original source repository and raw experiment archive have not been provided. The project is a source-aligned independent implementation, not a claim of bit-identical reproduction of the authors' original code.
-- Five separately supplied papers are catalogued as background literature in `SOURCE_MAP.md`; they are not treated as evidence for this project's numerical results.
+- Five separately supplied papers are catalogued as background literature in SOURCE_MAP.md; they are not treated as evidence for this project's numerical results.

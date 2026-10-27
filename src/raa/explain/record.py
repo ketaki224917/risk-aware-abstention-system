@@ -1,4 +1,4 @@
-﻿"""Immutable structured decision record used to ground explanations."""
+"""Immutable structured decision record used to ground explanations."""
 
 from __future__ import annotations
 
@@ -45,4 +45,3 @@ class DecisionRecord:
         if self.risk <= self.assisted_threshold:
             return "intermediate"
         return "higher"
-

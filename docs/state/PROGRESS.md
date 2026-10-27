@@ -215,7 +215,7 @@ Evidence: pytest tests/test_results_page.py -> 1 passed; test parses source JSON
 Files: src/raa/app/streamlit_app.py, src/raa/app/demo_assets.py, tests/test_results_page.py.
  
 ### 2026-10-27 - P4.1l - Accessible, safety-bounded interface copy
-Done: Centralized UI copy in app/copy.py, removed corrupted UTF-8 text, retained the permanent exact prototype/non-diagnosis banner, added plain-language glossary definitions, and marked risk thresholds both visually and textually with ARIA values. Route output always pairs a traffic-light icon with a textual tier and “the model leans” wording.
+Done: Centralized UI copy in app/copy.py, removed corrupted UTF-8 text, retained the permanent exact prototype/non-diagnosis banner, added plain-language glossary definitions, and marked risk thresholds both visually and textually with ARIA values. Route output always pairs a traffic-light icon with a textual tier and â€œthe model leansâ€ wording.
 Evidence: tests/test_copy_a11y.py and tests/test_ui.py -> 7 passed; Ruff check . -> all checks passed. AppTest checks route text, explanation checker status, the risk-gauge ARIA label, and banner persistence across all five modes.
 Files: src/raa/app/copy.py, src/raa/app/streamlit_app.py, tests/test_copy_a11y.py, tests/test_ui.py, docs/state/DECISIONS.md.
  
@@ -223,3 +223,9 @@ Files: src/raa/app/copy.py, src/raa/app/streamlit_app.py, tests/test_copy_a11y.p
 Done: Completed direct validation tests for nonnumeric, NaN/infinite, negative, shape, range and geometry cases; imputer/train-only checks; full/partial real-pipeline parity; held-out example claims; CSV template, invalid schemas, personal ID columns, blank values and row limits; explanation read-only guarantee; all five UI modes and permanent banner. Batch tests check no files appear in a temporary output directory, and AppTest confirms demo artifacts do not change during CSV handling.
 Evidence: pytest tests/test_batch.py tests/test_ui.py tests/test_explanation.py tests/test_copy_a11y.py -> 16 passed; focused Ruff passed.
 Files: tests/test_batch.py, tests/test_ui.py.
+
+### 2026-10-27 - P4.1n - README screenshot and 90-second viva walkthrough
+Done: Replaced the stale four-section input description with the example-first five-mode guide, local startup instructions, saved-artifact provenance, risk/output explanation, privacy limits, run results, pipeline diagram, and 90-second viva walkthrough. Saved a real 1280x672 screenshot of the running landing page at docs/images/raa-demo.jpg. Fixed make app startup after a clean Streamlit profile prompted for an email: the app target now uses headless mode and disables Streamlit usage statistics; ADR-019 records this choice.
+Evidence: make test -> 35 passed; make lint -> all checks passed; uv --cache-dir .tools/uv-cache run ruff format --check . -> 66 files already formatted; uv --cache-dir .tools/uv-cache lock --check --offline -> 57 packages resolved; make app -> Local URL http://localhost:8501; GET /_stcore/health -> HTTP 200, ok.
+Files: README.md, docs/images/raa-demo.jpg, Makefile, docs/state/DECISIONS.md, docs/state/BLOCKERS.md, docs/state/ENVIRONMENT.md, docs/state/TODO.md, docs/state/PROGRESS.md, docs/state/HANDOFF.md, src/raa/explain/record.py.
+Notes: GNU Make 4.4.1 at D:/msys64/usr/bin/make.exe is now used; the old MinGW make remains defective but is not the resolved make command. Fresh-clone setup and reproduction remain unverified. CLAIM-001 author wording review remains open.

@@ -105,5 +105,11 @@ Consequences / how to reverse: Validation risk scores are saved in results/demo/
 ## ADR-018: Make route and risk visuals independent of color [DECISION] Date: 2026-10-27 Status: active
 Context: The traffic-light routing output and risk gauge must remain understandable with color vision differences and assistive technology.
 Options considered: Use green/yellow/red styling alone; display icons alone; or pair each route icon with its text and expose the numeric risk thresholds in text and an ARIA-labeled gauge.
-Decision and why: Render each route with an icon plus the explicit Automatic/Assisted/Human Review label and ìmodel leansî phrasing. The risk bar includes visible dark threshold marks, a numeric text summary, and an ARIA label with score/cutoffs. Signal bars have text labels and numeric values. Glossary/help copy describes each signal and its limits.
+Decision and why: Render each route with an icon plus the explicit Automatic/Assisted/Human Review label and ‚Äúmodel leans‚Äù phrasing. The risk bar includes visible dark threshold marks, a numeric text summary, and an ARIA label with score/cutoffs. Signal bars have text labels and numeric values. Glossary/help copy describes each signal and its limits.
 Consequences / how to reverse: Keep route text, gauge text and ARIA values synchronized when changing UI styling or route labels.
+
+## ADR-019: Make local app startup noninteractive and telemetry-free [DECISION] Date: 2026-10-27 Status: active
+Context: The first actual make app launch on a clean Streamlit profile prompted for an activation email and exited with error 127 when run without interactive stdin. A user case-input demo should launch without requesting personal details or opening a browser automatically.
+Options considered: Require a user email; commit a local Streamlit credential/config file; or pass headless and usage-stat settings on the app command.
+Decision and why: The Makefile app recipe passes --server.headless=true --browser.gatherUsageStats=false. Headless mode skips the activation prompt and browser auto-open; disabling usage statistics also suppresses the first-run telemetry message.
+Consequences / how to reverse: make app starts the local server without collecting an email or sending Streamlit usage statistics. This does not change case inference or saved experiment results. Reconsider only if the demo intentionally adopts an interactive Streamlit setup flow.

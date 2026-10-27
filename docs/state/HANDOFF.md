@@ -1,31 +1,33 @@
-﻿# HANDOFF
+# HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current task: P4.1n README, screenshot and viva demo | Status: implementation and test matrix complete; packaging remains.
+Updated: 2026-10-27 | Session #: 4 | Current phase: P4.6/P4.7 final acceptance | Status: P4.1a-n demo implementation complete and running; overall paper review and fresh-clone reproduction checks remain.
 
 ## Do next
 
-1. Replace the stale README app description with five-mode usage, local startup, saved model artifact provenance, privacy and limitations.
-2. Add an actual app screenshot under docs and a concise 90-second viva walkthrough with exact demo clicks.
-3. Run full pytest, Ruff, lock check, and Streamlit health; update final TODO/handoff and leave the Make/author blockers clearly stated.
+1. In a clean clone, run make setup, make test, make reproduce, and make app; record exact results in docs/state/ENVIRONMENT.md.
+2. Get the author's decision on CLAIM-001 wording in docs/state/BLOCKERS.md.
+3. Update P4.6/P4.7 and this handoff after both remaining items are resolved.
 
-## Current state
+## Current demo
 
-- Active repository: D:\ERA CP; latest task commit is [P4.1m] Test UI, batch and privacy boundaries.
-- P4.1a-m complete; P4.1j is also complete and now needs its stale checkbox corrected.
-- Modes A-E work through the real trained model pipeline: examples, six measured/24 estimated guided entry, strict CSV, live what-if, and exploratory validation-percentile capacity. Why abstain uses canonical results/metrics.json.
-- Saved demo artifact version 2 in results/demo was fit on TRAIN, thresholds on validation, imputer on TRAIN only; app loading never fits.
-- Focused test group tests/test_batch.py tests/test_ui.py tests/test_explanation.py tests/test_copy_a11y.py: 16 passed. Ruff check . previously passed.
-- UI tests navigate every mode and verify the permanent banner; privacy tests confirm input paths do not write files. Example claims, imputation, validation, capacity and explanation read-only are tested.
-- README.md is the only prior-turn uncommitted file; tests/test_batch.py and tests/test_ui.py have current P4.1m changes to commit.
-- GNU Make 3.82.90 remains unable to parse targets (INTERNAL: readdir: Invalid argument); CLAIM-001 remains an author wording decision.
+- Active repository: D:/ERA CP. Latest task work is the current HEAD commit labeled P4.1n.
+- Modes A-E are complete: one-click held-out examples, six-measurement guided entry with TRAIN-only imputation, strict in-memory CSV triage, live what-if plus synthetic stress, and exploratory review capacity.
+- Every case result goes through the real classifier, disagreement, anomaly, consequence, risk, routing, and grounded explanation path.
+- The saved v2 artifact under results/demo loads without fitting. Why abstain reads canonical experiment metrics from results/runs/raa-20261026-paper-aligned-01/metrics.json.
+- The app is running at http://localhost:8501 from make app. Its health endpoint returns HTTP 200 and ok. It starts headless and disables Streamlit usage statistics; no case inputs are saved by the app.
+- README.md now has the five-mode guide, screenshot, local run commands, risk explanation, current results, privacy limits, and 90-second viva script.
 
-## WIP files
+## Verification
 
-- README.md needs the new UI, screenshot and viva script.
-- Current test changes are ready to commit.
+- make test -> 35 passed.
+- make lint -> all checks passed.
+- Ruff format check -> 66 files already formatted.
+- Offline lock check -> 57 packages resolved.
+- make app -> Local URL http://localhost:8501; health -> HTTP 200, ok.
+- GNU Make 4.4.1 at D:/msys64/usr/bin/make.exe works. The old MinGW make remains defective but is not used by PATH.
+- Fresh-clone make setup and make reproduce have not been re-run.
+- CLAIM-001 remains an author wording decision; source-aligned results are reported without tuning.
 
-## Next 3 commands/actions
+## Worktree
 
-- Commit the P4.1m test matrix and corrected P4.1j TODO status.
-- Update README and capture a screenshot of the running app.
-- Run full suite/lint/lock/app health, then record any remaining Make or author-review blockers.
+No unfinished implementation task remains in P4.1. The remaining work is fresh-clone setup/reproduction verification and the author's result-wording decision. The app process should remain running for the user's demo.
