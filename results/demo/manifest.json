@@ -1,5 +1,5 @@
 {
-  "artifact_version": 1,
+  "artifact_version": 2,
   "artifact": "model_bundle.joblib",
   "dataset": "Wisconsin Diagnostic Breast Cancer (scikit-learn)",
   "run_seed": 42,
@@ -18,6 +18,11 @@
   "model": "seed-42 RAA pipeline; fit on TRAIN, policy fit on validation",
   "imputer": "five-neighbor distance-weighted KNN; fit on TRAIN only",
   "scikit_learn_version": "1.9.1",
+  "validation_risk_file": "validation_risk.csv",
+  "default_risk_percentiles": {
+    "automatic": 70,
+    "assisted": 90
+  },
   "example_cases": {
     "low_risk": {
       "title": "Clear low-risk example",

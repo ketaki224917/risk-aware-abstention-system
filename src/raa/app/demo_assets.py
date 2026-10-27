@@ -23,7 +23,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_DEMO_DIR = PROJECT_ROOT / "results" / "demo"
 DEFAULT_RUN_DIR = PROJECT_ROOT / "results" / "runs" / "raa-20261026-paper-aligned-01"
 ARTIFACT_NAME = "model_bundle.joblib"
-ARTIFACT_VERSION = 1
+ARTIFACT_VERSION = 2
 
 
 @dataclass(frozen=True)
@@ -36,6 +36,7 @@ class DemoArtifact:
     guided_features: tuple[str, ...]
     feature_importances: tuple[float, ...]
     test_indices: tuple[int, ...]
+    validation_risks: tuple[float, ...]
     system: DecisionSystem
     inference_context: InferenceContext
     examples: dict[str, ExampleCase]
@@ -55,6 +56,7 @@ def build_demo_artifact(output_dir: str | Path = DEFAULT_DEMO_DIR) -> DemoArtifa
     importances = np.asarray(system.classifier.feature_importances_, dtype=float)
     guided = select_guided_features(data.feature_names, importances, count=6)
     test_records = system.predict(data.features[split.test])
+    validation_records = system.predict(data.features[split.validation])
     examples = select_example_cases(data, split, test_records)
     artifact = DemoArtifact(
         artifact_version=ARTIFACT_VERSION,
@@ -63,6 +65,7 @@ def build_demo_artifact(output_dir: str | Path = DEFAULT_DEMO_DIR) -> DemoArtifa
         guided_features=guided,
         feature_importances=tuple(float(value) for value in importances),
         test_indices=tuple(int(index) for index in split.test),
+        validation_risks=tuple(float(record.risk) for record in validation_records),
         system=system,
         inference_context=context,
         examples=examples,
@@ -85,6 +88,8 @@ def load_demo_artifact(path: str | Path | None = None) -> DemoArtifact:
         raise ValueError("Demo artifact feature order does not match the WDBC dataset")
     if artifact.inference_context.system is not artifact.system:
         raise ValueError("Demo artifact does not share its fitted decision system")
+    if len(artifact.validation_risks) != 114 or not np.isfinite(artifact.validation_risks).all():
+        raise ValueError("Demo artifact validation-risk values are missing or invalid")
     if artifact.inference_context.imputer is None:
         raise ValueError("Demo artifact is missing the train-only partial-feature imputer")
     return artifact
@@ -139,8 +144,17 @@ def _write_artifact(
         "model": "seed-42 RAA pipeline; fit on TRAIN, policy fit on validation",
         "imputer": "five-neighbor distance-weighted KNN; fit on TRAIN only",
         "scikit_learn_version": sklearn.__version__,
+        "validation_risk_file": "validation_risk.csv",
+        "default_risk_percentiles": {"automatic": 70, "assisted": 90},
         "example_cases": catalog,
     }
+    with (directory / "validation_risk.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(("validation_row", "risk"))
+        writer.writerows(
+            (i, f"{risk:.12g}") for i, risk in enumerate(artifact.validation_risks, start=1)
+        )
+
     (directory / "manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )

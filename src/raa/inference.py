@@ -13,6 +13,7 @@ from sklearn.impute import KNNImputer
 
 from raa.explain.record import DecisionRecord
 from raa.pipeline import DecisionSystem
+from raa.risk.policy import DecisionLevel, PolicyThresholds
 
 
 def select_guided_features(
@@ -296,3 +297,42 @@ def synthetic_shift_case(
     shifted = row.copy()
     shifted[selected] = np.maximum(0.0, row[selected] + signs * shift_sigma * std[selected])
     return shifted, tuple(int(index) for index in selected)
+
+
+def thresholds_for_review_capacity(
+    validation_risk: ArrayLike, capacity_per_100: float
+) -> tuple[PolicyThresholds, float, float]:
+    """Map review capacity to validation percentiles; 30/100 preserves p70/p90."""
+    capacity = float(capacity_per_100)
+    if not np.isfinite(capacity) or not 0 < capacity < 100:
+        raise ValueError("Review capacity must be between 0 and 100 cases per 100.")
+    automatic_percentile = 100.0 - capacity
+    assisted_percentile = 100.0 - capacity / 3.0
+    thresholds = PolicyThresholds.fit(
+        validation_risk,
+        automatic_percentile=automatic_percentile,
+        assisted_percentile=assisted_percentile,
+    )
+    return thresholds, automatic_percentile, assisted_percentile
+
+
+def reroute_case_record(
+    record: DecisionRecord, thresholds: PolicyThresholds, weights: dict[str, float]
+) -> DecisionRecord:
+    """Apply exploratory cutoffs to the same computed risk score."""
+    level = thresholds.route_one(record.risk)
+    reason = ""
+    if level is not DecisionLevel.AUTOMATIC:
+        contributions = {
+            "ensemble disagreement (uncertainty)": weights["uncertainty"] * record.uncertainty,
+            "anomaly evidence": weights["anomaly"] * record.anomaly,
+            "the consequence term": weights["consequence"] * record.consequence,
+        }
+        reason = max(contributions, key=contributions.get)
+    return replace(
+        record,
+        level=level,
+        automatic_threshold=thresholds.automatic_max,
+        assisted_threshold=thresholds.assisted_max,
+        referral_reason=reason,
+    )

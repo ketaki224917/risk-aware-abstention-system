@@ -22,7 +22,9 @@ from raa.inference import (
     csv_template,
     predict_case,
     predict_csv,
+    reroute_case_record,
     synthetic_shift_case,
+    thresholds_for_review_capacity,
 )
 from raa.risk.policy import DecisionLevel
 
@@ -36,7 +38,7 @@ class DemoState:
     test_records: tuple[DecisionRecord, ...]
 
 
-@st.cache_resource(show_spinner="Loading the saved research modelÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦")
+@st.cache_resource(show_spinner="Loading the saved research model...")
 def load_demo_state() -> DemoState:
     """Load saved models and score held-out test examples without fitting anything."""
     artifact = load_demo_artifact()
@@ -47,21 +49,48 @@ def load_demo_state() -> DemoState:
     return DemoState(data, split, artifact, examples, test_records)
 
 
-def render_result(record: DecisionRecord, *, synthetic: bool = False) -> None:
+def render_review_capacity(record: DecisionRecord, state: DemoState) -> DecisionRecord:
+    """Map an exploratory review workload slider to the saved validation-risk distribution."""
+    with st.expander("Review capacity (exploratory)"):
+        capacity = st.slider(
+            "How many of 100 cases can your team review?",
+            min_value=5,
+            max_value=60,
+            value=30,
+            step=1,
+            key="review_capacity_per_100",
+        )
+        thresholds, automatic_p, assisted_p = thresholds_for_review_capacity(
+            state.artifact.validation_risks, capacity
+        )
+        st.caption(
+            f"Validation percentiles: Automatic p{automatic_p:.1f}; "
+            f"Human Review cutoff p{assisted_p:.1f}. Default 30/100 maps to p70/p90."
+        )
+        st.caption("Exploratory for this case only; canonical reported results stay unchanged.")
+        return reroute_case_record(record, thresholds, state.artifact.system.weights)
+    return record
+
+
+def render_result(
+    record: DecisionRecord, *, state: DemoState | None = None, synthetic: bool = False
+) -> None:
     """Display a human-readable route, component scores, and checked explanation."""
+    if state is not None:
+        record = render_review_capacity(record, state)
     label = record.predicted_label
     if record.level is DecisionLevel.AUTOMATIC:
-        st.success(f"\U0001f7e2 Automatic ? the model leans {label}.")
+        st.success(f"\U0001f7e2 Automatic: the model leans {label}.")
         st.write(
             "The research policy returned this case in its Automatic tier. This is not a diagnosis."
         )
     elif record.level is DecisionLevel.ASSISTED:
         st.warning(
-            f"\U0001f7e1 Assisted ? the model leans {label}; additional verification is advised."
+            f"\U0001f7e1 Assisted: the model leans {label}; additional verification is advised."
         )
     else:
         st.error(
-            f"\U0001f534 Human Review ? the model leans {label}; a human should review this case."
+            f"\U0001f534 Human Review: the model leans {label}; a human should review this case."
         )
     st.caption("The class is a model estimate. The route describes this prototype's policy.")
     if synthetic:
@@ -99,8 +128,8 @@ def render_result(record: DecisionRecord, *, synthetic: bool = False) -> None:
     st.subheader("Combined risk")
     st.progress(int(np.clip(record.risk, 0, 1) * 100), text=f"Risk score: {record.risk:.3f}")
     st.caption(
-        f"Automatic through {record.automatic_threshold:.3f} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· "
-        f"Assisted through {record.assisted_threshold:.3f} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· "
+        f"Automatic through {record.automatic_threshold:.3f} | "
+        f"Assisted through {record.assisted_threshold:.3f} | "
         f"Human Review above {record.assisted_threshold:.3f}."
     )
     st.markdown(
@@ -118,13 +147,13 @@ def render_result(record: DecisionRecord, *, synthetic: bool = False) -> None:
     with st.expander("Grounded explanation and checker"):
         st.write(explanation)
         if check.passed:
-            st.success("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Rule-based checker passed.")
+            st.success("Rule-based checker passed.")
         else:
             st.error("Checker issues: " + ", ".join(check.issues))
 
     with st.popover("Glossary"):
         for term, definition in GLOSSARY.items():
-            st.markdown(f"**{term}** ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â {definition}")
+            st.markdown(f"**{term}** - {definition}")
     with st.expander("How computed"):
         st.latex(r"R = 0.5U + 0.2A + 0.3C")
         st.write(
@@ -165,7 +194,7 @@ def render_examples(state: DemoState) -> None:
         if reveal:
             target = int(state.data.targets[case.dataset_row])
             st.info(f"Recorded WDBC dataset label: {'malignant' if target == 0 else 'benign'}.")
-        render_result(record)
+        render_result(record, state=state)
 
 
 def _sync_number_from_slider(slider_key: str, number_key: str) -> None:
@@ -200,7 +229,7 @@ def render_guided_entry(state: DemoState) -> None:
             number_key = f"guided_number_{index}"
             st.markdown(f"**{feature.title()}**")
             help_text = (
-                f"Typical TRAIN range (5thÃ¢â‚¬â€œ95th percentile): {p05:.3g}Ã¢â‚¬â€œ{p95:.3g}. "
+                f"Typical TRAIN range (5th-95th percentile): {p05:.3g} to {p95:.3g}. "
                 "Values outside the observed TRAIN range are accepted with a warning."
             )
             slider_col, number_col = st.columns([2, 1])
@@ -241,7 +270,7 @@ def render_guided_entry(state: DemoState) -> None:
         except CaseInputError as error:
             st.error(str(error))
         else:
-            render_result(record)
+            render_result(record, state=state)
 
 
 def _batch_output_csv(batch) -> str:
@@ -415,7 +444,7 @@ def render_what_if(state: DemoState) -> None:
         np.ones(current.size, dtype=bool),
         context=state.artifact.inference_context,
     )
-    render_result(record, synthetic=is_synthetic)
+    render_result(record, state=state, synthetic=is_synthetic)
 
 
 def render_why_abstain() -> None:
@@ -427,9 +456,7 @@ def render_why_abstain() -> None:
         "The policy routes uncertain, unusual, or higher-consequence cases for additional review. "
         "These aggregate values are loaded from the canonical 30-split results file."
     )
-    st.caption(
-        f"Run ID: {results['run_id']} | {results['test_cases']:,} held-out records"
-    )
+    st.caption(f"Run ID: {results['run_id']} | {results['test_cases']:,} held-out records")
     cols = st.columns(4)
     cols[0].metric("Baseline error rate", f"{pooled['error_rate']:.2%}")
     cols[1].metric("Automatic coverage", f"{pooled['automatic_coverage']:.2%}")
@@ -455,13 +482,13 @@ def render_why_abstain() -> None:
 def main() -> None:
     st.set_page_config(
         page_title="Risk-Aware Abstention",
-        page_icon="ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â§Ãƒâ€šÃ‚Â­",
+        page_icon="\U0001f9ed",
         layout="wide",
     )
     st.title("Risk-Aware Abstention")
-    st.error("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â " + BANNER)
+    st.error(BANNER)
     st.caption(PRIVACY)
-    st.sidebar.caption("Local research demo ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· no names or demographic fields")
+    st.sidebar.caption("Local research demo; no names or demographic fields")
     mode = st.sidebar.radio(
         "Choose a mode",
         ("Example cases", "Guided entry", "Upload CSV", "What-if", "Why abstain?"),

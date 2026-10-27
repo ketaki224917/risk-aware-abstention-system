@@ -51,19 +51,20 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 
 ## Phase 4.1 - User-facing demo replacement
 - [x] P4.1a Inference API: `predict_case(features, measured_mask) -> DecisionRecord`
-- [ ] P4.1b Select six guided features by train-only importance and log ADR
-- [ ] P4.1c Fit partial-feature imputer on train only and log ADR
-- [ ] P4.1d Input validation, range/geometry warnings
-- [ ] P4.1e Held-out example-case selection and claim tests
+- [x] P4.1b Select six guided features by train-only importance and log ADR
+- [x] P4.1c Fit partial-feature imputer on train only and log ADR
+- [x] P4.1d Input validation, range/geometry warnings
+- [x] P4.1e Held-out example-case selection and claim tests
 - [x] P4.1f Example-first landing page
 - [x] P4.1g Guided six-feature entry
 - [x] P4.1h CSV upload/paste batch triage
 - [x] P4.1i What-if controls and labeled synthetic stress recipe
 - [ ] P4.1j Exploratory review-capacity thresholds
-- [ ] P4.1k Why-abstain page sourced from results
+- [>] P4.1k Why-abstain page sourced from results
 - [ ] P4.1l Accessible copy, glossary, safety language
 - [ ] P4.1m UI smoke and privacy tests
 - [ ] P4.1n README screenshots and 90-second viva script
+
 
 
 
