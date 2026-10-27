@@ -1,32 +1,29 @@
 ﻿# HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current task: P4.1b feature selection | Status: P4.1a complete; replacement demo in progress.
+Updated: 2026-10-27 | Session #: 4 | Current task: P4.1c train-only partial imputation | Status: P4.1a/b complete; replacement demo in progress.
 
 ## Do next
 
-1. Determine the six guided fields by Random Forest importance on the fixed seed-42 TRAIN partition only; record ADR-011 and tests.
-2. Verify/improve the train-only KNN imputer decision and add tests for partial and out-of-range cases (P4.1c/d).
-3. Build a saved demo bundle and held-out test case catalog under `results/` so Streamlit never trains at page load.
+1. Test the five-neighbor distance-weighted KNN imputer fitted on the seed-42 TRAIN matrix only, including a six-of-30 case.
+2. Add explicit partial, invalid, out-of-range, and shape-consistency validation tests (P4.1d).
+3. Create a reproducible saved demo bundle and results-backed example catalog so the app never fits models on page load.
 
 ## Current state
 
-- Active repository: `D:\ERA CP`; base commit before this task: `b639659`.
-- P4.1a committed in `[P4.1a] Add validated case inference API`.
-- Baseline project smoke check: `uv --cache-dir .tools/uv-cache run pytest -q` -> 12 passed before changes.
-- Focused P4.1a evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 1 passed; focused Ruff -> all checks passed.
-- `InferenceContext.fit_from_training` fits KNN imputation and observed feature bounds from the supplied TRAIN rows. Partial-input production flow still needs tests and UI hookup.
-- Previous uncommitted edits to `README.md` and `src/raa/app/streamlit_app.py` predate this commit; the app file is known incomplete and must be replaced before launch.
-- No artifact has been generated yet. Runtime app must load a saved bundle from `results/`; it must not fit models at startup.
-- GNU Make 3.82.90 remains incompatible (`INTERNAL: readdir: Invalid argument`); literal Make target verification remains open.
-- `CLAIM-001` author wording blocker remains open.
+- Active repository: `D:\ERA CP`; latest commit before the next task: `[P4.1b] Select guided input features`.
+- P4.1a inference adapter and P4.1b selector are implemented in `src/raa/inference.py`; `DecisionRecord` carries measured/estimated counts and warnings.
+- P4.1b uses the top six `mean ...` features by Random Forest importance from the seed-42 TRAIN partition only. Exact values and policy are in ADR-011; an importance CSV will be emitted with the demo artifact.
+- Baseline smoke check before P4.1a: 12 passed. Focused P4.1 inference/selection check: 2 passed; Ruff passed.
+- The partial KNN path exists but has no dedicated tests yet. It uses a pre-fitted `KNNImputer(n_neighbors=5, weights='distance')`; no UI load path may call `.fit`.
+- Existing earlier-turn WIP remains in `README.md` and `src/raa/app/streamlit_app.py`; app file is incomplete and needs a full replacement.
+- No serialized model artifact exists yet. GNU Make 3.82.90 and `CLAIM-001` remain open blockers.
 
 ## WIP files
 
-- Existing earlier-turn WIP: `README.md`, `src/raa/app/streamlit_app.py`.
-- P4.1 checklist is recorded in `docs/state/TODO.md`.
+- `src/raa/inference.py` and `tests/test_inference.py` have new b-task changes committed; `README.md` and `src/raa/app/streamlit_app.py` retain earlier uncommitted UI edits.
 
 ## Next 3 commands/actions
 
-- Compute train-only feature importance for P4.1b using seed-42 TRAIN rows.
-- Add the deterministic six-feature selection and category tests.
-- Update ADR/TODO/PROGRESS/HANDOFF and commit P4.1b.
+- Add train-only imputation tests using the seed-42 split.
+- Implement and verify result-backed demo artifact preparation/loading.
+- Build the example catalog and validate each card's claim against held-out test rows.

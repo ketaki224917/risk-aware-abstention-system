@@ -13,6 +13,23 @@ from raa.explain.record import DecisionRecord
 from raa.pipeline import DecisionSystem
 
 
+def select_guided_features(
+    feature_names: Sequence[str], feature_importances: ArrayLike, *, count: int = 6
+) -> tuple[str, ...]:
+    """Choose the most important mean-valued WDBC fields, with stable tie-breaking."""
+    names = tuple(str(name) for name in feature_names)
+    importance = np.asarray(feature_importances, dtype=np.float64)
+    if importance.ndim != 1 or importance.size != len(names):
+        raise ValueError("Feature importances must match the feature-name list")
+    if not np.isfinite(importance).all() or np.any(importance < 0):
+        raise ValueError("Feature importances must be finite and nonnegative")
+    eligible = [i for i, name in enumerate(names) if name.startswith("mean ")]
+    if not 1 <= count <= len(eligible):
+        raise ValueError("count must select at least one available mean feature")
+    ranked = sorted(eligible, key=lambda i: (-importance[i], i))
+    return tuple(names[i] for i in ranked[:count])
+
+
 class CaseInputError(ValueError):
     """A friendly, actionable error for an invalid case input."""
 

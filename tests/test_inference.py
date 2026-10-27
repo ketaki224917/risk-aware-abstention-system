@@ -33,3 +33,34 @@ def test_predict_case_returns_the_real_pipeline_record():
     assert result.level == expected.level
     assert result.measured_feature_count == 30
     assert result.estimated_feature_count == 0
+
+
+def test_guided_feature_selection_uses_only_top_mean_importances():
+    from raa.inference import select_guided_features
+
+    names = (
+        "mean radius",
+        "mean texture",
+        "mean perimeter",
+        "mean area",
+        "mean smoothness",
+        "mean compactness",
+        "mean concavity",
+        "mean concave points",
+        "mean symmetry",
+        "mean fractal dimension",
+        "worst radius",
+    )
+    importance = np.array([0.5, 0.3, 0.7, 0.6, 0.1, 0.2, 0.8, 0.9, 0.05, 0.01, 99.0])
+
+    selected = select_guided_features(names, importance)
+
+    assert selected == (
+        "mean concave points",
+        "mean concavity",
+        "mean perimeter",
+        "mean area",
+        "mean radius",
+        "mean texture",
+    )
+    assert "worst radius" not in selected

@@ -163,3 +163,8 @@ Done: Added `predict_case(features, measured_mask, context=...)` in `src/raa/inf
 Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 1 passed; focused Ruff check -> all checks passed. The regression test compares the adapter output with the real pipeline for a fixed held-out row.
 Files: `src/raa/inference.py`, `src/raa/explain/record.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
 Notes: UI integration and additional validation/imputation tests remain in P4.1c/d. The existing app file is still WIP and will be replaced in later app tasks.
+
+### 2026-10-27 - P4.1b - Train-only guided feature selection
+Done: Added a deterministic selector that ranks the ten mean WDBC features by the fixed seed-42 TRAIN-fitted Random Forest importances and returns the top six. ADR-011 records the measured ranking; non-mean fields are never eligible.
+Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 2 passed; focused Ruff -> all checks passed. Importance command: loaded WDBC, created the seed-42 stratified split, and called `fit_system(..., split.train, split.validation, ..., seed=42)`; top six mean importance values are recorded in ADR-011.
+Files: `src/raa/inference.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
