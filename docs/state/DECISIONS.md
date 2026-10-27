@@ -101,3 +101,9 @@ Context: A review team needs to explore referral thresholds at a capacity other 
 Options considered: Change the model risk score; hard-code a route by capacity; or select cutoffs from the saved seed-42 validation-risk distribution while preserving the default operating point.
 Decision and why: For capacity c cases per 100, set the Automatic cutoff at validation percentile 100-c and the Human Review cutoff at 100-c/3. This allocates two-thirds of review capacity to Assisted and one-third to the highest-risk Human Review tier. At c=30, the mapping exactly returns p70/p90. Capacity is adjustable only in a collapsed exploratory expander and is not written back to canonical metrics.
 Consequences / how to reverse: Validation risk scores are saved in results/demo/validation_risk.csv and the saved model bundle. Ties in a finite validation set can make realized routing counts differ slightly from the requested percentage. Any different capacity mapping must preserve the 70/90 default or explicitly document the change.
+ 
+## ADR-018: Make route and risk visuals independent of color [DECISION] Date: 2026-10-27 Status: active
+Context: The traffic-light routing output and risk gauge must remain understandable with color vision differences and assistive technology.
+Options considered: Use green/yellow/red styling alone; display icons alone; or pair each route icon with its text and expose the numeric risk thresholds in text and an ARIA-labeled gauge.
+Decision and why: Render each route with an icon plus the explicit Automatic/Assisted/Human Review label and “model leans” phrasing. The risk bar includes visible dark threshold marks, a numeric text summary, and an ARIA label with score/cutoffs. Signal bars have text labels and numeric values. Glossary/help copy describes each signal and its limits.
+Consequences / how to reverse: Keep route text, gauge text and ARIA values synchronized when changing UI styling or route labels.

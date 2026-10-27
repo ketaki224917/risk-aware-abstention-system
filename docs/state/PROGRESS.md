@@ -213,3 +213,8 @@ Files: src/raa/app/demo_assets.py, src/raa/inference.py, src/raa/app/streamlit_a
 Done: Added dedicated checks for the Why abstain page, which reads canonical pooled metrics from results/runs/raa-20261026-paper-aligned-01/metrics.json and displays run ID, baseline error, automatic coverage, tier errors, and false-negative routing.
 Evidence: pytest tests/test_results_page.py -> 1 passed; test parses source JSON and compares displayed values; focused Ruff passed.
 Files: src/raa/app/streamlit_app.py, src/raa/app/demo_assets.py, tests/test_results_page.py.
+ 
+### 2026-10-27 - P4.1l - Accessible, safety-bounded interface copy
+Done: Centralized UI copy in app/copy.py, removed corrupted UTF-8 text, retained the permanent exact prototype/non-diagnosis banner, added plain-language glossary definitions, and marked risk thresholds both visually and textually with ARIA values. Route output always pairs a traffic-light icon with a textual tier and “the model leans” wording.
+Evidence: tests/test_copy_a11y.py and tests/test_ui.py -> 7 passed; Ruff check . -> all checks passed. AppTest checks route text, explanation checker status, the risk-gauge ARIA label, and banner persistence across all five modes.
+Files: src/raa/app/copy.py, src/raa/app/streamlit_app.py, tests/test_copy_a11y.py, tests/test_ui.py, docs/state/DECISIONS.md.

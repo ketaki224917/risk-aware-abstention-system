@@ -138,7 +138,13 @@ def render_result(
         f"Human Review starts above {record.assisted_threshold:.3f}.' "
         "style='position:relative;height:8px;background:#d9dee7;border-radius:5px'>"
         f"<div style='width:{np.clip(record.risk, 0, 1) * 100:.2f}%;height:8px;"
-        "background:#315b8a;border-radius:5px'></div></div>",
+        "background:#315b8a;border-radius:5px'></div>"
+        "<span aria-hidden='true' style='position:absolute;left:"
+        f"{record.automatic_threshold * 100:.2f}%;top:-3px;height:14px;width:2px;"
+        "background:#111'></span>"
+        "<span aria-hidden='true' style='position:absolute;left:"
+        f"{record.assisted_threshold * 100:.2f}%;top:-3px;height:14px;width:2px;"
+        "background:#111'></span></div>",
         unsafe_allow_html=True,
     )
 

@@ -20,6 +20,9 @@ def test_mode_a_landing_banner_and_one_click_case():
     assert not app.exception
     messages = list(app.warning) + list(app.success) + list(app.error)
     assert any("model leans" in element.value for element in messages)
+    assert any("Automatic:" in element.value for element in messages)
+    assert any("Rule-based checker passed" in element.value for element in app.success)
+    assert any("aria-label='Risk gauge" in element.value for element in app.markdown)
 
 
 def test_guided_mode_has_six_inputs_and_returns_estimated_profile():
@@ -68,3 +71,14 @@ def test_what_if_page_has_four_live_sliders_capacity_and_synthetic_button():
     assert not app.exception
     assert any("Synthetic what-if profile" in item.value for item in app.info)
     assert any("Synthetic shifted fields" in item.value for item in app.caption)
+
+
+def test_banner_and_navigation_smoke_for_all_five_modes():
+    app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
+    for mode in ("Example cases", "Guided entry", "Upload CSV", "What-if", "Why abstain?"):
+        app.sidebar.radio[0].set_value(mode).run()
+        assert not app.exception
+        assert any(
+            "Research prototype. Not a medical device. Not for diagnosis." in item.value
+            for item in app.error
+        )
