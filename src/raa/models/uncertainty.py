@@ -27,6 +27,7 @@ class BootstrapUncertainty:
         members: int = 30,
         trees_per_member: int = 50,
         seed: int = 0,
+        class_weight: str | dict[int, float] | None = None,
     ) -> BootstrapUncertainty:
         """Fit one smaller Random Forest per bootstrap sample of training rows."""
         x = np.asarray(features)
@@ -39,6 +40,7 @@ class BootstrapUncertainty:
                 n_estimators=trees_per_member,
                 random_state=seed + index,
                 n_jobs=1,
+                class_weight=class_weight,
             )
             model.fit(x[sample], y[sample])
             fitted.append(model)

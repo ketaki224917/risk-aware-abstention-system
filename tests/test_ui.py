@@ -11,8 +11,9 @@ def _app_path() -> Path:
     return Path(__file__).resolve().parents[1] / "src" / "raa" / "app" / "streamlit_app.py"
 
 
-def test_mode_a_landing_banner_and_one_click_case():
+def test_examples_are_optional_and_one_click_case_works():
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
+    app.sidebar.radio[0].set_value("Example cases").run()
     assert not app.exception
     assert any("Research prototype. Not a medical device." in item.value for item in app.error)
     assert len(app.button) >= 6
@@ -25,17 +26,62 @@ def test_mode_a_landing_banner_and_one_click_case():
     assert any("aria-label='Risk gauge" in element.value for element in app.markdown)
 
 
-def test_guided_mode_has_six_inputs_and_returns_estimated_profile():
+def test_four_question_intake_is_default_and_only_returns_human_review():
+    results_dir = Path(__file__).resolve().parents[1] / "results" / "demo"
+    before = {item.name: item.stat().st_size for item in results_dir.iterdir()}
+    app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
+    assert not app.exception
+    assert app.sidebar.radio[0].value == "Four-question intake"
+    assert len(app.number_input) == 1
+    assert app.number_input[0].min == 1
+    assert len(app.selectbox) == 3
+    assert app.number_input[0].value is None
+    assert all(widget.value is None for widget in app.selectbox)
+    assert any("not these four inputs" in item.value for item in app.info)
+    app.button[0].click().run()
+    assert any("complete all four fields" in item.value.lower() for item in app.error)
+    assert not any("Human Review" in item.value for item in app.error)
+
+    app.number_input[0].set_value(42).run()
+    app.selectbox[0].set_value("Lump").run()
+    app.selectbox[1].set_value("Not sure").run()
+    app.selectbox[2].set_value("No").run()
+    app.button[0].click().run()
+
+    assert not app.exception
+    assert any("Human Review — no prediction made" in item.value for item in app.error)
+    assert any("not been trained or validated" in item.value for item in app.info)
+    assert any("not a medical assessment" in item.value for item in app.caption)
+    messages = list(app.warning) + list(app.success)
+    assert not any("the model leans" in item.value for item in messages)
+    after = {item.name: item.stat().st_size for item in results_dir.iterdir()}
+    assert after == before
+
+
+def test_guided_entry_uses_slider_and_typed_values_for_real_inference():
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
     app.sidebar.radio[0].set_value("Guided entry").run()
+    data = load_breast_cancer_data()
+    values_by_feature = dict(zip(data.feature_names, data.features[0].tolist(), strict=True))
+
+    slider_feature = app.slider[0].label.removesuffix(" slider").lower()
+    slider_value = float(values_by_feature[slider_feature])
+    app.slider[0].set_value(slider_value).run()
+    assert app.number_input[0].value == slider_value
+
+    for index in range(1, 6):
+        feature = app.number_input[index].label.removesuffix(" exact value").lower()
+        app.number_input[index].set_value(float(values_by_feature[feature]))
+    app.run()
+
     assert not app.exception
-    assert len(app.slider) == 6
-    assert len(app.number_input) == 6
+    assert all(widget.value is not None for widget in app.number_input)
     assert any("6 of 30 measured, 24 estimated" in item.value for item in app.markdown)
     app.button[0].click().run()
     assert not app.exception
     assert any("6 of 30 measured" in item.value for item in app.caption)
     assert any("24 estimated" in item.value for item in app.caption)
+    assert any("model leans" in item.value for item in list(app.warning) + list(app.success))
 
 
 def test_upload_csv_mode_renders_batch_results():
@@ -77,9 +123,16 @@ def test_what_if_page_has_four_live_sliders_capacity_and_synthetic_button():
     assert any("Synthetic shifted fields" in item.value for item in app.caption)
 
 
-def test_banner_and_navigation_smoke_for_all_five_modes():
+def test_banner_and_navigation_smoke_for_all_six_modes():
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
-    for mode in ("Example cases", "Guided entry", "Upload CSV", "What-if", "Why abstain?"):
+    for mode in (
+        "Four-question intake",
+        "Guided entry",
+        "Upload CSV",
+        "What-if",
+        "Example cases",
+        "Why abstain?",
+    ):
         app.sidebar.radio[0].set_value(mode).run()
         assert not app.exception
         assert any(

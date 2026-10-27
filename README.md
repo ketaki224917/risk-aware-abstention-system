@@ -15,46 +15,54 @@ make setup
 make app
 ```
 
-Open [http://localhost:8501](http://localhost:8501). The app loads the committed model bundle at results/demo/model_bundle.joblib; it does not train models when a page loads. To rebuild that bundle intentionally, run make demo-artifact.
+Open [http://localhost:8501](http://localhost:8501). The default four-question intake does not load or call the model. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
 
 If GNU Make is unavailable, use the equivalent commands:
 
 ```sh
 uv sync --locked
-uv run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false
+uv run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=127.0.0.1
 ```
 
 Run tests and lint with make test and make lint, or equivalent commands uv run pytest -q and uv run ruff check .
 
 To regenerate experiment outputs, run make reproduce. It writes split metrics, ablations, sensitivity tables, risk-coverage results, synthetic-shift analyses, explanation-checker results, and figures under results/runs/<run-id>/.
 
-## Start with an example
+## Start with four user inputs
 
-The landing page is designed for a first result with one click. It uses cases from the held-out seed-42 TEST split, so you can explore the real pipeline without typing measurements.
+The landing page asks for age, symptoms, family history, and medical history. All four fields start unanswered. The current Random Forest was trained on cell-nucleus measurements and cannot use these answers. After all four are supplied, the only output is **Human Review — no prediction made**. A candidate dataset was evaluated, but its held-out results were too poor to connect to this form.
 
-![Risk-Aware Abstention landing page with the permanent research-prototype banner and held-out example cases](docs/images/raa-demo.jpg)
+## Why the questionnaire does not produce a cancer estimate
 
-## Five input modes
+The [Duke BRCA dataset](https://stat.duke.edu/datasets/brca) has 987 historical screening records. It records age bands, family history, prior breast biopsy/surgery, and only lump or nipple-discharge symptoms. Its target is whether a cancer diagnosis was recorded within 12 months after a 2002 screening mammogram; it is not a current diagnosis or a benign/malignant pathology label. It contains 37 positive outcomes.
+
+An RAA model trained on a fixed seed-42 stratified split (591 train, 198 validation, 198 held-out test) detected **0 of 7** test cancer outcomes and had **0.487 ROC-AUC**. The candidate is therefore kept out of the intake app. Reproduce the audit with `python scripts/audit_questionnaire_dataset.py`; metrics are in `results/clinical_candidate_audit/metrics.json`. These are one-split research results, not clinical validation.
+
+![Risk-Aware Abstention four-question intake with age, symptoms, family history, medical history, and the permanent research-prototype banner](docs/images/raa-demo.jpg)
+
+## Intake and research modes
 
 | Mode | What you do | What the app does |
 | --- | --- | --- |
-| **Example cases** (landing page) | Open one of six labeled example cards. | Runs the held-out row through the classifier, uncertainty, anomaly, consequence, risk, routing, and explanation. An optional control reveals the recorded test label. |
-| **Guided entry** | Enter six mean measurements using sliders or number boxes. Typical training ranges and plain-language help are shown. | Displays **6 of 30 measured, 24 estimated**. A KNN imputer fitted on TRAIN only estimates the other 24 features before the complete inference pipeline runs. |
+| **Four-question intake** (landing page) | Enter age; choose Lump, Breast swelling, Skin changes, Nipple changes, or No symptoms; answer Yes, No, or Not sure for family history and medical history. | Requires all four answers and then returns **Human Review — no prediction made**. The answers are not passed to the current classifier because it was not trained or validated on these fields. |
+| **Guided entry** (WDBC research mode) | Enter six mean cell-nucleus measurements using sliders or blank number boxes. Typical training ranges and plain-language help are shown. | Displays **6 of 30 measured, 24 estimated**. Assessment waits until all six values are supplied; a KNN imputer fitted on TRAIN only estimates the remaining 24 before the WDBC inference pipeline runs. |
 | **Upload CSV** | Upload or paste rows with all 30 WDBC feature columns; use the downloadable header template. | Validates and triages at most 100 rows in memory. The table gives route, risk, and reason; a summary gives each tier's share; downloaded results omit the input feature values. |
-| **What-if** | Adjust four measurements on a held-out profile, or request a synthetic unusualness stress case. | Recomputes the real inference pipeline when values change. The stress button applies the configured signed 3-standard-deviation shift to eight features and labels the case synthetic. |
+| **What-if** | Adjust four measurements on a held-out WDBC profile for exploration, or request a synthetic unusualness stress case. Use Guided entry for new WDBC measurements. | Recomputes the WDBC inference pipeline when values change. The stress button applies the configured signed 3-standard-deviation shift to eight features and labels the case synthetic. |
+| **Example cases** (optional) | Open one of six held-out test cards when deliberately selecting this mode. | Runs that test row through the WDBC pipeline. An optional control reveals the recorded test label. |
 | **Why abstain?** | Review the experiment summary. | Loads reported figures from results/runs/raa-20261026-paper-aligned-01/metrics.json. |
 
-The collapsible **Review capacity (exploratory)** control is available with case results. Its default preserves the validation p70/p90 thresholds. Other capacities map to percentiles of saved validation risks and affect only the displayed route for that case; they do not change the canonical experiment results.
+The collapsible **Review capacity (exploratory)** control is available with WDBC case results. Its default preserves the validation p70/p90 thresholds. Other capacities map to percentiles of saved validation risks and affect only the displayed route for that case; they do not change the canonical experiment results.
 
 ## Reading a result
 
-- The route uses an icon **and** text: Automatic, Assisted, or Human Review. The wording says “the model leans …”; it is not a diagnosis.
-- Three signal bars show model disagreement, unusualness, and the design value called cost of error. The risk gauge shows the current score and route thresholds.
-- A template explanation has a checker status. The checker is read-only and cannot alter a class or route.
-- For guided entry, the result states how many fields were measured and estimated. Range and approximate-geometry checks produce warnings; they do not silently change measured values.
-- The displayed risk is **R = 0.5U + 0.2A + 0.3C**, using the project's normalization rules. The default routing thresholds are the 70th and 90th percentiles of validation risk.
+- For the four-question intake, Human Review means the current model cannot assess those inputs. It is not a malignant/benign classification, medical assessment, or referral.
+- In the optional WDBC research modes, the route uses an icon **and** text: Automatic, Assisted, or Human Review. Wording says “the model leans …”; it is not a diagnosis.
+- Three signal bars show model disagreement, unusualness, and the design value called cost of error. The risk gauge shows the current WDBC score and route thresholds.
+- A template explanation has a checker status. The checker is read-only and cannot alter a WDBC class or route.
+- Guided entry states how many fields were measured and estimated. Range and approximate-geometry checks produce warnings; they do not silently change measured values.
+- The displayed WDBC risk is **R = 0.5U + 0.2A + 0.3C**, using the project's normalization rules. Default routing thresholds are validation percentiles 70 and 90.
 
-Bootstrap disagreement is not a calibrated probability of error. The model bundle's imputer is TRAIN-only, but the uncertainty score does not explicitly quantify the additional uncertainty introduced by imputation. The anomaly evaluation uses synthetic perturbations and does not establish performance on real-world distribution shifts.
+Bootstrap disagreement is not a calibrated probability of error. The WDBC model's imputer is TRAIN-only, but its uncertainty score does not quantify additional imputation uncertainty. Synthetic anomaly tests do not establish real-world distribution-shift performance.
 
 ## Latest source-aligned experiment
 
@@ -91,25 +99,25 @@ flowchart LR
 
 ## 90-second viva walkthrough
 
-**0:00–0:15 — State the purpose.** “This prototype decides when to return a model lean automatically and when to route a case for assistance or human review. It is a research demo, not a diagnostic system.”
+**0:00–0:15 — State the purpose.** “This prototype offers a four-question intake, but the current research model cannot classify those answers. It will not guess Malignant or Benign.”
 
-**0:15–0:35 — Show a one-click result.** Keep **Example cases** selected and open **Clear low-risk example**. Point to the route label, model lean, three signal bars, risk thresholds, and explanation checker.
+**0:15–0:35 — Show the questions.** Enter age, choose one symptom option, and answer the family-history and medical-history questions. Point out that no answer is preselected.
 
-**0:35–0:50 — Show abstention.** Open **Borderline Human Review example**. Explain that the route comes from the validation-derived risk thresholds and that the template only explains the recorded decision.
+**0:35–0:50 — Explain the output.** Select **Review answers**. The page reports **Human Review — no prediction made** and explains that the Random Forest expects cell-nucleus measurements. This is an unsupported-input status, not a diagnosis or referral.
 
-**0:50–1:05 — Show the real-input constraint.** Select **Guided entry**. Point out the six mean measurements and the note that six are measured while 24 are estimated by a TRAIN-only imputer.
+**0:50–1:10 — Show the compatible research mode.** Select **Guided entry** and explain that it accepts WDBC cell measurements, not the four intake answers. Six measured fields are supplied and 24 are estimated by the saved TRAIN-only imputer.
 
-**1:05–1:20 — Show evidence.** Select **Why abstain?** and identify the run ID and summary values loaded from the saved results file. State that the independent run differs from some published numbers and is reported separately.
-
-**1:20–1:30 — Close with limits.** “The model lean, risk, and routing are not medical advice. The dataset and synthetic stress test do not establish clinical validity, fairness, or real-world shift performance.”
+**1:10–1:30 — Close with requirements and limits.** “A compatible labeled dataset and a separately trained and validated model are needed before these four inputs could support Malignant or Benign outputs. The prototype is not clinically validated.”
 
 ## Claim boundaries and privacy
 
-- The dataset is the Wisconsin Diagnostic Breast Cancer dataset exposed by scikit-learn, with 569 rows, 30 numeric features, and no demographic attributes.
+- The four-question intake does not generate a clinical risk estimate or malignant/benign prediction.
+- The current Random Forest uses the Wisconsin Diagnostic Breast Cancer dataset from scikit-learn: 569 rows and 30 numeric cell-nucleus features. It cannot use age, symptoms, family history, or medical history.
+- A compatible labeled dataset and a separately trained and validated model are required before predictions from these four fields can be considered.
 - Do not claim fairness, clinical safety, diagnosis, or deployment readiness.
 - The synthetic anomaly stress test is not validation on real-world shifted data.
-- Explanations are deterministic templates; no live language model was evaluated.
-- Do not enter names, IDs, symptoms, or demographic information. The app keeps measurements in the browser session and does not save submitted case inputs to disk. This privacy statement describes the local demo implementation; it is not a security certification.
+- Explanations in the WDBC research modes are deterministic templates; no live language model was evaluated.
+- Do not enter names, IDs, or contact details. The local app keeps submitted inputs in memory for the session and does not save them to disk. The four intake answers are not passed to the existing classifier. This is not a security certification.
 
 ## Project map
 
@@ -118,5 +126,5 @@ flowchart LR
 - **results/demo/**: saved model bundle, manifest, feature importance, examples, and validation risks used by the app.
 - **results/runs/**: run-ID-versioned experiment artifacts and metrics.
 - **docs/state/**: project status, decisions, blockers, reconciliation, and [paper source map](docs/state/SOURCE_MAP.md).
-- **docs/images/raa-demo.jpg**: screenshot of the running example-first app.
+- **docs/images/raa-demo.jpg**: screenshot of the running app's default four-question intake.
 - **legacy/**: documents that the initial workspace contained no unrelated implementation to quarantine.

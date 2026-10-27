@@ -1,4 +1,4 @@
-"""Example-first Streamlit interface for the local RAA research prototype."""
+"""Four-question intake and WDBC research interface for the local RAA prototype."""
 
 from __future__ import annotations
 
@@ -9,7 +9,28 @@ from dataclasses import dataclass
 import numpy as np
 import streamlit as st
 
-from raa.app.copy import BANNER, GLOSSARY, INPUT_HELP, LIMITS, PRIVACY
+from raa.app.copy import (
+    BANNER,
+    GLOSSARY,
+    INPUT_HELP,
+    INTAKE_AGE_ERROR,
+    INTAKE_AGE_LABEL,
+    INTAKE_FAMILY_LABEL,
+    INTAKE_HISTORY_OPTIONS,
+    INTAKE_INTRO,
+    INTAKE_MEDICAL_LABEL,
+    INTAKE_MISSING,
+    INTAKE_MODEL_LIMIT,
+    INTAKE_REASON,
+    INTAKE_RESULT,
+    INTAKE_SCOPE,
+    INTAKE_SUBMIT,
+    INTAKE_SYMPTOM_OPTIONS,
+    INTAKE_SYMPTOMS_LABEL,
+    INTAKE_TITLE,
+    LIMITS,
+    PRIVACY,
+)
 from raa.app.demo_assets import DemoArtifact, load_demo_artifact, load_paper_results
 from raa.app.examples import ExampleCase, select_example_cases
 from raa.config import load_config
@@ -218,12 +239,16 @@ def render_guided_entry(state: DemoState) -> None:
     st.write(INPUT_HELP)
     st.caption(PRIVACY)
     st.info(
-        "Enter six mean measurements from a compatible WDBC record. "
+        "Enter six mean measurements from one compatible WDBC record. "
         "The remaining 24 are estimated by a KNN imputer fitted on TRAIN only."
+    )
+    st.caption(
+        "Number boxes start blank. Move a slider to provide its value; each slider thumb "
+        "starts at the TRAIN median only as a visual guide and is not used unless moved."
     )
     st.markdown("**6 of 30 measured, 24 estimated**")
     train = state.data.features[state.split.train]
-    values: dict[str, float] = {}
+    values: dict[str, float | None] = {}
     with st.container(border=True):
         for feature in state.artifact.guided_features:
             index = state.data.feature_names.index(feature)
@@ -242,7 +267,7 @@ def render_guided_entry(state: DemoState) -> None:
             if slider_key not in st.session_state:
                 st.session_state[slider_key] = default
             if number_key not in st.session_state:
-                st.session_state[number_key] = default
+                st.session_state[number_key] = None
             with slider_col:
                 st.slider(
                     f"{feature.title()} slider",
@@ -260,23 +285,32 @@ def render_guided_entry(state: DemoState) -> None:
                     step=step,
                     help=help_text,
                     key=number_key,
+                    placeholder="Type a measured value",
+                    required=True,
                     on_change=_sync_slider_from_number,
                     args=(slider_key, number_key, low, high),
                 )
-            values[feature] = float(st.session_state[number_key])
+            number_value = st.session_state[number_key]
+            values[feature] = None if number_value is None else float(number_value)
     if st.button("Assess these six measurements", type="primary"):
-        row = np.full(len(state.data.feature_names), np.nan, dtype=np.float64)
-        measured = np.zeros(row.size, dtype=bool)
-        for feature, value in values.items():
-            index = state.data.feature_names.index(feature)
-            row[index] = value
-            measured[index] = True
-        try:
-            record = predict_case(row, measured, context=state.artifact.inference_context)
-        except CaseInputError as error:
-            st.error(str(error))
+        missing = [feature for feature, value in values.items() if value is None]
+        if missing:
+            st.error("Enter a value for all six measurements using number boxes or sliders.")
         else:
-            render_result(record, state=state)
+            row = np.full(len(state.data.feature_names), np.nan, dtype=np.float64)
+            measured = np.zeros(row.size, dtype=bool)
+            for feature, value in values.items():
+                if value is None:
+                    continue
+                index = state.data.feature_names.index(feature)
+                row[index] = value
+                measured[index] = True
+            try:
+                record = predict_case(row, measured, context=state.artifact.inference_context)
+            except CaseInputError as error:
+                st.error(str(error))
+            else:
+                render_result(record, state=state)
 
 
 def _batch_output_csv(batch) -> str:
@@ -485,6 +519,58 @@ def render_why_abstain() -> None:
     )
 
 
+def render_four_question_intake() -> None:
+    """Collect the proposed intake fields without pretending the WDBC model supports them."""
+    st.header(INTAKE_TITLE)
+    st.write(INTAKE_INTRO)
+    st.info(INTAKE_MODEL_LIMIT)
+    with st.container(border=True):
+        age = st.number_input(
+            INTAKE_AGE_LABEL,
+            min_value=1,
+            max_value=120,
+            value=None,
+            step=1,
+            format="%d",
+            placeholder="Enter age in years",
+            key="intake_age",
+            required=True,
+        )
+        symptoms = st.selectbox(
+            INTAKE_SYMPTOMS_LABEL,
+            options=INTAKE_SYMPTOM_OPTIONS,
+            index=None,
+            placeholder="Select one option",
+            key="intake_symptoms",
+        )
+        family_history = st.selectbox(
+            INTAKE_FAMILY_LABEL,
+            options=INTAKE_HISTORY_OPTIONS,
+            index=None,
+            placeholder="Select one option",
+            key="intake_family_history",
+        )
+        medical_history = st.selectbox(
+            INTAKE_MEDICAL_LABEL,
+            options=INTAKE_HISTORY_OPTIONS,
+            index=None,
+            placeholder="Select one option",
+            key="intake_medical_history",
+        )
+
+    if st.button(INTAKE_SUBMIT, type="primary"):
+        answers = (age, symptoms, family_history, medical_history)
+        if any(answer is None for answer in answers):
+            st.error(INTAKE_MISSING)
+            return
+        if not np.isfinite(float(age)) or not float(age).is_integer() or not 1 <= age <= 120:
+            st.error(INTAKE_AGE_ERROR)
+            return
+        st.error(INTAKE_RESULT)
+        st.info(INTAKE_REASON)
+        st.caption(INTAKE_SCOPE)
+
+
 def main() -> None:
     st.set_page_config(
         page_title="Risk-Aware Abstention",
@@ -494,11 +580,22 @@ def main() -> None:
     st.title("Risk-Aware Abstention")
     st.error(BANNER)
     st.caption(PRIVACY)
-    st.sidebar.caption("Local research demo; no names or demographic fields")
+    st.sidebar.caption("Four-question intake is local and is not passed to the current model.")
     mode = st.sidebar.radio(
         "Choose a mode",
-        ("Example cases", "Guided entry", "Upload CSV", "What-if", "Why abstain?"),
+        (
+            "Four-question intake",
+            "Guided entry",
+            "Upload CSV",
+            "What-if",
+            "Example cases",
+            "Why abstain?",
+        ),
+        index=0,
     )
+    if mode == "Four-question intake":
+        render_four_question_intake()
+        return
     try:
         state = load_demo_state()
     except (FileNotFoundError, ValueError) as error:
@@ -515,7 +612,7 @@ def main() -> None:
     elif mode == "Why abstain?":
         render_why_abstain()
     else:
-        st.info("This mode is being prepared; choose Example cases for the working one-click demo.")
+        st.info("Choose a mode from the sidebar.")
 
 
 if __name__ == "__main__":

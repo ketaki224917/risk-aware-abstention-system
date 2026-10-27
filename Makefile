@@ -30,7 +30,7 @@ results/demo/model_bundle.joblib:
 	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_demo_artifact
 
 app: results/demo/model_bundle.joblib
-	$(UV) --cache-dir .tools/uv-cache run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false
+	$(UV) --cache-dir .tools/uv-cache run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=127.0.0.1
 
 all: test lint reproduce
 

@@ -6,6 +6,9 @@
   - Needed from the author: confirm whether to retain the journal values as the originally published experiment and label the source-aligned run separately as an independent reproduction.
   - Recommended wording: report the published values as the original experiment and the source-aligned values as an independent reproduction. See docs/state/RECONCILIATION.md.
 
+- [OPEN 2026-10-27] DATA-001 - A suitable labeled dataset is required before the four-question intake can produce any cancer estimate. The public Duke BRCA screening table matches only age bands, family history, prior biopsy/surgery, and lump/nipple-discharge symptoms; it has 37/987 cancer outcomes and the seed-42 held-out prototype had sensitivity 0/7 and ROC-AUC 0.487. It is not an appropriate model for a real user's current diagnosis.
+  - Needed: an approved, de-identified dataset with compatible user-answer fields and confirmed outcome labels, enough positive cases for stable independent validation, and a defined target. Until then the intake should return Human Review with no predicted class.
+
 ## Resolved environment issue
 
 - [RESOLVED 2026-10-27] MAKE-001 - GNU Make 4.4.1 is available at D:/msys64/usr/bin/make.exe. make test, make lint, and make app passed in the active D: project. The older C:/MinGW/bin/mingw32-make.exe 3.82.90 still fails before parsing targets with INTERNAL: readdir: Invalid argument, but it is no longer the selected make executable.

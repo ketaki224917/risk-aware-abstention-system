@@ -1,0 +1,35 @@
+{
+  "run_id": "duke-brca-questionnaire-seed-42",
+  "dataset_rows": 987,
+  "cancer_outcome_rows": 37,
+  "no_cancer_outcome_rows": 950,
+  "train_rows": 591,
+  "validation_rows": 198,
+  "test_rows": 198,
+  "test_cancer_outcomes": 7,
+  "test_no_cancer_outcomes": 191,
+  "test_confusion_matrix_labels": [
+    "cancer within 12 months",
+    "no cancer within 12 months"
+  ],
+  "test_confusion_matrix": [
+    [
+      0,
+      7
+    ],
+    [
+      23,
+      168
+    ]
+  ],
+  "test_cancer_sensitivity": 0.0,
+  "test_specificity": 0.8795811518324608,
+  "test_roc_auc": 0.4865370231862378,
+  "automatic_test_cases": 135,
+  "assisted_test_cases": 39,
+  "human_review_test_cases": 24,
+  "classifier": "RandomForestClassifier(class_weight=balanced_subsample, n_estimators=300)",
+  "policy": "RAA pipeline; thresholds fitted on validation at p70/p90",
+  "seed": 42,
+  "warning": "One historical screening cohort and one held-out split; not clinical validation."
+}

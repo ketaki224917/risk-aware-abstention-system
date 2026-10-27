@@ -15,12 +15,14 @@ def fit_classifier(
     *,
     n_estimators: int = 300,
     random_state: int = 0,
+    class_weight: str | dict[int, float] | None = None,
 ) -> RandomForestClassifier:
     """Fit a deterministic Random Forest on training data only."""
     model = RandomForestClassifier(
         n_estimators=n_estimators,
         random_state=random_state,
         n_jobs=1,
+        class_weight=class_weight,
     )
     model.fit(features, targets)
     return model

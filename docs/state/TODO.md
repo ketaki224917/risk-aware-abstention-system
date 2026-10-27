@@ -64,6 +64,9 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1l Accessible copy, glossary, safety language
 - [x] P4.1m UI smoke and privacy tests
 - [x] P4.1n README screenshots and 90-second viva script
+- [~] P4.1o Guided-entry-first form (superseded by the requested four-question intake as the landing page; WDBC guided entry remains optional)
+- [x] P4.1p Four-question intake landing page with age, symptoms, family history, and medical history; return Human Review with no prediction because current WDBC model is incompatible
+- [!] P4.1q Train and validate a model compatible with the four intake fields (blocked: Duke BRCA candidate has 37/987 positive outcomes; seed-42 held-out RAA model sensitivity 0/7 and ROC-AUC 0.487, so do not expose predictions)
 
 
 

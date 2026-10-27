@@ -1,33 +1,30 @@
 # HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current phase: P4.6/P4.7 final acceptance | Status: P4.1a-n demo implementation complete and running; overall paper review and fresh-clone reproduction checks remain.
+Updated: 2026-10-27 | Session #: 7 | Current phase: P4.1q dataset feasibility / P4.6-P4.7 final acceptance | Status: four-question UI exists, but compatible clinical prediction is blocked by candidate dataset evidence.
 
 ## Do next
 
-1. In a clean clone, run make setup, make test, make reproduce, and make app; record exact results in docs/state/ENVIRONMENT.md.
-2. Get the author's decision on CLAIM-001 wording in docs/state/BLOCKERS.md.
-3. Update P4.6/P4.7 and this handoff after both remaining items are resolved.
+1. Obtain an approved, de-identified dataset with compatible questionnaire fields and enough confirmed positive outcomes for independent validation; keep the intake at Human Review until then.
+2. In a clean clone, run `make setup`, `make test`, `make reproduce`, and `make app`; record current outputs in `docs/state/ENVIRONMENT.md`.
+3. Resolve CLAIM-001 paper wording with the author and update P4.6/P4.7.
 
 ## Current demo
 
-- Active repository: D:/ERA CP. Latest task work is the current HEAD commit labeled P4.1n.
-- Modes A-E are complete: one-click held-out examples, six-measurement guided entry with TRAIN-only imputation, strict in-memory CSV triage, live what-if plus synthetic stress, and exploratory review capacity.
-- Every case result goes through the real classifier, disagreement, anomaly, consequence, risk, routing, and grounded explanation path.
-- The saved v2 artifact under results/demo loads without fitting. Why abstain reads canonical experiment metrics from results/runs/raa-20261026-paper-aligned-01/metrics.json.
-- The app is running at http://localhost:8501 from make app. Its health endpoint returns HTTP 200 and ok. It starts headless and disables Streamlit usage statistics; no case inputs are saved by the app.
-- README.md now has the five-mode guide, screenshot, local run commands, risk explanation, current results, privacy limits, and 90-second viva script.
+- Active repository: `D:/ERA CP`.
+- The landing page collects age, symptoms, family history, and prior breast history. It returns Human Review with no predicted class because the WDBC classifier is incompatible and the only public questionnaire-like candidate tested failed held-out feasibility.
+- Optional WDBC research modes remain available and load the saved WDBC bundle; they do not accept the four questionnaire answers.
+- The public Duke BRCA file is retained under `data/` with field scope and provenance documented. It has 987 records, 37 cancer outcomes, and a follow-up outcome after 2002 screening. It is not current diagnosis or benign/malignant pathology data.
+- `scripts/audit_questionnaire_dataset.py` reproduces the seed-42 RAA feasibility check. Metrics are recorded in `results/clinical_candidate_audit/metrics.json`; the file is not used by app inference.
+- Candidate held-out result: 0/7 cancer outcomes detected; ROC-AUC 0.486537. Do not connect this model to user answers or claim that it detects cancer.
+- App health was previously HTTP 200 at `http://localhost:8501`; no app change was made in this audit task.
 
 ## Verification
 
-- make test -> 35 passed.
-- make lint -> all checks passed.
-- Ruff format check -> 66 files already formatted.
-- Offline lock check -> 57 packages resolved.
-- make app -> Local URL http://localhost:8501; health -> HTTP 200, ok.
-- GNU Make 4.4.1 at D:/msys64/usr/bin/make.exe works. The old MinGW make remains defective but is not used by PATH.
-- Fresh-clone make setup and make reproduce have not been re-run.
-- CLAIM-001 remains an author wording decision; source-aligned results are reported without tuning.
+- Candidate audit: 987 rows; split 591/198/198; 37 positive outcomes; test sensitivity 0/7; specificity 168/191; ROC-AUC 0.486537.
+- Prior project checks in Session 6: `make test` -> 35 passed; `make lint` -> all checks passed; app health -> HTTP 200, `ok`.
+- Re-run `make test`, `make lint`, and `make app` after pulling the current audit files. Fresh-clone setup/reproduction remain unverified.
+- CLAIM-001 remains open.
 
-## Worktree
+## Worktree / blocker
 
-No unfinished implementation task remains in P4.1. The remaining work is fresh-clone setup/reproduction verification and the author's result-wording decision. The app process should remain running for the user's demo.
+P4.1q remains blocked under DATA-001: the candidate dataset is unsuitable for an interactive cancer classifier. No changes were made to questionnaire inference or the running app. The D: worktree already contained modifications from prior P4.1 tasks; preserve those while committing the dataset audit.

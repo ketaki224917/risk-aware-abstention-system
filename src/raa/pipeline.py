@@ -123,6 +123,7 @@ def fit_system(
         y[train],
         n_estimators=int(cc["n_estimators"]),
         random_state=seed + int(cc["random_state_offset"]),
+        class_weight=cc.get("class_weight"),
     )
     ensemble = BootstrapUncertainty.fit(
         x[train],
@@ -130,6 +131,7 @@ def fit_system(
         members=int(uc["ensemble_members"]),
         trees_per_member=int(uc["trees_per_member"]),
         seed=seed + int(uc["random_state_offset"]),
+        class_weight=cc.get("class_weight"),
     )
     anomaly_scaler = StandardScaler().fit(x[train])
     anomaly_train = anomaly_scaler.transform(x[train])
