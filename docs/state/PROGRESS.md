@@ -208,3 +208,8 @@ Files: src/raa/inference.py, src/raa/app/streamlit_app.py, tests/test_stress_inp
 Done: Versioned the demo bundle and saved its 114 validation risk values under results/demo. Added a collapsed capacity control that maps c cases per 100 to validation percentiles (Automatic p100-c; Human Review cutoff p100-c/3), preserving p70/p90 at the default 30/100. Route changes apply only to the current display.
 Evidence: pytest tests/test_review_capacity.py tests/test_ui.py tests/test_examples.py -> 7 passed; focused Ruff passed. API tests verify exact default thresholds, changed p80/p93.33 cutoffs, unchanged input risk/class, and byte-identical canonical metrics. AppTest verifies the default mapping and changed capacity display.
 Files: src/raa/app/demo_assets.py, src/raa/inference.py, src/raa/app/streamlit_app.py, results/demo/model_bundle.joblib, results/demo/manifest.json, results/demo/validation_risk.csv, tests/test_review_capacity.py, tests/test_ui.py.
+ 
+### 2026-10-27 - P4.1k - Results-backed Why abstain page
+Done: Added dedicated checks for the Why abstain page, which reads canonical pooled metrics from results/runs/raa-20261026-paper-aligned-01/metrics.json and displays run ID, baseline error, automatic coverage, tier errors, and false-negative routing.
+Evidence: pytest tests/test_results_page.py -> 1 passed; test parses source JSON and compares displayed values; focused Ruff passed.
+Files: src/raa/app/streamlit_app.py, src/raa/app/demo_assets.py, tests/test_results_page.py.
