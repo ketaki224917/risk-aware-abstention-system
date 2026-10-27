@@ -158,3 +158,8 @@ Done: Reconstructed the complete tracked worktree at `D:\ERA CP`, created a fres
 Evidence: `uv --system-certs --cache-dir .tools/uv-cache sync --all-groups --locked` -> 57 resolved, 54 checked; `uv --cache-dir .tools/uv-cache run pytest -q` -> 12 passed; Ruff check passed; offline lock check resolved 57 packages; Streamlit health returned HTTP 200 `ok`; Git worktree clean.
 Files: D: project files and `docs/state/`.
 Notes: A literal MinGW Make 3.82.90 dry run fails with `INTERNAL: readdir: Invalid argument`; equivalent uv checks pass. The existing canonical 30-split run remains valid. A duplicate rerun was stopped at the user's request to relocate the project, and its touched cache files were restored from Git. `CLAIM-001` still needs author wording review.
+### 2026-10-27 - P4.1a - Thin case inference API
+Done: Added `predict_case(features, measured_mask, context=...)` in `src/raa/inference.py`. The adapter validates the measured vector/mask, supports a pre-fitted train-only KNN imputer for partial vectors, calls the existing `DecisionSystem.predict`, and annotates the immutable `DecisionRecord` with measured/estimated counts and warnings.
+Evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 1 passed; focused Ruff check -> all checks passed. The regression test compares the adapter output with the real pipeline for a fixed held-out row.
+Files: `src/raa/inference.py`, `src/raa/explain/record.py`, `tests/test_inference.py`, `docs/state/DECISIONS.md`.
+Notes: UI integration and additional validation/imputation tests remain in P4.1c/d. The existing app file is still WIP and will be replaced in later app tasks.

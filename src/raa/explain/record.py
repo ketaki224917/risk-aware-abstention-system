@@ -1,4 +1,4 @@
-"""Immutable structured decision record used to ground explanations."""
+﻿"""Immutable structured decision record used to ground explanations."""
 
 from __future__ import annotations
 
@@ -21,6 +21,9 @@ class DecisionRecord:
     automatic_threshold: float
     assisted_threshold: float
     referral_reason: str = ""
+    measured_feature_count: int = 30
+    estimated_feature_count: int = 0
+    input_warnings: tuple[str, ...] = ()
 
     @property
     def predicted_label(self) -> str:
@@ -42,3 +45,4 @@ class DecisionRecord:
         if self.risk <= self.assisted_threshold:
             return "intermediate"
         return "higher"
+

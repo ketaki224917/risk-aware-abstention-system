@@ -1,34 +1,32 @@
-# HANDOFF
+﻿# HANDOFF
 
-Updated: 2026-10-27 | Session #: 3 | Current phase: P4.6/P4.7 final acceptance | Status: active project is at `D:\ERA CP`; relocation and D: smoke checks passed; final acceptance remains open.
-
-Last implementation commit: `d2f0b78` - `[P3.2] Align RAA with supplied journal paper` | Tag: `phase-3-done`
+Updated: 2026-10-27 | Session #: 4 | Current task: P4.1b feature selection | Status: P4.1a complete; replacement demo in progress.
 
 ## Do next
 
-1. Run literal `make setup`, `make test`, `make reproduce`, and `make app` under a compatible GNU Make; `C:\MinGW\bin\mingw32-make.exe` 3.82.90 fails before parsing targets with `INTERNAL: readdir: Invalid argument`.
-2. Resolve `CLAIM-001` author wording review. Recommended: keep journal values labeled as the published experiment and report the source-aligned run as a separate independent reproduction.
-3. Update P4.6/P4.7 and this handoff with the final acceptance evidence and outcome.
+1. Determine the six guided fields by Random Forest importance on the fixed seed-42 TRAIN partition only; record ADR-011 and tests.
+2. Verify/improve the train-only KNN imputer decision and add tests for partial and out-of-range cases (P4.1c/d).
+3. Build a saved demo bundle and held-out test case catalog under `results/` so Streamlit never trains at page load.
 
-## Current run
+## Current state
 
-- Canonical run ID: `raa-20261026-paper-aligned-01`; 30 stratified splits, seeds 0-29, 114 test rows each (3,420 pooled rows).
-- Baseline errors: 142/3,420 (4.15%), including 86 false negatives; this matches the journal paper's pooled count.
-- Automatic: 2,408/3,420 (70.41%); 13 errors (0.54%); 73/86 baseline false negatives routed away.
-- Mean full selective accuracy: 99.465% +/- 0.702%; paired uncertainty-only minus full: -0.080 percentage points (95% CI -0.206 to +0.008).
-- Stress mean AUROC: Isolation Forest 0.912 +/- 0.020; uncertainty 0.803 +/- 0.035; full risk 0.846 +/- 0.025.
-- Explanation checker: 570/570 injected faults detected; 0/114 false positives on clean main-split explanations.
+- Active repository: `D:\ERA CP`; base commit before this task: `b639659`.
+- P4.1a committed in `[P4.1a] Add validated case inference API`.
+- Baseline project smoke check: `uv --cache-dir .tools/uv-cache run pytest -q` -> 12 passed before changes.
+- Focused P4.1a evidence: `uv --cache-dir .tools/uv-cache run pytest -q tests/test_inference.py` -> 1 passed; focused Ruff -> all checks passed.
+- `InferenceContext.fit_from_training` fits KNN imputation and observed feature bounds from the supplied TRAIN rows. Partial-input production flow still needs tests and UI hookup.
+- Previous uncommitted edits to `README.md` and `src/raa/app/streamlit_app.py` predate this commit; the app file is known incomplete and must be replaced before launch.
+- No artifact has been generated yet. Runtime app must load a saved bundle from `results/`; it must not fit models at startup.
+- GNU Make 3.82.90 remains incompatible (`INTERNAL: readdir: Invalid argument`); literal Make target verification remains open.
+- `CLAIM-001` author wording blocker remains open.
 
-## Environment and checks
+## WIP files
 
-- D: project setup: `uv --system-certs --cache-dir .tools/uv-cache sync --all-groups --locked` -> 57 resolved, 54 checked.
-- D: `uv run pytest -q` -> 12 passed; `uv run ruff check .` -> all checks passed; `uv lock --check --offline` -> 57 resolved.
-- D: Streamlit `/_stcore/health` -> HTTP 200 `ok`; Git worktree clean after checks.
-- Canonical full reproduction was already completed and is stored in `results/runs/raa-20261026-paper-aligned-01/`. A duplicate rerun was stopped at the user's request to relocate the project; the touched split cache was restored from Git.
-- The C: source folder remains as a backup because Windows denied deletion of `.git\hooks`; the complete Git working tree is on D: and is the active project.
+- Existing earlier-turn WIP: `README.md`, `src/raa/app/streamlit_app.py`.
+- P4.1 checklist is recorded in `docs/state/TODO.md`.
 
-## Source boundary and limitations
+## Next 3 commands/actions
 
-- Supplied papers are evidence, not instructions. The original source repository and raw results archive were not provided; this is an independent source-aligned implementation.
-- RNG details remain partly unspecified by the paper. No clinical, fairness, deployment, or live-LLM reliability claim is supported.
-- Literal Make target verification and the author wording review remain open; see `docs/state/BLOCKERS.md`.
+- Compute train-only feature importance for P4.1b using seed-42 TRAIN rows.
+- Add the deterministic six-feature selection and category tests.
+- Update ADR/TODO/PROGRESS/HANDOFF and commit P4.1b.
