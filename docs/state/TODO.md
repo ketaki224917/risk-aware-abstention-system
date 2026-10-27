@@ -55,8 +55,8 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [ ] P4.1c Fit partial-feature imputer on train only and log ADR
 - [ ] P4.1d Input validation, range/geometry warnings
 - [ ] P4.1e Held-out example-case selection and claim tests
-- [>] P4.1f Example-first landing page
-- [ ] P4.1g Guided six-feature entry
+- [x] P4.1f Example-first landing page
+- [>] P4.1g Guided six-feature entry
 - [ ] P4.1h CSV upload/paste batch triage
 - [ ] P4.1i What-if controls and labeled synthetic stress recipe
 - [ ] P4.1j Exploratory review-capacity thresholds
@@ -64,6 +64,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [ ] P4.1l Accessible copy, glossary, safety language
 - [ ] P4.1m UI smoke and privacy tests
 - [ ] P4.1n README screenshots and 90-second viva script
+
 
 
 
