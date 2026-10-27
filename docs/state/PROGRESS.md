@@ -152,3 +152,9 @@ Done: Committed the source-aligned code, documentation, and run artifacts; tagge
 Evidence: Commit `d2f0b78` (`[P3.2] Align RAA with supplied journal paper`); tag `phase-3-done`; `git status --short --branch` was clean after commit.
 Files: All project changes for the 2026-10-26 source-alignment task.
 Notes: Elevated Git required a command-scoped safe-directory setting and the prior project identity `Codex <codex@localhost>`; no global Git configuration was changed.
+
+### 2026-10-27 - P4.6/P4.7 - Relocate project and verify D: environment
+Done: Reconstructed the complete tracked worktree at `D:\ERA CP`, created a fresh locked `.venv`, and ran the project smoke checks there. The old C: source folder remains as a backup because Windows denied deletion of `.git\hooks` during the cross-volume move; no ACLs were changed.
+Evidence: `uv --system-certs --cache-dir .tools/uv-cache sync --all-groups --locked` -> 57 resolved, 54 checked; `uv --cache-dir .tools/uv-cache run pytest -q` -> 12 passed; Ruff check passed; offline lock check resolved 57 packages; Streamlit health returned HTTP 200 `ok`; Git worktree clean.
+Files: D: project files and `docs/state/`.
+Notes: A literal MinGW Make 3.82.90 dry run fails with `INTERNAL: readdir: Invalid argument`; equivalent uv checks pass. The existing canonical 30-split run remains valid. A duplicate rerun was stopped at the user's request to relocate the project, and its touched cache files were restored from Git. `CLAIM-001` still needs author wording review.
