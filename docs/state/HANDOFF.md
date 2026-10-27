@@ -1,31 +1,31 @@
 ﻿# HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current task: P4.1m UI and privacy tests | Status: Modes/copy complete; final test matrix and docs remain.
+Updated: 2026-10-27 | Session #: 4 | Current task: P4.1n README, screenshot and viva demo | Status: implementation and test matrix complete; packaging remains.
 
 ## Do next
 
-1. Add coverage for all input-validation failure messages, CSV batch boundaries, explanation read-only behavior, and absence of input-file writes.
-2. Run UI smoke coverage for every mode and check the persistent banner/result path.
-3. Update README with the new workflow, artifact build behavior, screenshot, and 90-second viva script; then full QA.
+1. Replace the stale README app description with five-mode usage, local startup, saved model artifact provenance, privacy and limitations.
+2. Add an actual app screenshot under docs and a concise 90-second viva walkthrough with exact demo clicks.
+3. Run full pytest, Ruff, lock check, and Streamlit health; update final TODO/handoff and leave the Make/author blockers clearly stated.
 
 ## Current state
 
-- Active repository: D:\ERA CP; latest task commit is [P4.1l] Improve accessible and safe UI copy.
-- P4.1a-l complete. All five modes, Why abstain, train-only guided imputation, strict CSV, live stress, capacity and result panel are implemented.
-- User copy lives in src/raa/app/copy.py; banner and route wording are tested; no color-only route/status. Gauge thresholds have visible dark markers, numeric text and an ARIA label.
-- AppTest covers example-first result, six guided fields and 6/24 output, CSV triage, four what-if sliders + capacity, synthetic button, Why abstain values, and banner persistence across five modes.
-- Privacy tests cover no disk writes in the batch API. Existing test_explanation.py contains the read-only guarantee.
-- Ruff check . passes. Full tests have not yet been run since all app tasks.
-- README.md remains the only uncommitted earlier-turn modification.
-- Make 3.82.90 compatibility issue and CLAIM-001 remain open.
+- Active repository: D:\ERA CP; latest task commit is [P4.1m] Test UI, batch and privacy boundaries.
+- P4.1a-m complete; P4.1j is also complete and now needs its stale checkbox corrected.
+- Modes A-E work through the real trained model pipeline: examples, six measured/24 estimated guided entry, strict CSV, live what-if, and exploratory validation-percentile capacity. Why abstain uses canonical results/metrics.json.
+- Saved demo artifact version 2 in results/demo was fit on TRAIN, thresholds on validation, imputer on TRAIN only; app loading never fits.
+- Focused test group tests/test_batch.py tests/test_ui.py tests/test_explanation.py tests/test_copy_a11y.py: 16 passed. Ruff check . previously passed.
+- UI tests navigate every mode and verify the permanent banner; privacy tests confirm input paths do not write files. Example claims, imputation, validation, capacity and explanation read-only are tested.
+- README.md is the only prior-turn uncommitted file; tests/test_batch.py and tests/test_ui.py have current P4.1m changes to commit.
+- GNU Make 3.82.90 remains unable to parse targets (INTERNAL: readdir: Invalid argument); CLAIM-001 remains an author wording decision.
 
 ## WIP files
 
-- README.md prior UI note needs reconciliation and final screenshot/viva material.
-- Test task m will extend coverage; no uncommitted source changes are intended besides docs state.
+- README.md needs the new UI, screenshot and viva script.
+- Current test changes are ready to commit.
 
 ## Next 3 commands/actions
 
-- Add missing batch/input privacy boundary tests and check explanation read-only coverage.
-- Run full pytest and Ruff, then launch app and check health.
-- Update README/screenshot/viva and HANDOFF; record literal Make limitation honestly.
+- Commit the P4.1m test matrix and corrected P4.1j TODO status.
+- Update README and capture a screenshot of the running app.
+- Run full suite/lint/lock/app health, then record any remaining Make or author-review blockers.

@@ -218,3 +218,8 @@ Files: src/raa/app/streamlit_app.py, src/raa/app/demo_assets.py, tests/test_resu
 Done: Centralized UI copy in app/copy.py, removed corrupted UTF-8 text, retained the permanent exact prototype/non-diagnosis banner, added plain-language glossary definitions, and marked risk thresholds both visually and textually with ARIA values. Route output always pairs a traffic-light icon with a textual tier and “the model leans” wording.
 Evidence: tests/test_copy_a11y.py and tests/test_ui.py -> 7 passed; Ruff check . -> all checks passed. AppTest checks route text, explanation checker status, the risk-gauge ARIA label, and banner persistence across all five modes.
 Files: src/raa/app/copy.py, src/raa/app/streamlit_app.py, tests/test_copy_a11y.py, tests/test_ui.py, docs/state/DECISIONS.md.
+ 
+### 2026-10-27 - P4.1m - UI, input and privacy test coverage
+Done: Completed direct validation tests for nonnumeric, NaN/infinite, negative, shape, range and geometry cases; imputer/train-only checks; full/partial real-pipeline parity; held-out example claims; CSV template, invalid schemas, personal ID columns, blank values and row limits; explanation read-only guarantee; all five UI modes and permanent banner. Batch tests check no files appear in a temporary output directory, and AppTest confirms demo artifacts do not change during CSV handling.
+Evidence: pytest tests/test_batch.py tests/test_ui.py tests/test_explanation.py tests/test_copy_a11y.py -> 16 passed; focused Ruff passed.
+Files: tests/test_batch.py, tests/test_ui.py.

@@ -59,11 +59,12 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1g Guided six-feature entry
 - [x] P4.1h CSV upload/paste batch triage
 - [x] P4.1i What-if controls and labeled synthetic stress recipe
-- [ ] P4.1j Exploratory review-capacity thresholds
+- [x] P4.1j Exploratory review-capacity thresholds
 - [x] P4.1k Why-abstain page sourced from results
 - [x] P4.1l Accessible copy, glossary, safety language
-- [>] P4.1m UI smoke and privacy tests
-- [ ] P4.1n README screenshots and 90-second viva script
+- [x] P4.1m UI smoke and privacy tests
+- [>] P4.1n README screenshots and 90-second viva script
+
 
 
 

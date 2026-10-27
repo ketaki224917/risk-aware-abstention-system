@@ -44,6 +44,8 @@ def test_upload_csv_mode_renders_batch_results():
     writer = csv.writer(output)
     writer.writerow(data.feature_names)
     writer.writerow(data.features[0].tolist())
+    results_dir = Path(__file__).resolve().parents[1] / "results" / "demo"
+    before = {item.name: item.stat().st_size for item in results_dir.iterdir()}
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
     app.sidebar.radio[0].set_value("Upload CSV").run()
     app.text_area[0].set_value(output.getvalue()).run()
@@ -52,6 +54,8 @@ def test_upload_csv_mode_renders_batch_results():
     assert not app.exception
     assert len(app.table) == 1
     assert len(app.metric) == 3
+    after = {item.name: item.stat().st_size for item in results_dir.iterdir()}
+    assert after == before
 
 
 def test_what_if_page_has_four_live_sliders_capacity_and_synthetic_button():

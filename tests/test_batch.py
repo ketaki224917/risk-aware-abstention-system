@@ -45,3 +45,33 @@ def test_csv_empty_malformed_and_over_limit_cases():
     missing = _csv_text(data).replace(str(data.features[0, 0]), "", 1)
     with pytest.raises(CaseInputError, match="is empty"):
         predict_csv(missing, context=context)
+
+
+@pytest.mark.parametrize(
+    ("value", "message"),
+    (("not a number", "must be a number"), ("NaN", "finite"), ("-1", "negative")),
+)
+def test_csv_rejects_non_numeric_nonfinite_and_negative_measurements(value, message):
+    artifact = load_demo_artifact()
+    data = load_breast_cancer_data()
+    values = data.features[0].tolist()
+    values[0] = value
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(data.feature_names)
+    writer.writerow(values)
+
+    with pytest.raises(CaseInputError, match=message):
+        predict_csv(output.getvalue(), context=artifact.inference_context)
+
+
+def test_csv_rejects_personal_identifier_columns():
+    artifact = load_demo_artifact()
+    data = load_breast_cancer_data()
+    text = _csv_text(data)
+    lines = text.splitlines()
+    lines[0] += ",patient_id"
+    lines[1] += ",123"
+
+    with pytest.raises(CaseInputError, match="unexpected patient_id"):
+        predict_csv("\n".join(lines) + "\n", context=artifact.inference_context)
