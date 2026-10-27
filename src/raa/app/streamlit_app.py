@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 from dataclasses import dataclass
 
 import numpy as np
@@ -14,7 +16,7 @@ from raa.data import BreastCancerData, DataSplit, load_breast_cancer_data, strat
 from raa.explain.checker import check_explanation
 from raa.explain.record import DecisionRecord
 from raa.explain.templates import generate_explanation
-from raa.inference import CaseInputError, predict_case
+from raa.inference import CaseInputError, csv_template, predict_case, predict_csv
 from raa.risk.policy import DecisionLevel
 
 
@@ -235,6 +237,95 @@ def render_guided_entry(state: DemoState) -> None:
             render_result(record)
 
 
+def _batch_output_csv(batch) -> str:
+    stream = io.StringIO(newline="")
+    writer = csv.writer(stream)
+    writer.writerow(("row", "model_leans", "decision", "risk", "reason", "warnings"))
+    for item in batch:
+        record = item.record
+        writer.writerow(
+            (
+                item.row_number,
+                record.predicted_label,
+                record.level.value,
+                f"{record.risk:.6f}",
+                record.referral_reason or "No single contributor triggered referral",
+                " | ".join(record.input_warnings),
+            )
+        )
+    return stream.getvalue()
+
+
+def render_csv_batch(state: DemoState) -> None:
+    st.header("Upload or paste a WDBC CSV")
+    st.write(
+        "Each row needs all 30 numeric cell-nucleus features. "
+        "No ID or demographic columns are accepted."
+    )
+    st.download_button(
+        "Download blank 30-feature CSV template",
+        data=csv_template(state.data.feature_names),
+        file_name="raa_wdbc_template.csv",
+        mime="text/csv",
+    )
+    uploaded = st.file_uploader("Choose a CSV file", type=("csv",), key="batch_csv_upload")
+    pasted = st.text_area("Or paste CSV text", height=160, key="batch_csv_paste")
+    st.caption("Maximum 100 rows per batch. Uploaded and pasted values stay in memory only.")
+    if st.button("Run batch triage", type="primary"):
+        source = pasted if pasted.strip() else ""
+        if not source and uploaded is not None:
+            try:
+                source = uploaded.getvalue().decode("utf-8-sig")
+            except UnicodeDecodeError:
+                st.error("Could not read this file as UTF-8 CSV. Save it as UTF-8 and try again.")
+                return
+        try:
+            batch = predict_csv(source, context=state.artifact.inference_context)
+        except CaseInputError as error:
+            st.error(str(error))
+            return
+        st.session_state["batch_triage_output"] = _batch_output_csv(batch)
+        counts = {level: 0 for level in ("Automatic", "Assisted", "Human Review")}
+        table_rows = []
+        for item in batch:
+            record = item.record
+            counts[record.level.value] += 1
+            table_rows.append(
+                {
+                    "Row": item.row_number,
+                    "Model leans": record.predicted_label,
+                    "Decision": record.level.value,
+                    "Risk": round(record.risk, 3),
+                    "Reason": record.referral_reason or "No single contributor triggered referral",
+                    "Input warning": "; ".join(record.input_warnings),
+                }
+            )
+        st.session_state["batch_triage_table"] = table_rows
+        st.session_state["batch_triage_counts"] = counts
+    if "batch_triage_table" in st.session_state:
+        table_rows = st.session_state["batch_triage_table"]
+        counts = st.session_state["batch_triage_counts"]
+        st.subheader(f"Triage results ? {len(table_rows)} rows")
+        st.table(table_rows)
+        columns = st.columns(3)
+        for column, level, icon in zip(
+            columns,
+            ("Automatic", "Assisted", "Human Review"),
+            ("\U0001f7e2", "\U0001f7e1", "\U0001f534"),
+            strict=True,
+        ):
+            percent = counts[level] / len(table_rows) * 100
+            column.metric(
+                f"{icon} {level}", f"{percent:.1f}%", f"{counts[level]} of {len(table_rows)}"
+            )
+        st.download_button(
+            "Download triage results",
+            data=st.session_state["batch_triage_output"],
+            file_name="raa_triage_results.csv",
+            mime="text/csv",
+        )
+
+
 def render_why_abstain() -> None:
     results = load_paper_results()
     pooled = results["pooled_case_metrics"]
@@ -288,6 +379,8 @@ def main() -> None:
         render_examples(state)
     elif mode == "Guided entry":
         render_guided_entry(state)
+    elif mode == "Upload CSV":
+        render_csv_batch(state)
     elif mode == "Why abstain?":
         render_why_abstain()
     else:

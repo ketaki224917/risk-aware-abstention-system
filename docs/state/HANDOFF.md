@@ -1,30 +1,30 @@
 ﻿# HANDOFF
 
-Updated: 2026-10-27 | Session #: 4 | Current task: P4.1h CSV batch triage | Status: Mode A/B complete; replacement demo in progress.
+Updated: 2026-10-27 | Session #: 4 | Current task: P4.1i what-if exploration | Status: Modes A-C complete; replacement demo in progress.
 
 ## Do next
 
-1. Add a CSV template with exactly the 30 WDBC numeric fields and a guided download.
-2. Parse CSV in memory, reject malformed/negative/nonfinite values, cap rows, and show decision/risk/reason plus auto/assisted/human percentages.
-3. Add downloadable results and batch edge-case/privacy tests; do not write uploaded inputs to disk.
+1. Implement the signed 3σ, eight-feature synthetic perturbation helper using TRAIN standard deviations and nonnegative clipping.
+2. Add a what-if page with four live sliders on a held-out row and a labeled synthetic-shift button.
+3. Test deterministic shift recipe and AppTest live updates; then add capacity mapping and Why abstain detail tests.
 
 ## Current state
 
-- Active repository: D:\ERA CP; latest task commit: [P4.1g] Add six-field guided entry.
-- P4.1a-g complete. Mode A one-click examples and Mode B six sliders plus exact-number boxes are functional. Mode B shows TRAIN p5-p95 ranges and explicitly reports 6 measured / 24 estimated.
-- Mode B AppTest and Mode A AppTest both pass (tests/test_ui.py: 2 passed); partial inference calls the train-only imputer and full pipeline.
-- Results bundle under results/demo/ is loaded only; app page reruns do not train.
-- The Why abstain page reads canonical aggregate numbers from results/runs/raa-20261026-paper-aligned-01/metrics.json.
-- CSV, what-if stress button, capacity thresholds, all-mode UI/privacy coverage and updated README remain.
-- GNU Make 3.82.90 and CLAIM-001 remain open blockers.
+- Active repository: D:\ERA CP; latest task commit is [P4.1h] Add CSV batch triage.
+- P4.1a-h complete. Modes A (examples), B (six measured/24 estimated), and C (CSV batch) use the same saved real model pipeline.
+- CSV accepts only 30 named feature columns, up to 100 rows, no ID/demographic fields; it stores no uploaded rows, and downloads triage outputs without values.
+- Verification: inference tests 5 passed; example tests 2 passed; tests/test_batch.py tests/test_ui.py -> 5 passed; focused Ruff passed.
+- Saved artifact under results/demo and canonical aggregate results remain the data sources. App loader never trains.
+- What-if, capacity, expanded why-abstain evidence, all-mode smoke/privacy checks and final README remain.
+- GNU Make 3.82.90 and CLAIM-001 remain open.
 
 ## WIP files
 
-- README.md still needs final app usage/docs and viva script.
-- src/raa/app/streamlit_app.py is working for examples/guided entry and will be extended with remaining modes.
+- README.md remains earlier uncommitted WIP.
+- src/raa/app/streamlit_app.py now contains working Modes A-C and will be extended.
 
 ## Next 3 commands/actions
 
-- Implement in-memory CSV template/upload/batch/download.
-- Add batch unit tests for empty, malformed, over-limit and valid batches.
-- Update P4.1h state and commit, then implement the synthetic what-if mode.
+- Implement deterministic 8-feature signed 3σ stress input and tests.
+- Add four-slider live what-if and synthetic label.
+- Update P4.1i state/commit; then implement capacity thresholds and evidence page.

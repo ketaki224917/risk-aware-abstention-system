@@ -193,3 +193,8 @@ Files: `src/raa/app/streamlit_app.py`, `src/raa/app/copy.py`, `tests/test_ui.py`
 Done: Added six data-driven mean-feature controls, each with a slider and exact-number box. Controls show TRAIN p5-p95 typical ranges and allow out-of-range numeric values for explicit warning. Submission fills only six measured fields, imputes the remaining 24 using the saved TRAIN-only KNN model, then calls predict_case and the complete RAA pipeline.
 Evidence: uv --cache-dir .tools/uv-cache run pytest -q tests/test_ui.py -> 2 passed; Mode B AppTest confirms exactly six sliders and number inputs and checks the displayed 6/24 note after prediction. Inference tests confirm estimated counts and real pipeline risk. Ruff passed.
 Files: src/raa/app/streamlit_app.py, tests/test_ui.py.
+ 
+### 2026-10-27 - P4.1h - CSV batch triage
+Done: Added an empty 30-feature template download, CSV paste/upload, exact-header validation, 100-row limit, friendly errors, in-memory batch inference, triage table, tier percentages, and results download. The generated output does not repeat measured feature values.
+Evidence: pytest tests/test_batch.py tests/test_ui.py -> 5 passed; focused Ruff passed. Batch tests cover template headers, valid real pipeline inference, empty/missing columns, blank feature, row limit, and no disk writes to a temporary directory. AppTest confirms pasted CSV yields one triage row and three tier metrics.
+Files: src/raa/inference.py, src/raa/app/streamlit_app.py, tests/test_batch.py, tests/test_ui.py, docs/state/DECISIONS.md.

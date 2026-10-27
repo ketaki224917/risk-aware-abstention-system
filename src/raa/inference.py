@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
 
@@ -28,6 +30,14 @@ def select_guided_features(
         raise ValueError("count must select at least one available mean feature")
     ranked = sorted(eligible, key=lambda i: (-importance[i], i))
     return tuple(names[i] for i in ranked[:count])
+
+
+@dataclass(frozen=True)
+class BatchRow:
+    """A CSV line number paired with its real RAA decision record."""
+
+    row_number: int
+    record: DecisionRecord
 
 
 class CaseInputError(ValueError):
@@ -184,3 +194,71 @@ def _input_warnings(
                     "please verify the entered units and values."
                 )
     return warnings
+
+
+MAX_BATCH_ROWS = 100
+
+
+def csv_template(feature_names: Sequence[str]) -> str:
+    """Return an empty downloadable CSV template with canonical WDBC columns."""
+    output = io.StringIO(newline="")
+    csv.writer(output).writerow(feature_names)
+    return output.getvalue()
+
+
+def predict_csv(
+    csv_text: str, *, context: InferenceContext, max_rows: int = MAX_BATCH_ROWS
+) -> tuple[BatchRow, ...]:
+    """Validate a full-feature CSV and run each row through the RAA pipeline in memory."""
+    if max_rows < 1:
+        raise ValueError("max_rows must be at least 1")
+    if not isinstance(csv_text, str) or not csv_text.strip():
+        raise CaseInputError("Paste or upload a CSV containing a header and at least one row.")
+    try:
+        reader = csv.DictReader(io.StringIO(csv_text))
+        raw_headers = reader.fieldnames
+    except csv.Error as error:
+        raise CaseInputError(f"Could not read CSV header: {error}") from error
+    if not raw_headers:
+        raise CaseInputError("CSV header is missing.")
+    headers = [header.strip() for header in raw_headers]
+    if len(set(headers)) != len(headers):
+        raise CaseInputError("CSV contains duplicate column names.")
+    expected = list(context.feature_names)
+    missing = [name for name in expected if name not in headers]
+    extra = [name for name in headers if name not in expected]
+    if missing or extra:
+        details = []
+        if missing:
+            details.append("missing " + ", ".join(missing[:3]))
+        if extra:
+            details.append("unexpected " + ", ".join(extra[:3]))
+        raise CaseInputError("CSV columns do not match the 30 WDBC features: " + "; ".join(details))
+
+    reader.fieldnames = headers
+    results: list[BatchRow] = []
+    for row_number, row in enumerate(reader, start=2):
+        if row is None or all(value is None or not str(value).strip() for value in row.values()):
+            continue
+        if len(results) >= max_rows:
+            raise CaseInputError(f"CSV exceeds the {max_rows}-row limit.")
+        if None in row:
+            raise CaseInputError(f"CSV row {row_number} has more values than the header.")
+        values = []
+        for name in expected:
+            raw_value = row.get(name)
+            if raw_value is None or not str(raw_value).strip():
+                raise CaseInputError(f"CSV row {row_number}: {name} is empty.")
+            values.append(raw_value.strip())
+        try:
+            record = predict_case(
+                values,
+                np.ones(len(expected), dtype=bool),
+                context=context,
+            )
+        except CaseInputError as error:
+            raise CaseInputError(f"CSV row {row_number}: {error}") from error
+        results.append(BatchRow(row_number=row_number, record=record))
+    if not results:
+        raise CaseInputError("CSV contains a header but no data rows.")
+    return tuple(results)
