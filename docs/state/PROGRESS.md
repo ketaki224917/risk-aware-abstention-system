@@ -198,3 +198,8 @@ Files: src/raa/app/streamlit_app.py, tests/test_ui.py.
 Done: Added an empty 30-feature template download, CSV paste/upload, exact-header validation, 100-row limit, friendly errors, in-memory batch inference, triage table, tier percentages, and results download. The generated output does not repeat measured feature values.
 Evidence: pytest tests/test_batch.py tests/test_ui.py -> 5 passed; focused Ruff passed. Batch tests cover template headers, valid real pipeline inference, empty/missing columns, blank feature, row limit, and no disk writes to a temporary directory. AppTest confirms pasted CSV yields one triage row and three tier metrics.
 Files: src/raa/inference.py, src/raa/app/streamlit_app.py, tests/test_batch.py, tests/test_ui.py, docs/state/DECISIONS.md.
+ 
+### 2026-10-27 - P4.1i - Live what-if and synthetic unusualness
+Done: Added four sliders on a held-out test profile; each slider change recomputes the model lean, uncertainty, anomaly, consequence, risk, policy and explanation. The synthetic button applies the configured signed 3-sigma shift to eight features using TRAIN standard deviations, clips to zero, and identifies the changed features and synthetic status.
+Evidence: pytest tests/test_stress_input.py tests/test_ui.py -> 5 passed. The stress test verifies determinism, eight changed features, sign directions and clipping. AppTest verifies a slider adjustment changes the displayed risk score and that the synthetic button labels the result. Ruff passed.
+Files: src/raa/inference.py, src/raa/app/streamlit_app.py, tests/test_stress_input.py, tests/test_ui.py, docs/state/DECISIONS.md.

@@ -12,11 +12,18 @@ import streamlit as st
 from raa.app.copy import BANNER, GLOSSARY, INPUT_HELP, LIMITS, PRIVACY
 from raa.app.demo_assets import DemoArtifact, load_demo_artifact, load_paper_results
 from raa.app.examples import ExampleCase, select_example_cases
+from raa.config import load_config
 from raa.data import BreastCancerData, DataSplit, load_breast_cancer_data, stratified_split
 from raa.explain.checker import check_explanation
 from raa.explain.record import DecisionRecord
 from raa.explain.templates import generate_explanation
-from raa.inference import CaseInputError, csv_template, predict_case, predict_csv
+from raa.inference import (
+    CaseInputError,
+    csv_template,
+    predict_case,
+    predict_csv,
+    synthetic_shift_case,
+)
 from raa.risk.policy import DecisionLevel
 
 
@@ -29,7 +36,7 @@ class DemoState:
     test_records: tuple[DecisionRecord, ...]
 
 
-@st.cache_resource(show_spinner="Loading the saved research modelÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦")
+@st.cache_resource(show_spinner="Loading the saved research modelÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦")
 def load_demo_state() -> DemoState:
     """Load saved models and score held-out test examples without fitting anything."""
     artifact = load_demo_artifact()
@@ -92,8 +99,8 @@ def render_result(record: DecisionRecord, *, synthetic: bool = False) -> None:
     st.subheader("Combined risk")
     st.progress(int(np.clip(record.risk, 0, 1) * 100), text=f"Risk score: {record.risk:.3f}")
     st.caption(
-        f"Automatic through {record.automatic_threshold:.3f} Ãƒâ€šÃ‚Â· "
-        f"Assisted through {record.assisted_threshold:.3f} Ãƒâ€šÃ‚Â· "
+        f"Automatic through {record.automatic_threshold:.3f} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· "
+        f"Assisted through {record.assisted_threshold:.3f} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· "
         f"Human Review above {record.assisted_threshold:.3f}."
     )
     st.markdown(
@@ -111,13 +118,13 @@ def render_result(record: DecisionRecord, *, synthetic: bool = False) -> None:
     with st.expander("Grounded explanation and checker"):
         st.write(explanation)
         if check.passed:
-            st.success("ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Rule-based checker passed.")
+            st.success("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Rule-based checker passed.")
         else:
             st.error("Checker issues: " + ", ".join(check.issues))
 
     with st.popover("Glossary"):
         for term, definition in GLOSSARY.items():
-            st.markdown(f"**{term}** ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â {definition}")
+            st.markdown(f"**{term}** ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â {definition}")
     with st.expander("How computed"):
         st.latex(r"R = 0.5U + 0.2A + 0.3C")
         st.write(
@@ -193,7 +200,7 @@ def render_guided_entry(state: DemoState) -> None:
             number_key = f"guided_number_{index}"
             st.markdown(f"**{feature.title()}**")
             help_text = (
-                f"Typical TRAIN range (5thâ€“95th percentile): {p05:.3g}â€“{p95:.3g}. "
+                f"Typical TRAIN range (5thÃ¢â‚¬â€œ95th percentile): {p05:.3g}Ã¢â‚¬â€œ{p95:.3g}. "
                 "Values outside the observed TRAIN range are accepted with a warning."
             )
             slider_col, number_col = st.columns([2, 1])
@@ -326,6 +333,91 @@ def render_csv_batch(state: DemoState) -> None:
         )
 
 
+def render_what_if(state: DemoState) -> None:
+    """Live what-if on a held-out row, with a paper-recipe synthetic shift option."""
+    st.header("What-if: adjust four measurements")
+    st.write("Start from a held-out WDBC test example, then move four sliders.")
+    keys = tuple(state.examples)
+    example_key = st.selectbox(
+        "Held-out starting case",
+        keys,
+        format_func=lambda key: state.examples[key].title,
+        key="what_if_example",
+    )
+    case = state.examples[example_key]
+    original = state.data.features[case.dataset_row].copy()
+    row_key = f"what_if_base_{example_key}"
+    synthetic_key = f"what_if_is_synthetic_{example_key}"
+    selected_key = f"what_if_shifted_indices_{example_key}"
+    if row_key in st.session_state:
+        original = np.asarray(st.session_state[row_key], dtype=np.float64).copy()
+    is_synthetic = bool(st.session_state.get(synthetic_key, False))
+    feature_indices = [
+        state.data.feature_names.index(name) for name in state.artifact.guided_features[:4]
+    ]
+    widget_keys = [f"what_if_{example_key}_{index}" for index in feature_indices]
+    current = original.copy()
+    for index, widget_key in zip(feature_indices, widget_keys, strict=True):
+        current[index] = float(st.session_state.get(widget_key, current[index]))
+
+    make_col, reset_col = st.columns(2)
+    if make_col.button("Make it unusual (synthetic)", type="primary"):
+        config = load_config()
+        anomaly = config["anomaly"]
+        del anomaly
+        stress = config["stress_test"]
+        shifted, changed = synthetic_shift_case(
+            current,
+            state.artifact.system.anomaly_scaler.scale_,
+            feature_count=int(stress["feature_count"]),
+            shift_sigma=float(stress["shift_magnitude_sigma"]),
+            seed=int(stress["seed"]),
+        )
+        st.session_state[row_key] = shifted
+        st.session_state[synthetic_key] = True
+        st.session_state[selected_key] = changed
+        for index, widget_key in zip(feature_indices, widget_keys, strict=True):
+            st.session_state[widget_key] = float(shifted[index])
+        st.rerun()
+    if reset_col.button("Reset to held-out example", key=f"reset_{example_key}"):
+        st.session_state.pop(row_key, None)
+        st.session_state[synthetic_key] = False
+        st.session_state.pop(selected_key, None)
+        for widget_key in widget_keys:
+            st.session_state.pop(widget_key, None)
+        st.rerun()
+
+    train = state.data.features[state.split.train]
+    sliders = st.columns(2)
+    for position, (index, widget_key) in enumerate(zip(feature_indices, widget_keys, strict=True)):
+        feature = state.data.feature_names[index]
+        sigma = float(state.artifact.system.anomaly_scaler.scale_[index])
+        lower = max(0.0, float(train[:, index].min()) - 3 * sigma)
+        upper = float(train[:, index].max()) + 3 * sigma
+        with sliders[position % 2]:
+            st.slider(
+                feature.title(),
+                min_value=lower,
+                max_value=upper,
+                value=float(current[index]),
+                key=widget_key,
+                help="This changes one measured feature and reruns the actual model pipeline.",
+            )
+    for index, widget_key in zip(feature_indices, widget_keys, strict=True):
+        current[index] = float(st.session_state[widget_key])
+    if is_synthetic:
+        changed_names = [
+            state.data.feature_names[index] for index in st.session_state[selected_key]
+        ]
+        st.caption("Synthetic shifted fields: " + ", ".join(changed_names))
+    record = predict_case(
+        current,
+        np.ones(current.size, dtype=bool),
+        context=state.artifact.inference_context,
+    )
+    render_result(record, synthetic=is_synthetic)
+
+
 def render_why_abstain() -> None:
     results = load_paper_results()
     pooled = results["pooled_case_metrics"]
@@ -335,7 +427,9 @@ def render_why_abstain() -> None:
         "The policy routes uncertain, unusual, or higher-consequence cases for additional review. "
         "These aggregate values are loaded from the canonical 30-split results file."
     )
-    st.caption(f"Run ID: {results['run_id']} Ãƒâ€šÃ‚Â· {results['test_cases']:,} held-out records")
+    st.caption(
+        f"Run ID: {results['run_id']} | {results['test_cases']:,} held-out records"
+    )
     cols = st.columns(4)
     cols[0].metric("Baseline error rate", f"{pooled['error_rate']:.2%}")
     cols[1].metric("Automatic coverage", f"{pooled['automatic_coverage']:.2%}")
@@ -360,12 +454,14 @@ def render_why_abstain() -> None:
 
 def main() -> None:
     st.set_page_config(
-        page_title="Risk-Aware Abstention", page_icon="ÃƒÂ°Ã…Â¸Ã‚Â§Ã‚Â­", layout="wide"
+        page_title="Risk-Aware Abstention",
+        page_icon="ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â§Ãƒâ€šÃ‚Â­",
+        layout="wide",
     )
     st.title("Risk-Aware Abstention")
-    st.error("ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â " + BANNER)
+    st.error("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â " + BANNER)
     st.caption(PRIVACY)
-    st.sidebar.caption("Local research demo Ãƒâ€šÃ‚Â· no names or demographic fields")
+    st.sidebar.caption("Local research demo ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· no names or demographic fields")
     mode = st.sidebar.radio(
         "Choose a mode",
         ("Example cases", "Guided entry", "Upload CSV", "What-if", "Why abstain?"),
@@ -381,6 +477,8 @@ def main() -> None:
         render_guided_entry(state)
     elif mode == "Upload CSV":
         render_csv_batch(state)
+    elif mode == "What-if":
+        render_what_if(state)
     elif mode == "Why abstain?":
         render_why_abstain()
     else:

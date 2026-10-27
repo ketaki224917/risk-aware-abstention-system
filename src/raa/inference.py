@@ -262,3 +262,37 @@ def predict_csv(
     if not results:
         raise CaseInputError("CSV contains a header but no data rows.")
     return tuple(results)
+
+
+def synthetic_shift_case(
+    features: ArrayLike,
+    training_std: ArrayLike,
+    *,
+    feature_count: int = 8,
+    shift_sigma: float = 3.0,
+    seed: int = 4242,
+) -> tuple[NDArray[np.float64], tuple[int, ...]]:
+    """Apply the paper's synthetic signed k-sigma shift and clip perturbed values at zero."""
+    row = np.asarray(features, dtype=np.float64)
+    std = np.asarray(training_std, dtype=np.float64)
+    if row.ndim != 1 or std.shape != row.shape or row.size == 0:
+        raise CaseInputError(
+            "A full feature row and matching TRAIN standard deviations are required."
+        )
+    if (
+        not np.isfinite(row).all()
+        or not np.isfinite(std).all()
+        or np.any(row < 0)
+        or np.any(std < 0)
+    ):
+        raise CaseInputError("Synthetic stress inputs must be finite and nonnegative.")
+    if not 1 <= feature_count <= row.size:
+        raise ValueError("feature_count must be between 1 and the feature count")
+    if not np.isfinite(shift_sigma) or shift_sigma <= 0:
+        raise ValueError("shift_sigma must be finite and positive")
+    rng = np.random.default_rng(seed)
+    selected = rng.choice(row.size, size=feature_count, replace=False)
+    signs = rng.choice(np.array([-1.0, 1.0]), size=feature_count)
+    shifted = row.copy()
+    shifted[selected] = np.maximum(0.0, row[selected] + signs * shift_sigma * std[selected])
+    return shifted, tuple(int(index) for index in selected)
