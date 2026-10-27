@@ -519,6 +519,33 @@ def render_why_abstain() -> None:
     )
 
 
+def render_visual_style() -> None:
+    """Apply a light, high-contrast visual theme to the intake and research pages."""
+    st.markdown(
+        """
+        <style>
+          .stApp { background: linear-gradient(180deg, #eef8ff 0, #ffffff 22rem); }
+          .block-container { max-width: 980px; padding-top: 1.5rem; }
+          h1, h2, h3 { color: #153b5b; letter-spacing: -0.02em; }
+          [data-testid="stVerticalBlockBorderWrapper"] {
+            border: 1px solid #d7e8f4; border-radius: 18px;
+            background: rgba(255,255,255,.94); box-shadow: 0 8px 28px rgba(24,70,105,.07);
+          }
+          [data-testid="stAlert"] { border-radius: 14px; }
+          .stButton > button[kind="primary"] {
+            border-radius: 12px; min-height: 2.8rem; font-weight: 700;
+            background: #176b87; border-color: #176b87;
+          }
+          .stButton > button[kind="primary"]:hover { background: #10566e; border-color: #10566e; }
+          input, [data-baseweb="select"] > div { border-radius: 10px !important; }
+          :focus-visible { outline: 3px solid #f0aa45 !important; outline-offset: 2px; }
+          @media (max-width: 640px) { .block-container { padding: 1rem 1rem 2rem; } }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_four_question_intake() -> None:
     """Collect the proposed intake fields without pretending the WDBC model supports them."""
     st.header(INTAKE_TITLE)
@@ -577,8 +604,9 @@ def main() -> None:
         page_icon="\U0001f9ed",
         layout="wide",
     )
+    render_visual_style()
     st.title("Risk-Aware Abstention")
-    st.error(BANNER)
+    st.warning(BANNER)
     st.caption(PRIVACY)
     st.sidebar.caption("Four-question intake is local and is not passed to the current model.")
     mode = st.sidebar.radio(

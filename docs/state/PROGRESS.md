@@ -235,3 +235,9 @@ Done: Added the public Duke BRCA table and an offline feasibility audit. The tab
 Evidence: `python scripts/audit_questionnaire_dataset.py` with the locked project dependencies and seed 42; one stratified 60/20/20 split gave 591 TRAIN, 198 VALIDATION, 198 TEST; 37/987 cancer outcomes overall and 7 in TEST. Full RAA pipeline: `class_weight=balanced_subsample`, RF-300, 30 bootstrap RF-50 members, Isolation Forest-200, validation p70/p90. TEST sensitivity 0/7, specificity 168/191 (87.96%), ROC-AUC 0.486537. Metrics: `results/clinical_candidate_audit/metrics.json`.
 Files: `data/brca.txt`, `data/README.md`, `scripts/audit_questionnaire_dataset.py`, `results/clinical_candidate_audit/metrics.json`, class-weight option in classifier/uncertainty/pipeline, `docs/state/DECISIONS.md`, `docs/state/BLOCKERS.md`.
 Notes: DATA-001 stays open. The app must not show this candidate's predicted class or Automatic/Assisted route for user answers. The current form's Human Review/no-prediction behavior remains until a suitable dataset is available.
+
+
+### 2026-10-27 - P4.1r - Bright, responsive intake styling
+Done: Added a light blue-and-white page theme, clearer focus outlines, rounded form cards and buttons, and a mobile-width layout. Kept the research-prototype/non-diagnosis notice visible as a warning banner. Questionnaire answers still do not feed the incompatible WDBC model.
+Evidence: source-level review of the intake page; no test or browser run was performed for this CSS-only change.
+Files: src/raa/app/streamlit_app.py.
