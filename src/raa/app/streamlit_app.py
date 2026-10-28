@@ -18,10 +18,13 @@ from raa.app.copy import (
     INTAKE_FAMILY_LABEL,
     INTAKE_HISTORY_OPTIONS,
     INTAKE_INTRO,
+    INTAKE_LLM_FALLBACK,
+    INTAKE_LLM_NOTE,
     INTAKE_MEDICAL_LABEL,
     INTAKE_MISSING,
     INTAKE_MODEL_LIMIT,
     INTAKE_REASON,
+    INTAKE_REPORT_LABEL,
     INTAKE_RESULT,
     INTAKE_SCOPE,
     INTAKE_SUBMIT,
@@ -33,9 +36,11 @@ from raa.app.copy import (
 )
 from raa.app.demo_assets import DemoArtifact, load_demo_artifact, load_paper_results
 from raa.app.examples import ExampleCase, select_example_cases
+from raa.app.report import build_intake_report
 from raa.config import load_config
 from raa.data import BreastCancerData, DataSplit, load_breast_cancer_data, stratified_split
 from raa.explain.checker import check_explanation
+from raa.explain.llm_adapter import LLMUnavailableError, generate_intake_status_summary
 from raa.explain.record import DecisionRecord
 from raa.explain.templates import generate_explanation
 from raa.inference import (
@@ -547,10 +552,11 @@ def render_visual_style() -> None:
 
 
 def render_four_question_intake() -> None:
-    """Collect the proposed intake fields without pretending the WDBC model supports them."""
+    """Collect the four answers and report the honest no-prediction result."""
     st.header(INTAKE_TITLE)
     st.write(INTAKE_INTRO)
     st.info(INTAKE_MODEL_LIMIT)
+    st.caption(INTAKE_LLM_NOTE)
     with st.container(border=True):
         age = st.number_input(
             INTAKE_AGE_LABEL,
@@ -585,17 +591,74 @@ def render_four_question_intake() -> None:
             key="intake_medical_history",
         )
 
+    current_answers = {
+        "age": age,
+        "symptoms": symptoms,
+        "family_history": family_history,
+        "medical_history": medical_history,
+    }
     if st.button(INTAKE_SUBMIT, type="primary"):
-        answers = (age, symptoms, family_history, medical_history)
-        if any(answer is None for answer in answers):
+        st.session_state.pop("intake_submission", None)
+        if any(answer is None for answer in current_answers.values()):
             st.error(INTAKE_MISSING)
             return
         if not np.isfinite(float(age)) or not float(age).is_integer() or not 1 <= age <= 120:
             st.error(INTAKE_AGE_ERROR)
             return
-        st.error(INTAKE_RESULT)
-        st.info(INTAKE_REASON)
-        st.caption(INTAKE_SCOPE)
+        report_answers = {
+            "age": str(int(age)),
+            "symptoms": str(symptoms),
+            "family_history": str(family_history),
+            "medical_history": str(medical_history),
+        }
+        try:
+            with st.spinner("Drafting a status explanation with the local LLM..."):
+                local_summary = generate_intake_status_summary()
+            summary = local_summary.text
+            source = f"Local Ollama model: {local_summary.model} (exploratory, not evaluated)"
+            generated_by_llm = True
+        except LLMUnavailableError:
+            summary = INTAKE_LLM_FALLBACK
+            source = "Fixed safe fallback (local LLM unavailable or summary rejected)"
+            generated_by_llm = False
+        report = build_intake_report(
+            report_answers,
+            explanation=summary,
+            explanation_source=source,
+        )
+        st.session_state["intake_submission"] = {
+            "answers": current_answers,
+            "summary": summary,
+            "source": source,
+            "generated_by_llm": generated_by_llm,
+            "report": report,
+        }
+
+    submission = st.session_state.get("intake_submission")
+    if submission is None or submission["answers"] != current_answers:
+        return
+    st.error(INTAKE_RESULT)
+    st.info(INTAKE_REASON)
+    st.caption(INTAKE_SCOPE)
+    st.subheader("LLM explanation")
+    st.write(submission["summary"])
+    if submission["generated_by_llm"]:
+        st.caption(
+            f"Generated locally by {submission['source']}. The LLM did not receive your answers "
+            "and cannot change the result."
+        )
+    else:
+        st.warning(
+            "The local LLM was unavailable or returned text that failed the safety checks. "
+            "This report uses a fixed explanation instead."
+        )
+    st.download_button(
+        INTAKE_REPORT_LABEL,
+        data=submission["report"],
+        file_name="risk_aware_intake_result_report.txt",
+        mime="text/plain",
+        key="intake_report_download",
+    )
 
 
 def main() -> None:

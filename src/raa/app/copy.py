@@ -3,8 +3,19 @@
 BANNER = "Research prototype. Not a medical device. Not for diagnosis."
 PRIVACY = (
     "Do not enter names, IDs, or contact details. Inputs stay in this local app session and "
-    "are not saved to disk. Four-question intake answers are not passed to the current classifier."
+    "are not saved to disk. The local LLM receives only fixed status text, not your answers. "
+    "A report includes your answers only if you choose to download it."
 )
+INTAKE_LLM_NOTE = (
+    "A local LLM drafts a short explanation of the fixed Human Review status. It does not see "
+    "your answers and cannot make or change a cancer prediction."
+)
+INTAKE_LLM_FALLBACK = (
+    "The prototype returned Human Review because its current model cannot assess these "
+    "questionnaire inputs. No class estimate was produced."
+)
+INTAKE_REPORT_LABEL = "Download intake result report"
+
 INPUT_HELP = (
     "The current Random Forest uses numeric cell-nucleus measurements from the Wisconsin "
     "Diagnostic Breast Cancer dataset. It cannot use age, symptoms, family history, or medical "

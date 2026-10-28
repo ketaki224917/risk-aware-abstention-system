@@ -15,7 +15,7 @@ make setup
 make app
 ```
 
-Open [http://localhost:8501](http://localhost:8501). The default four-question intake does not load or call the model. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
+Open [http://127.0.0.1:8501](http://127.0.0.1:8501). The default four-question intake does not call the cancer classifier. On submission, a local Ollama model may draft a status-only explanation and the app offers a downloadable text report; the LLM sees only fixed status facts, not your answers. The report records Human Review with no prediction made. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
 
 If GNU Make is unavailable, use the equivalent commands:
 
@@ -128,3 +128,12 @@ flowchart LR
 - **docs/state/**: project status, decisions, blockers, reconciliation, and [paper source map](docs/state/SOURCE_MAP.md).
 - **docs/images/raa-demo.jpg**: screenshot of the running app's default four-question intake.
 - **legacy/**: documents that the initial workspace contained no unrelated implementation to quarantine.
+
+
+## Local LLM status explanation and report
+
+The intake uses the local Ollama API at 127.0.0.1:11434 with qwen2.5:1.5b by default. Set OLLAMA_MODEL to another installed local model if needed. The app does not send questionnaire answers or cell measurements to the LLM. It asks the model only to rephrase the fixed Human Review/no-prediction status. A safety gate rejects output that omits that status or adds disease or medical claims; the report then uses a fixed explanation. The LLM is exploratory and has not been clinically or scientifically evaluated.
+
+After submitting all four fields, use Download intake result report to save a plain-text report. It includes the answers because the user explicitly downloads it. The app does not write the report or submitted answers to disk. If Ollama is not running or the configured model is missing, the intake and report still work with the fixed explanation.
+
+To start the demo, run make app and open http://127.0.0.1:8501. The server binds only to the local computer. Keep the Ollama service running for the LLM-generated summary.

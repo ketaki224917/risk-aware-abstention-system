@@ -26,7 +26,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P2.3 Rule-based explanation checker
 - [x] P2.4 Fault injection and per-type detection evaluation
 - [x] P2.5 Read-only explanation guarantee and test
-- [~] P2.6 Optional exploratory LLM adapter (dropped: templates satisfy scope; no unevaluated LLM path)
+- [x] P2.6 Optional exploratory local LLM adapter; it summarizes the fixed no-prediction status only, never changes inference, and remains unevaluated
 
 ## Phase 3 â€” Experiments
 - [x] P3.1 Resumable 30-split pooled evaluation (3,420 test cases)
@@ -68,6 +68,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1p Four-question intake landing page with age, symptoms, family history, and medical history; return Human Review with no prediction because current WDBC model is incompatible
 - [!] P4.1q Train and validate a model compatible with the four intake fields (blocked: Duke BRCA candidate has 37/987 positive outcomes; seed-42 held-out RAA model sensitivity 0/7 and ROC-AUC 0.487, so do not expose predictions)
 - [x] P4.1r Bright, responsive styling for the four-question intake; retain honest Human Review behavior while model data is blocked.
+- [x] P4.1s Local LLM status explanation, user-triggered text report, and reachable local app server.
 
 
 

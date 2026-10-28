@@ -241,3 +241,10 @@ Notes: DATA-001 stays open. The app must not show this candidate's predicted cla
 Done: Added a light blue-and-white page theme, clearer focus outlines, rounded form cards and buttons, and a mobile-width layout. Kept the research-prototype/non-diagnosis notice visible as a warning banner. Questionnaire answers still do not feed the incompatible WDBC model.
 Evidence: source-level review of the intake page; no test or browser run was performed for this CSS-only change.
 Files: src/raa/app/streamlit_app.py.
+
+
+### 2026-10-28 - P4.1s - Local LLM status report and app recovery
+Done: Added a local-only Ollama adapter using qwen2.5:1.5b by default. It receives only fixed no-prediction status facts, validates the returned wording, and cannot alter inference. The intake now offers a user-triggered plain-text report; report data is created in memory and includes answers only on download. The app was restarted on its local-only address.
+Evidence: a focused local call using synthetic status text returned a Human Review/no-class-estimate summary; a synthetic report check confirmed answer fields, no-prediction outcome, and the local-only privacy statement. Ruff check passed; Ruff format check passed; git diff --check passed. Direct Streamlit launch returned HTTP 200 for both /_stcore/health and /, with health body "ok". A focused Streamlit AppTest with synthetic answers verified the Human Review result, local LLM summary, and report download button. No full pytest suite was run in this task.
+Files: src/raa/explain/llm_adapter.py, src/raa/app/report.py, src/raa/app/streamlit_app.py, src/raa/app/copy.py, README.md, docs/state/*.
+Notes: Local Ollama API docs use POST /api/chat with stream=false for a complete response: https://github.com/ollama/ollama/blob/main/docs/api.md. The LLM is exploratory and not evaluated. The questionnaire classifier remains blocked under DATA-001.
