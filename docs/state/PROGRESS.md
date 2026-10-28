@@ -248,3 +248,10 @@ Done: Added a local-only Ollama adapter using qwen2.5:1.5b by default. It receiv
 Evidence: a focused local call using synthetic status text returned a Human Review/no-class-estimate summary; a synthetic report check confirmed answer fields, no-prediction outcome, and the local-only privacy statement. Ruff check passed; Ruff format check passed; git diff --check passed. Direct Streamlit launch returned HTTP 200 for both /_stcore/health and /, with health body "ok". A focused Streamlit AppTest with synthetic answers verified the Human Review result, local LLM summary, and report download button. No full pytest suite was run in this task.
 Files: src/raa/explain/llm_adapter.py, src/raa/app/report.py, src/raa/app/streamlit_app.py, src/raa/app/copy.py, README.md, docs/state/*.
 Notes: Local Ollama API docs use POST /api/chat with stream=false for a complete response: https://github.com/ollama/ollama/blob/main/docs/api.md. The LLM is exploratory and not evaluated. The questionnaire classifier remains blocked under DATA-001.
+
+
+### 2026-10-28 - P4.1t - Dark, high-contrast expanded questionnaire
+Done: Switched Streamlit's configured theme to dark and applied explicit high-contrast colors to page text, labels, alerts, fields, buttons, and keyboard focus. The intake now asks five basic items (age, height, weight, gender, breast/family history) and four separate symptom questions. The report includes all answers only when downloaded; neither the classifier nor local LLM receives them.
+Evidence: focused Streamlit AppTest with synthetic answers verified the nine inputs, Human Review/no-prediction output, local LLM explanation, and report download button. Ruff check and formatting passed. The computer-use browser surface was unavailable, so no screenshot-based inspection was possible. After restarting with the new theme, /_stcore/health returned HTTP 200 with body ok and / returned HTTP 200.
+Files: .streamlit/config.toml, src/raa/app/streamlit_app.py, src/raa/app/copy.py, src/raa/app/report.py, tests/test_ui.py, README.md, docs/state/*.
+Notes: P4.1q remains blocked. This UI change does not train a cancer classifier.

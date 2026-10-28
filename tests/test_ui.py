@@ -15,7 +15,7 @@ def test_examples_are_optional_and_one_click_case_works():
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
     app.sidebar.radio[0].set_value("Example cases").run()
     assert not app.exception
-    assert any("Research prototype. Not a medical device." in item.value for item in app.error)
+    assert any("Research prototype. Not a medical device." in item.value for item in app.warning)
     assert len(app.button) >= 6
     app.button[0].click().run()
     assert not app.exception
@@ -26,32 +26,41 @@ def test_examples_are_optional_and_one_click_case_works():
     assert any("aria-label='Risk gauge" in element.value for element in app.markdown)
 
 
-def test_four_question_intake_is_default_and_only_returns_human_review():
+def test_intake_collects_basic_details_and_four_symptoms_but_returns_human_review():
     results_dir = Path(__file__).resolve().parents[1] / "results" / "demo"
     before = {item.name: item.stat().st_size for item in results_dir.iterdir()}
-    app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
+    app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
     assert not app.exception
-    assert app.sidebar.radio[0].value == "Four-question intake"
-    assert len(app.number_input) == 1
-    assert app.number_input[0].min == 1
-    assert len(app.selectbox) == 3
-    assert app.number_input[0].value is None
+    assert app.sidebar.radio[0].value == "Breast health questionnaire"
+    assert len(app.number_input) == 3
+    assert len(app.selectbox) == 6
+    assert all(widget.value is None for widget in app.number_input)
     assert all(widget.value is None for widget in app.selectbox)
-    assert any("not these four inputs" in item.value for item in app.info)
+    assert any("cannot use these answers to predict cancer" in item.value for item in app.info)
     app.button[0].click().run()
-    assert any("complete all four fields" in item.value.lower() for item in app.error)
+    assert any("complete the five basic fields" in item.value.lower() for item in app.error)
     assert not any("Human Review" in item.value for item in app.error)
 
     app.number_input[0].set_value(42).run()
-    app.selectbox[0].set_value("Lump").run()
+    app.number_input[1].set_value(165).run()
+    app.number_input[2].set_value(65.2).run()
+    app.selectbox[0].set_value("Woman").run()
     app.selectbox[1].set_value("Not sure").run()
-    app.selectbox[2].set_value("No").run()
-    app.button[0].click().run()
+    app.selectbox[2].set_value("Yes").run()
+    app.selectbox[3].set_value("No").run()
+    app.selectbox[4].set_value("Not sure").run()
+    app.selectbox[5].set_value("No").run()
+    app.button[0].click().run(timeout=90)
 
     assert not app.exception
-    assert any("Human Review — no prediction made" in item.value for item in app.error)
+    assert any(
+        "Human Review" in item.value and "no prediction made" in item.value.lower()
+        for item in app.error
+    )
     assert any("not been trained or validated" in item.value for item in app.info)
     assert any("not a medical assessment" in item.value for item in app.caption)
+    assert any("LLM explanation" in item.value for item in app.subheader)
+    assert len(app.get("download_button")) == 1
     messages = list(app.warning) + list(app.success)
     assert not any("the model leans" in item.value for item in messages)
     after = {item.name: item.stat().st_size for item in results_dir.iterdir()}
@@ -126,7 +135,7 @@ def test_what_if_page_has_four_live_sliders_capacity_and_synthetic_button():
 def test_banner_and_navigation_smoke_for_all_six_modes():
     app = AppTest.from_file(str(_app_path()), default_timeout=45).run()
     for mode in (
-        "Four-question intake",
+        "Breast health questionnaire",
         "Guided entry",
         "Upload CSV",
         "What-if",
@@ -137,5 +146,5 @@ def test_banner_and_navigation_smoke_for_all_six_modes():
         assert not app.exception
         assert any(
             "Research prototype. Not a medical device. Not for diagnosis." in item.value
-            for item in app.error
+            for item in app.warning
         )

@@ -1,4 +1,4 @@
-"""In-memory text report for a four-question intake submission."""
+"""In-memory text report for the breast-health questionnaire."""
 
 from __future__ import annotations
 
@@ -14,13 +14,21 @@ def build_intake_report(
 ) -> str:
     """Build a user-downloadable report; this function does not write a file."""
     timestamp = (generated_at or datetime.now().astimezone()).astimezone()
-    fields = (
+    basic_fields = (
         ("Age (years)", "age"),
-        ("Symptoms", "symptoms"),
-        ("Family history", "family_history"),
-        ("Medical history", "medical_history"),
+        ("Height (cm)", "height_cm"),
+        ("Weight (kg)", "weight_kg"),
+        ("Gender", "gender"),
+        ("Breast/family history", "history"),
     )
-    answer_lines = [f"{label}: {answers[key]}" for label, key in fields]
+    symptom_fields = (
+        ("Lump", "symptom_lump"),
+        ("Breast swelling", "symptom_swelling"),
+        ("Skin changes", "symptom_skin_changes"),
+        ("Nipple changes", "symptom_nipple_changes"),
+    )
+    basic_lines = [f"{label}: {answers[key]}" for label, key in basic_fields]
+    symptom_lines = [f"{label}: {answers[key]}" for label, key in symptom_fields]
     return "\n".join(
         [
             "RISK-AWARE ABSTENTION - INTAKE RESULT REPORT",
@@ -30,8 +38,11 @@ def build_intake_report(
             "Human Review - no prediction made",
             "Predicted class: None",
             "",
-            "ANSWERS PROVIDED",
-            *answer_lines,
+            "BASIC DETAILS",
+            *basic_lines,
+            "",
+            "SYMPTOM ANSWERS",
+            *symptom_lines,
             "",
             "EXPLANATION",
             explanation,

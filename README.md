@@ -15,7 +15,7 @@ make setup
 make app
 ```
 
-Open [http://127.0.0.1:8501](http://127.0.0.1:8501). The default four-question intake does not call the cancer classifier. On submission, a local Ollama model may draft a status-only explanation and the app offers a downloadable text report; the LLM sees only fixed status facts, not your answers. The report records Human Review with no prediction made. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
+Open [http://127.0.0.1:8501](http://127.0.0.1:8501). The dark-theme intake asks five basic questions plus four symptom questions. The local Ollama model may draft a status-only explanation and the app offers a downloadable text report; the LLM sees only fixed status facts, not your answers. The report records Human Review with no prediction made. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
 
 If GNU Make is unavailable, use the equivalent commands:
 
@@ -28,9 +28,9 @@ Run tests and lint with make test and make lint, or equivalent commands uv run p
 
 To regenerate experiment outputs, run make reproduce. It writes split metrics, ablations, sensitivity tables, risk-coverage results, synthetic-shift analyses, explanation-checker results, and figures under results/runs/<run-id>/.
 
-## Start with four user inputs
+## Start with five basic questions and four symptom questions
 
-The landing page asks for age, symptoms, family history, and medical history. All four fields start unanswered. The current Random Forest was trained on cell-nucleus measurements and cannot use these answers. After all four are supplied, the only output is **Human Review — no prediction made**. A candidate dataset was evaluated, but its held-out results were too poor to connect to this form.
+The dark landing page asks for age, height, weight, gender, and breast/family history, followed by separate questions about a breast lump, swelling, skin changes, and nipple changes. Each choice starts unanswered. The current Random Forest uses cell-nucleus measurements and cannot use these answers. Submitting the form returns **Human Review - no prediction made**. The local LLM explains that fixed result; it does not see the answers or predict a class.
 
 ## Why the questionnaire does not produce a cancer estimate
 
@@ -38,13 +38,12 @@ The [Duke BRCA dataset](https://stat.duke.edu/datasets/brca) has 987 historical 
 
 An RAA model trained on a fixed seed-42 stratified split (591 train, 198 validation, 198 held-out test) detected **0 of 7** test cancer outcomes and had **0.487 ROC-AUC**. The candidate is therefore kept out of the intake app. Reproduce the audit with `python scripts/audit_questionnaire_dataset.py`; metrics are in `results/clinical_candidate_audit/metrics.json`. These are one-split research results, not clinical validation.
 
-![Risk-Aware Abstention four-question intake with age, symptoms, family history, medical history, and the permanent research-prototype banner](docs/images/raa-demo.jpg)
 
 ## Intake and research modes
 
 | Mode | What you do | What the app does |
 | --- | --- | --- |
-| **Four-question intake** (landing page) | Enter age; choose Lump, Breast swelling, Skin changes, Nipple changes, or No symptoms; answer Yes, No, or Not sure for family history and medical history. | Requires all four answers and then returns **Human Review — no prediction made**. The answers are not passed to the current classifier because it was not trained or validated on these fields. |
+| **Breast-health intake** (landing page) | Enter age, height, weight, gender, and breast/family history; then choose Yes, No, or Not sure for lump, breast swelling, skin changes, and nipple changes. | Uses a high-contrast dark theme, keeps answers in the local session, returns **Human Review - no prediction made**, and offers a downloadable report. Answers are not sent to the LLM or classifier. |
 | **Guided entry** (WDBC research mode) | Enter six mean cell-nucleus measurements using sliders or blank number boxes. Typical training ranges and plain-language help are shown. | Displays **6 of 30 measured, 24 estimated**. Assessment waits until all six values are supplied; a KNN imputer fitted on TRAIN only estimates the remaining 24 before the WDBC inference pipeline runs. |
 | **Upload CSV** | Upload or paste rows with all 30 WDBC feature columns; use the downloadable header template. | Validates and triages at most 100 rows in memory. The table gives route, risk, and reason; a summary gives each tier's share; downloaded results omit the input feature values. |
 | **What-if** | Adjust four measurements on a held-out WDBC profile for exploration, or request a synthetic unusualness stress case. Use Guided entry for new WDBC measurements. | Recomputes the WDBC inference pipeline when values change. The stress button applies the configured signed 3-standard-deviation shift to eight features and labels the case synthetic. |
@@ -55,7 +54,7 @@ The collapsible **Review capacity (exploratory)** control is available with WDBC
 
 ## Reading a result
 
-- For the four-question intake, Human Review means the current model cannot assess those inputs. It is not a malignant/benign classification, medical assessment, or referral.
+- For the breast-health questionnaire, Human Review means the current model cannot assess those inputs. It is not a malignant/benign classification, medical assessment, or referral.
 - In the optional WDBC research modes, the route uses an icon **and** text: Automatic, Assisted, or Human Review. Wording says “the model leans …”; it is not a diagnosis.
 - Three signal bars show model disagreement, unusualness, and the design value called cost of error. The risk gauge shows the current WDBC score and route thresholds.
 - A template explanation has a checker status. The checker is read-only and cannot alter a WDBC class or route.
@@ -99,7 +98,7 @@ flowchart LR
 
 ## 90-second viva walkthrough
 
-**0:00–0:15 — State the purpose.** “This prototype offers a four-question intake, but the current research model cannot classify those answers. It will not guess Malignant or Benign.”
+**0:00–0:15 — State the purpose.** “This prototype asks five basic questions and four symptom questions, but the current research model cannot classify those answers. It will not guess Malignant or Benign.”
 
 **0:15–0:35 — Show the questions.** Enter age, choose one symptom option, and answer the family-history and medical-history questions. Point out that no answer is preselected.
 
@@ -111,7 +110,7 @@ flowchart LR
 
 ## Claim boundaries and privacy
 
-- The four-question intake does not generate a clinical risk estimate or malignant/benign prediction.
+- The breast-health questionnaire does not generate a clinical risk estimate or malignant/benign prediction.
 - The current Random Forest uses the Wisconsin Diagnostic Breast Cancer dataset from scikit-learn: 569 rows and 30 numeric cell-nucleus features. It cannot use age, symptoms, family history, or medical history.
 - A compatible labeled dataset and a separately trained and validated model are required before predictions from these four fields can be considered.
 - Do not claim fairness, clinical safety, diagnosis, or deployment readiness.
@@ -126,14 +125,13 @@ flowchart LR
 - **results/demo/**: saved model bundle, manifest, feature importance, examples, and validation risks used by the app.
 - **results/runs/**: run-ID-versioned experiment artifacts and metrics.
 - **docs/state/**: project status, decisions, blockers, reconciliation, and [paper source map](docs/state/SOURCE_MAP.md).
-- **docs/images/raa-demo.jpg**: screenshot of the running app's default four-question intake.
 - **legacy/**: documents that the initial workspace contained no unrelated implementation to quarantine.
 
 
 ## Local LLM status explanation and report
 
-The intake uses the local Ollama API at 127.0.0.1:11434 with qwen2.5:1.5b by default. Set OLLAMA_MODEL to another installed local model if needed. The app does not send questionnaire answers or cell measurements to the LLM. It asks the model only to rephrase the fixed Human Review/no-prediction status. A safety gate rejects output that omits that status or adds disease or medical claims; the report then uses a fixed explanation. The LLM is exploratory and has not been clinically or scientifically evaluated.
+The dark-theme intake uses the local Ollama API at 127.0.0.1:11434 with qwen2.5:1.5b by default.
 
-After submitting all four fields, use Download intake result report to save a plain-text report. It includes the answers because the user explicitly downloads it. The app does not write the report or submitted answers to disk. If Ollama is not running or the configured model is missing, the intake and report still work with the fixed explanation.
+After completing the intake, use Download intake result report to save a plain-text report. It includes the answers because the user explicitly downloads it. The app does not write the report or submitted answers to disk. If Ollama is not running or the configured model is missing, the intake and report still work with the fixed explanation.
 
 To start the demo, run make app and open http://127.0.0.1:8501. The server binds only to the local computer. Keep the Ollama service running for the LLM-generated summary.

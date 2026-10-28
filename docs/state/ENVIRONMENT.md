@@ -39,3 +39,10 @@
 - A synthetic status-only request to qwen2.5:1.5b returned valid Human Review/no-class-estimate wording. No real user answers were sent.
 - Updated app launch: uv run --project "D:/ERA CP" streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=127.0.0.1.
 - Current URL: http://127.0.0.1:8501. Health endpoint returned HTTP 200 with body ok; root page returned HTTP 200.
+
+
+## Dark Streamlit theme (2026-10-28)
+
+- Explicit theme settings live in .streamlit/config.toml: dark base, #0B1220 background, #142034 secondary background, #F8FAFC text, and cyan primary action color.
+- The app applies contrast overrides for text, form labels, dropdowns, alerts, and focus outlines in src/raa/app/streamlit_app.py.
+- Restart Streamlit after changing config.toml so the theme is loaded from the project root.

@@ -69,6 +69,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [!] P4.1q Train and validate a model compatible with the four intake fields (blocked: Duke BRCA candidate has 37/987 positive outcomes; seed-42 held-out RAA model sensitivity 0/7 and ROC-AUC 0.487, so do not expose predictions)
 - [x] P4.1r Bright, responsive styling for the four-question intake; retain honest Human Review behavior while model data is blocked.
 - [x] P4.1s Local LLM status explanation, user-triggered text report, and reachable local app server.
+- [x] P4.1t High-contrast dark questionnaire with five basic fields and four separate symptom answers.
 
 
 

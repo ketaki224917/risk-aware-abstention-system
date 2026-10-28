@@ -1,4 +1,4 @@
-"""Four-question intake and WDBC research interface for the local RAA prototype."""
+"""Breast-health questionnaire and WDBC research interface for the local RAA prototype."""
 
 from __future__ import annotations
 
@@ -15,12 +15,16 @@ from raa.app.copy import (
     INPUT_HELP,
     INTAKE_AGE_ERROR,
     INTAKE_AGE_LABEL,
-    INTAKE_FAMILY_LABEL,
+    INTAKE_BASIC_LABEL,
+    INTAKE_GENDER_LABEL,
+    INTAKE_GENDER_OPTIONS,
+    INTAKE_HEIGHT_LABEL,
     INTAKE_HISTORY_OPTIONS,
+    INTAKE_HISTORY_QUESTION,
     INTAKE_INTRO,
     INTAKE_LLM_FALLBACK,
     INTAKE_LLM_NOTE,
-    INTAKE_MEDICAL_LABEL,
+    INTAKE_MEASUREMENTS_ERROR,
     INTAKE_MISSING,
     INTAKE_MODEL_LIMIT,
     INTAKE_REASON,
@@ -29,8 +33,10 @@ from raa.app.copy import (
     INTAKE_SCOPE,
     INTAKE_SUBMIT,
     INTAKE_SYMPTOM_OPTIONS,
+    INTAKE_SYMPTOM_QUESTIONS,
     INTAKE_SYMPTOMS_LABEL,
     INTAKE_TITLE,
+    INTAKE_WEIGHT_LABEL,
     LIMITS,
     PRIVACY,
 )
@@ -525,25 +531,56 @@ def render_why_abstain() -> None:
 
 
 def render_visual_style() -> None:
-    """Apply a light, high-contrast visual theme to the intake and research pages."""
+    """Apply a high-contrast dark theme across the intake and research pages."""
     st.markdown(
         """
         <style>
-          .stApp { background: linear-gradient(180deg, #eef8ff 0, #ffffff 22rem); }
+          .stApp, [data-testid="stAppViewContainer"] {
+            background: radial-gradient(ellipse at top, #16233c 0, #0b1220 58rem);
+            color: #f8fafc;
+          }
+          [data-testid="stHeader"] { background: rgba(11,18,32,.96); }
+          [data-testid="stSidebar"] {
+            background: #101a2c; border-right: 1px solid #334155;
+          }
           .block-container { max-width: 980px; padding-top: 1.5rem; }
-          h1, h2, h3 { color: #153b5b; letter-spacing: -0.02em; }
+          h1, h2, h3, h4 { color: #f8fafc !important; letter-spacing: -.015em; }
+          p, [data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"],
+          label, .stCaption, .stCaption p {
+            color: #e2e8f0 !important;
+          }
+          [data-testid="stWidgetLabel"] p { color: #f8fafc !important; font-weight: 650; }
           [data-testid="stVerticalBlockBorderWrapper"] {
-            border: 1px solid #d7e8f4; border-radius: 18px;
-            background: rgba(255,255,255,.94); box-shadow: 0 8px 28px rgba(24,70,105,.07);
+            border: 1px solid #334761; border-radius: 18px;
+            background: rgba(20,32,52,.96); box-shadow: 0 10px 32px rgba(0,0,0,.24);
           }
-          [data-testid="stAlert"] { border-radius: 14px; }
+          [data-testid="stAlert"] {
+            border: 1px solid #405675; border-radius: 14px;
+            background: #18263c;
+          }
+          [data-testid="stAlert"] p, [data-testid="stAlert"] div {
+            color: #f1f5f9 !important;
+          }
+          input, textarea, [data-baseweb="select"] > div {
+            background: #0b1424 !important; color: #f8fafc !important;
+            border-color: #64748b !important; border-radius: 10px !important;
+          }
+          [data-baseweb="select"] div, [data-baseweb="select"] input {
+            color: #f8fafc !important;
+          }
+          [role="listbox"], [role="option"] {
+            background: #132139 !important; color: #f8fafc !important;
+          }
           .stButton > button[kind="primary"] {
-            border-radius: 12px; min-height: 2.8rem; font-weight: 700;
-            background: #176b87; border-color: #176b87;
+            border-radius: 12px; min-height: 2.8rem; font-weight: 750;
+            background: #22d3ee; border-color: #22d3ee; color: #07111f !important;
           }
-          .stButton > button[kind="primary"]:hover { background: #10566e; border-color: #10566e; }
-          input, [data-baseweb="select"] > div { border-radius: 10px !important; }
-          :focus-visible { outline: 3px solid #f0aa45 !important; outline-offset: 2px; }
+          .stButton > button[kind="primary"]:hover {
+            background: #67e8f9; border-color: #67e8f9;
+          }
+          input::placeholder { color: #9eacc0 !important; opacity: 1; }
+          :focus-visible { outline: 3px solid #fbbf24 !important; outline-offset: 2px; }
+          hr { border-color: #334155; }
           @media (max-width: 640px) { .block-container { padding: 1rem 1rem 2rem; } }
         </style>
         """,
@@ -551,51 +588,91 @@ def render_visual_style() -> None:
     )
 
 
-def render_four_question_intake() -> None:
-    """Collect the four answers and report the honest no-prediction result."""
+def render_health_questionnaire() -> None:
+    """Collect basic details and symptom answers without making unsupported predictions."""
     st.header(INTAKE_TITLE)
     st.write(INTAKE_INTRO)
     st.info(INTAKE_MODEL_LIMIT)
     st.caption(INTAKE_LLM_NOTE)
     with st.container(border=True):
-        age = st.number_input(
-            INTAKE_AGE_LABEL,
-            min_value=1,
-            max_value=120,
-            value=None,
-            step=1,
-            format="%d",
-            placeholder="Enter age in years",
-            key="intake_age",
-            required=True,
-        )
-        symptoms = st.selectbox(
-            INTAKE_SYMPTOMS_LABEL,
-            options=INTAKE_SYMPTOM_OPTIONS,
-            index=None,
-            placeholder="Select one option",
-            key="intake_symptoms",
-        )
-        family_history = st.selectbox(
-            INTAKE_FAMILY_LABEL,
-            options=INTAKE_HISTORY_OPTIONS,
-            index=None,
-            placeholder="Select one option",
-            key="intake_family_history",
-        )
-        medical_history = st.selectbox(
-            INTAKE_MEDICAL_LABEL,
-            options=INTAKE_HISTORY_OPTIONS,
-            index=None,
-            placeholder="Select one option",
-            key="intake_medical_history",
-        )
+        st.subheader(INTAKE_BASIC_LABEL)
+        age_col, height_col, weight_col = st.columns(3)
+        with age_col:
+            age = st.number_input(
+                INTAKE_AGE_LABEL,
+                min_value=1,
+                max_value=120,
+                value=None,
+                step=1,
+                format="%d",
+                placeholder="Age",
+                key="intake_age",
+                required=True,
+            )
+        with height_col:
+            height = st.number_input(
+                INTAKE_HEIGHT_LABEL,
+                min_value=50,
+                max_value=250,
+                value=None,
+                step=1,
+                placeholder="Height",
+                key="intake_height",
+                required=True,
+            )
+        with weight_col:
+            weight = st.number_input(
+                INTAKE_WEIGHT_LABEL,
+                min_value=1.0,
+                max_value=300.0,
+                value=None,
+                step=0.1,
+                format="%.1f",
+                placeholder="Weight",
+                key="intake_weight",
+                required=True,
+            )
 
-    current_answers = {
+        gender_col, history_col = st.columns(2)
+        with gender_col:
+            gender = st.selectbox(
+                INTAKE_GENDER_LABEL,
+                options=INTAKE_GENDER_OPTIONS,
+                index=None,
+                placeholder="Select an option",
+                key="intake_gender",
+            )
+        with history_col:
+            history = st.selectbox(
+                INTAKE_HISTORY_QUESTION,
+                options=INTAKE_HISTORY_OPTIONS,
+                index=None,
+                placeholder="Select an option",
+                key="intake_history",
+            )
+
+        st.divider()
+        st.subheader(INTAKE_SYMPTOMS_LABEL)
+        st.caption("Choose Yes, No, or Not sure for each question.")
+        symptom_answers: dict[str, str | None] = {}
+        symptom_columns = st.columns(2)
+        for index, (answer_key, question, short_label) in enumerate(INTAKE_SYMPTOM_QUESTIONS):
+            with symptom_columns[index % 2]:
+                symptom_answers[answer_key] = st.selectbox(
+                    question,
+                    options=INTAKE_SYMPTOM_OPTIONS,
+                    index=None,
+                    placeholder=f"{short_label}: select an option",
+                    key=f"intake_{answer_key}",
+                )
+
+    current_answers: dict[str, str | float | int | None] = {
         "age": age,
-        "symptoms": symptoms,
-        "family_history": family_history,
-        "medical_history": medical_history,
+        "height_cm": height,
+        "weight_kg": weight,
+        "gender": gender,
+        "history": history,
+        **symptom_answers,
     }
     if st.button(INTAKE_SUBMIT, type="primary"):
         st.session_state.pop("intake_submission", None)
@@ -605,11 +682,17 @@ def render_four_question_intake() -> None:
         if not np.isfinite(float(age)) or not float(age).is_integer() or not 1 <= age <= 120:
             st.error(INTAKE_AGE_ERROR)
             return
+        if not 50 <= height <= 250 or not 1 <= weight <= 300:
+            st.error(INTAKE_MEASUREMENTS_ERROR)
+            return
+
         report_answers = {
             "age": str(int(age)),
-            "symptoms": str(symptoms),
-            "family_history": str(family_history),
-            "medical_history": str(medical_history),
+            "height_cm": str(int(height)),
+            "weight_kg": f"{float(weight):g}",
+            "gender": str(gender),
+            "history": str(history),
+            **{key: str(value) for key, value in symptom_answers.items()},
         }
         try:
             with st.spinner("Drafting a status explanation with the local LLM..."):
@@ -671,11 +754,11 @@ def main() -> None:
     st.title("Risk-Aware Abstention")
     st.warning(BANNER)
     st.caption(PRIVACY)
-    st.sidebar.caption("Four-question intake is local and is not passed to the current model.")
+    st.sidebar.caption("Health answers stay local and are not used by the current model.")
     mode = st.sidebar.radio(
         "Choose a mode",
         (
-            "Four-question intake",
+            INTAKE_TITLE,
             "Guided entry",
             "Upload CSV",
             "What-if",
@@ -684,8 +767,8 @@ def main() -> None:
         ),
         index=0,
     )
-    if mode == "Four-question intake":
-        render_four_question_intake()
+    if mode == INTAKE_TITLE:
+        render_health_questionnaire()
         return
     try:
         state = load_demo_state()
