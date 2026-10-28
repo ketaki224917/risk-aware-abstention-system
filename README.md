@@ -15,13 +15,13 @@ make setup
 make app
 ```
 
-Open [http://127.0.0.1:8501](http://127.0.0.1:8501). The dark-theme intake asks five basic questions plus four symptom questions. The local Ollama model may draft a status-only explanation and the app offers a downloadable text report; the LLM sees only fixed status facts, not your answers. The report records Human Review with no prediction made. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to 127.0.0.1. To rebuild the bundle intentionally, run make demo-artifact.
+Open [http://localhost:8501](http://localhost:8501). The dark-theme intake asks five basic questions plus four symptom questions. The local Ollama model may draft a status-only explanation and the app offers a downloadable text report; the LLM sees only fixed status facts, not your answers. The report records Human Review with no prediction made. Optional WDBC research modes load the committed model bundle at results/demo/model_bundle.joblib; the app does not train models when a page loads. The Make target binds to the IPv6 loopback interface so browsers resolving localhost to ::1 can connect; it does not expose the app to the LAN. To rebuild the bundle intentionally, run make demo-artifact.
 
 If GNU Make is unavailable, use the equivalent commands:
 
 ```sh
 uv sync --locked
-uv run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=127.0.0.1
+uv run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=::1
 ```
 
 Run tests and lint with make test and make lint, or equivalent commands uv run pytest -q and uv run ruff check .
@@ -134,4 +134,4 @@ The dark-theme intake uses the local Ollama API at 127.0.0.1:11434 with qwen2.5:
 
 After completing the intake, use Download intake result report to save a plain-text report. It includes the answers because the user explicitly downloads it. The app does not write the report or submitted answers to disk. If Ollama is not running or the configured model is missing, the intake and report still work with the fixed explanation.
 
-To start the demo, run make app and open http://127.0.0.1:8501. The server binds only to the local computer. Keep the Ollama service running for the LLM-generated summary.
+To start the demo, run make app and open http://localhost:8501. The server binds only to the local computer. Keep the Ollama service running for the LLM-generated summary.

@@ -70,6 +70,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1r Bright, responsive styling for the four-question intake; retain honest Human Review behavior while model data is blocked.
 - [x] P4.1s Local LLM status explanation, user-triggered text report, and reachable local app server.
 - [x] P4.1t High-contrast dark questionnaire with five basic fields and four separate symptom answers.
+- [x] P4.1u Fix localhost IPv6 resolution by binding Streamlit to IPv6 loopback and verify the browser hostname.
 
 
 

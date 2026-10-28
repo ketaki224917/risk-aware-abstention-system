@@ -255,3 +255,10 @@ Done: Switched Streamlit's configured theme to dark and applied explicit high-co
 Evidence: focused Streamlit AppTest with synthetic answers verified the nine inputs, Human Review/no-prediction output, local LLM explanation, and report download button. Ruff check and formatting passed. The computer-use browser surface was unavailable, so no screenshot-based inspection was possible. After restarting with the new theme, /_stcore/health returned HTTP 200 with body ok and / returned HTTP 200.
 Files: .streamlit/config.toml, src/raa/app/streamlit_app.py, src/raa/app/copy.py, src/raa/app/report.py, tests/test_ui.py, README.md, docs/state/*.
 Notes: P4.1q remains blocked. This UI change does not train a cancer classifier.
+
+
+### 2026-10-28 - P4.1u - Fix localhost IPv6 binding
+Done: Diagnosed that Streamlit accepted IPv4 only while localhost resolves to IPv6 ::1 on this machine. Changed the app target to bind exclusively to IPv6 loopback and updated the README.
+Evidence: netstat showed [::1]:8501 LISTENING. HTTP checks returned 200 for http://localhost:8501/, http://[::1]:8501/, and health at http://[::1]:8501/_stcore/health. Direct IPv4 http://127.0.0.1:8501/ is unavailable by design.
+Files: Makefile, README.md, docs/state/DECISIONS.md, docs/state/ENVIRONMENT.md, docs/state/HANDOFF.md, docs/state/TODO.md.
+Notes: Binding remains local-only. The app server is currently started in the background.

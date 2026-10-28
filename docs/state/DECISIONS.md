@@ -140,3 +140,10 @@ Context: The user asked for age, height, weight, gender, and four separate sympt
 Options considered: Ignore the latest requested fields; pass them to the WDBC classifier or LLM; or collect the requested fields in the local interface and report without using them for prediction.
 Decision and why: Collect five basic fields (age, height, weight, gender, and one breast/family-history question) plus separate Yes/No/Not sure answers for lump, breast swelling, skin changes, and nipple changes. This supersedes ADR-020 only for the displayed intake fields. Keep all fields in the local Streamlit session; do not pass them to the classifier or LLM. Include them in the report only after the user chooses to download it. Continue returning Human Review with no predicted class.
 Consequences / how to reverse: The form includes demographic and health details at the user's direct request. The app does not persist them by default or send them to an external service. They provide no evidence for a cancer estimate and must not change the route. A suitable labeled dataset and independent validation remain necessary for predictions.
+
+
+## ADR-024: Bind the local app to IPv6 loopback [DECISION] Date: 2026-10-28 Status: active
+Context: The app was bound only to IPv4 127.0.0.1. On this Windows machine, localhost resolves to both ::1 and 127.0.0.1; an IPv6-only connection to ::1 failed even though the IPv4 page returned HTTP 200.
+Options considered: Keep the IPv4-only bind and ask the user to choose an IP URL; bind to all interfaces; or bind specifically to IPv6 loopback so browsers that resolve localhost to ::1 can connect while the app remains local-only.
+Decision and why: Use --server.address=::1 in Makefile and startup instructions. Verification showed http://localhost:8501 and http://[::1]:8501 return HTTP 200. Do not bind to 0.0.0.0 or a LAN address.
+Consequences / how to reverse: Use http://localhost:8501 as the app URL. Direct IPv4 127.0.0.1 is not a listener. Revisit only if the target machine lacks IPv6 loopback; any replacement must remain bound to loopback.

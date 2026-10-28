@@ -37,8 +37,8 @@
 - Ollama was listening at 127.0.0.1:11434. Its local model list included qwen2.5:1.5b (used by the intake summary) and embeddinggemma:latest.
 - The app calls only the local Ollama API at 127.0.0.1:11434/api/chat; it does not send health answers or cell measurements. OLLAMA_MODEL can select a different installed local model.
 - A synthetic status-only request to qwen2.5:1.5b returned valid Human Review/no-class-estimate wording. No real user answers were sent.
-- Updated app launch: uv run --project "D:/ERA CP" streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=127.0.0.1.
-- Current URL: http://127.0.0.1:8501. Health endpoint returned HTTP 200 with body ok; root page returned HTTP 200.
+- Updated app launch: uv run --project "D:/ERA CP" streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=::1.
+- Current URL: http://localhost:8501. Streamlit binds to IPv6 loopback ::1; direct localhost and [::1] checks returned HTTP 200. IPv4 127.0.0.1 is not bound. Health endpoint returned HTTP 200 with body ok; root page returned HTTP 200.
 
 
 ## Dark Streamlit theme (2026-10-28)
