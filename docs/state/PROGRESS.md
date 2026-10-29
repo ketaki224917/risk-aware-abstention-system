@@ -279,3 +279,15 @@ Files: `src/raa/app/health_intake.py`, `src/raa/app/copy.py`, `src/raa/app/repor
 Done: Stopped the previously running Streamlit process only after confirming its command line, then relaunched the updated app hidden and bound exclusively to IPv6 loopback.
 Evidence: `http://localhost:8501/` -> HTTP 200; `http://[::1]:8501/_stcore/health` -> HTTP 200 with body `ok`; current landing page and updated question counts are covered by Streamlit AppTest. Full regression: `make test` -> 42 passed; `make lint` -> all checks passed.
 Files: Makefile launch target is unchanged; the updated app and state files are included in this task.
+
+
+### 2026-10-29 - P4.1ab - Generate downloadable Word prediction reports
+Done: Added a standard-library OOXML writer that turns the requested report into a formatted `.docx` in memory. The download includes the dynamic class/route, local LLM summary, model-sensitivity explanation, all entered answers, held-out metrics, and model limits. Word tables have repeated header rows. The app continues to create the report only after the user requests it and does not save it automatically.
+Evidence: `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 76 files formatted; `git diff --check` passed. A temporary Word preview generated from a public held-out UCI record was accepted by Microsoft Word and exported to a two-page PDF; the Word-exported HTML preview was visually inspected, and PDF extraction confirmed the input table header repeats on page two. ZIP integrity, XML parsing, report fields, and all three repeat-header rows are covered by `tests/test_report.py`. The canonical `render_docx.py` attempt found `pdf2image` and LibreOffice are unavailable, so QA used the installed Word renderer instead.
+Files: `src/raa/app/docx_report.py`, `src/raa/app/health_intake.py`, `tests/test_report.py`, `tests/test_ui.py`, `README.md`, and state documentation.
+
+
+### 2026-10-29 - P4.1ac - Serve the Word report update locally
+Done: Restarted Streamlit after adding DOCX download and confirmed it still binds only to IPv6 loopback.
+Evidence: `http://localhost:8501/` -> HTTP 200; `http://localhost:8501/_stcore/health` -> HTTP 200 with body `ok`; current app root is served by the updated D: project.
+Files: app runtime only; launch configuration continues to use `::1`.

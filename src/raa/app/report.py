@@ -1,4 +1,4 @@
-"""In-memory plain-text prediction report assembled on explicit user request."""
+"""Prediction report content assembled in memory after an explicit user request."""
 
 from __future__ import annotations
 

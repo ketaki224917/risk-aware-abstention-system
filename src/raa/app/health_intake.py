@@ -14,6 +14,7 @@ from raa.app.copy import (
     INTAKE_SYMPTOM_QUESTIONS,
     PRIVACY,
 )
+from raa.app.docx_report import build_prediction_report_docx
 from raa.app.report import build_prediction_report
 from raa.explain.llm_adapter import LLMUnavailableError, generate_prediction_narrative
 from raa.mammography import (
@@ -245,17 +246,17 @@ def _render_report(submission: dict[str, Any]) -> None:
         )
         st.session_state["prediction_report"] = {
             "answers": submission["answers"],
-            "text": report,
+            "docx": build_prediction_report_docx(report),
         }
 
     report = st.session_state.get("prediction_report")
     if report is not None and report["answers"] == submission["answers"]:
         st.success("Your report is ready.")
         st.download_button(
-            "Download prediction report",
-            data=report["text"],
-            file_name="risk_aware_prediction_report.txt",
-            mime="text/plain",
+            "Download Word report",
+            data=report["docx"],
+            file_name="risk_aware_prediction_report.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             key="prediction_report_download",
         )
 

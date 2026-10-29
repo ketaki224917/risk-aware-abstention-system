@@ -131,9 +131,7 @@ def test_report_is_only_generated_after_button_and_download_contains_prediction(
     report_button.click().run()
     assert len(calls) == 1
     assert not app.exception
-    assert any(
-        button.label == "Download prediction report" for button in app.get("download_button")
-    )
+    assert any(button.label == "Download Word report" for button in app.get("download_button"))
     assert any("Your report is ready." in item.value for item in app.success)
 
 

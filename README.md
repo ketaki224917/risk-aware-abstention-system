@@ -111,6 +111,6 @@ flowchart LR
 
 ## Report generation
 
-Click **Generate prediction report** after viewing the result. The local Ollama model receives the submitted answers and structured prediction facts on this computer only; it writes a short report summary. The report also includes the exact model output, route, scores, explanations, and held-out metrics from the saved results file. If Ollama is unavailable, the app uses a fixed summary. The report is kept in memory and appears as a download; it is not saved automatically.
+Click **Generate prediction report** after viewing the result. The local Ollama model receives the submitted answers and structured prediction facts on this computer only; it writes a short report summary. The report also includes the exact model output, route, scores, explanations, and held-out metrics from the saved results file. If Ollama is unavailable, the app uses a fixed summary. The report is formatted as a Word `.docx` file, kept in memory, and offered as a download; it is not saved automatically.
 
 Start the app with `make app` and open http://localhost:8501.

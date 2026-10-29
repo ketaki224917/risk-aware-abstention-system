@@ -54,3 +54,13 @@
 - Launch with `make app` and open `http://localhost:8501`. Streamlit binds to IPv6 loopback `::1` only.
 - The form collects age, height, weight, gender, family/medical history, and four symptoms. A benign/malignant mass-label estimate requires report shape, margin, and density. The local Ollama report writer runs only after an explicit request.
 - After adding height, weight, and gender, `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 75 files already formatted. The updated localhost app was restarted and verified: root HTTP 200 and `/_stcore/health` HTTP 200 with body `ok`.
+
+
+## Word prediction reports (2026-10-29)
+
+- The app creates the report as an in-memory `.docx` using only Python standard-library ZIP/XML modules; no new runtime dependency was added.
+- The final report is not written to disk by the app. A user-requested download contains the current session answers and result.
+- For layout QA, temporary preview files are created under `D:/Temp`; project files and generated outputs stay on D:.
+
+
+- Updated Word-download app re-launched at `http://localhost:8501`; root and health returned HTTP 200, health body `ok`. The process binds to IPv6 loopback only.

@@ -175,3 +175,12 @@ Context: The user asked for age, height, weight, gender, general breast-health h
 Decision and why: Ask age, height, weight, gender, family history, previous breast condition/biopsy/treatment, and the four symptom questions. Only age plus shape, margin, and density from a mammogram report enter the saved classifier-to-risk pipeline. The other answers are labeled report context and cannot change the predicted class or score. They are sent to the local Ollama writer only after an explicit report request and are included in the downloadable report. Without a mammogram report, return Human Review with no class estimate.
 
 Consequences / how to reverse: The form gathers the requested ordinary-language information and generates an honest estimate only when model-compatible report fields are supplied. It does not claim symptoms or body measurements affect classification. Use a dataset that contains those predictors and suitable pathology labels, followed by independent validation, before connecting them to the class prediction.
+
+
+## ADR-028: Deliver prediction reports as Word documents [DECISION] Date: 2026-10-29 Status: active
+
+Context: The user asked for the requested prediction report in Word format. The report contains sensitive questionnaire answers and is created only after the user selects the report action.
+
+Decision and why: Generate a `.docx` package in memory with the deterministic prediction, RAA route, model explanation, submitted answers, held-out dataset metrics, and limits. Keep the local LLM responsible only for the short summary paragraph. The download button returns the Word MIME type and `.docx` filename; do not write the report to the project or temporary files during normal app use. Use the Python standard library OOXML writer so app startup needs no additional dependency.
+
+Consequences / how to reverse: The user can open the result in Word without converting a text file. The report content is not stored by the app unless the user chooses to download it.

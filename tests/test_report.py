@@ -1,5 +1,9 @@
 import json
+from io import BytesIO
+from xml.etree import ElementTree
+from zipfile import ZipFile
 
+from raa.app.docx_report import build_prediction_report_docx
 from raa.app.report import build_prediction_report
 from raa.mammography import (
     DEFAULT_ARTIFACT_DIR,
@@ -45,3 +49,19 @@ def test_prediction_report_contains_model_result_context_and_results_metrics():
     assert "Nipple changes: Not sure" in report
     assert f"Malignant sensitivity: {metrics['test']['sensitivity_malignant']:.1%}" in report
     assert "This is not a diagnosis." in report
+    docx = build_prediction_report_docx(report)
+    with ZipFile(BytesIO(docx)) as archive:
+        assert archive.testzip() is None
+        document_xml = archive.read("word/document.xml")
+        assert document_xml.count(b"<w:tblHeader/>") == 3
+        document = ElementTree.fromstring(document_xml)
+    word_text = " ".join(
+        element.text or ""
+        for element in document.iter(
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t"
+        )
+    )
+    assert "Risk Aware Abstention System" in word_text
+    assert "Prediction report" in word_text
+    assert "Model output" in word_text and "Malignant" in word_text
+    assert "Height (cm)" in word_text and "Gender" in word_text

@@ -78,3 +78,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1z Restart localhost with the new app and verify HTTP health/root response, full tests, and lint.
 
 - [x] P4.1aa Add requested height, weight, and gender questions; include answers in the user-requested local report while keeping unsupported fields out of the classifier.
+
+- [x] P4.1ab Generate the requested prediction report as a formatted Word `.docx` download and verify its OOXML content.
+
+- [x] P4.1ac Restart localhost with the Word report change and verify the IPv6 loopback health/root endpoints.
