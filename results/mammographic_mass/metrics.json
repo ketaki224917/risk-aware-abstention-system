@@ -1,0 +1,55 @@
+{
+  "class_counts": {
+    "benign": 516,
+    "malignant": 445
+  },
+  "dataset": "UCI Mammographic Mass",
+  "dataset_sha256": "072051c896fb14f8f25c64eed30ba1333290af41e6c9ffad4e1ca573daa865a8",
+  "encoded_features": [
+    "x0",
+    "x1_1.0",
+    "x1_2.0",
+    "x1_3.0",
+    "x1_4.0",
+    "x2_1.0",
+    "x2_2.0",
+    "x2_3.0",
+    "x2_4.0",
+    "x2_5.0",
+    "x3_1.0",
+    "x3_2.0",
+    "x3_3.0",
+    "x3_4.0"
+  ],
+  "model_features": [
+    "Age",
+    "Shape",
+    "Margin",
+    "Density"
+  ],
+  "preprocessing": "TRAIN-only median/mode imputation and one-hot encoding",
+  "rows": 961,
+  "run_id": "mammographic-mass-seed-42-v1",
+  "scikit_learn_version": "1.9.1",
+  "seed": 42,
+  "split_rows": {
+    "test": 193,
+    "train": 576,
+    "validation": 192
+  },
+  "test": {
+    "accuracy": 0.7305699481865285,
+    "automatic_coverage": 0.6735751295336787,
+    "automatic_error_rate": 0.2,
+    "decision_counts": {
+      "Assisted": 31,
+      "Automatic": 130,
+      "Human Review": 32
+    },
+    "malignant_false_negatives": 34,
+    "malignant_false_negatives_routed_away": 24,
+    "roc_auc_malignant": 0.8101771823681936,
+    "sensitivity_malignant": 0.6179775280898876,
+    "specificity_benign": 0.8269230769230769
+  }
+}

@@ -13,3 +13,8 @@ This is a methodological prototype, not a medical device or clinically validated
 9. **Exact original implementation provenance is unavailable.** The author supplied the journal paper, but not the original source repository or raw experiment archive. Random generator details omitted by the paper are explicit deterministic implementation choices.
 
 The latest reproduced values and any differences from the journal paper are recorded in `docs/state/RECONCILIATION.md` and `docs/results.md`.
+
+
+## Mammography input model
+
+The user-facing model estimates the dataset's mammographic-mass severity label, not a person's diagnosis. It uses age, shape, margin, and density from mammogram records. Height, weight, gender, the four symptom questions, and family/medical history are report context only. The dataset is small, historical, and from one collection; its held-out malignant sensitivity was 61.8%, and its Automatic-tier error rate was 20.0%. It is unsuitable for health decisions. A symptom-only benign/malignant model remains unsupported by a suitable dataset in this project.

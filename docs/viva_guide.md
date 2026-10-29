@@ -2,57 +2,58 @@
 
 ## Two-minute explanation
 
-Risk-Aware Abstention is a methodological prototype for deciding when a classifier prediction should be automated and when a person should review it. On the Wisconsin Diagnostic Breast Cancer benchmark, a 300-tree Random Forest predicts malignant versus benign. A 30-member bootstrap Random Forest ensemble supplies disagreement as an uncertainty signal, and a training-fitted Isolation Forest supplies an anomaly score. The two scores are normalized from validation data; a design-assumption consequence value is combined with them using fixed weights to form a risk score. Validation 70th and 90th percentiles route test cases to Automatic, Assisted, or Human Review. A frozen structured decision record grounds a deterministic explanation, and a rule checker flags injected inconsistencies. The explanation layer cannot change the prediction or route. This is not clinically validated, does not establish fairness, and does not calibrate ensemble disagreement as probability of error. The main contribution is system integration and measured coverage/workload trade-offs, including honest ablations; base methods are established techniques.
+Risk-Aware Abstention combines a classifier with disagreement, unusualness, a consequence term, a risk score, and three routes: Automatic, Assisted, or Human Review. The original WDBC paper-aligned experiment remains separate from the user-facing app. The app collects age, height, weight, gender, family/medical history, and four symptoms, then accepts mass shape, edge, and density from a mammogram report. It shows the model's benign/malignant mass-label lean, the RAA route, and one-field sensitivity checks that explain how report fields changed the model score. Height, weight, gender, symptoms, and history appear as report context but do not affect the classifier. Missing report details force Human Review; without a report there is no class estimate. The held-out malignant sensitivity is 61.8% and Automatic-tier error is 20.0%, so the model is not suitable for health decisions. The local language model writes only the optional report summary and cannot change the class or route.
 
 ## Ten-minute walkthrough
 
-1. Show the repository map, project prompt, `config.yaml`, and the run ID in `results/runs/`.
-2. Explain the stratified 60/20/20 split and show that only training data fits models; validation fits component normalization and thresholds.
-3. Show the Random Forest prediction, malignant probability, bootstrap disagreement, anomaly score, and consequence assumption.
-4. Derive the weighted risk expression and explain each input's normalization.
-5. Route an example using t70/t90 and distinguish prediction from routing.
-6. Inspect a `DecisionRecord`, template, and checker fault injection; show that explanations are read-only.
-7. Walk through pooled test metrics, split-level intervals, risk-coverage/workload, and paired ablation differences.
-8. Explain the synthetic shift recipe and its limited meaning.
-9. Close with limitations and the exact list of claims that are out of scope.
+1. Open the dark app at localhost:8501 and point out the title and the health questions.
+2. Explain that height, weight, gender, symptoms, and history are collected as report context only.
+3. Enter age and mammogram report shape, edge, and density; submit and read the model lean and separate RAA route.
+4. Show the one-field sensitivity checks and explain that they describe model behavior, not causes.
+5. Open How the RAA route was chosen; describe disagreement, unusualness, consequence, weighted risk, and p70/p90 thresholds.
+6. Open About this model and read held-out sensitivity and Automatic-tier error before discussing limits.
+7. Generate a report and point out that the local language model writes prose only; deterministic result facts are included in the download.
+8. Show the UCI model artifacts in results/mammographic_mass and distinguish them from the original WDBC results in results/runs.
+9. Close with the no-diagnosis boundary and the remaining lack of a symptom-compatible labeled dataset.
 
 ## Likely questions and answers
 
-1. **What problem does RAA address?** It studies when a model prediction should be automatic and when a case should receive assisted or human review.
-2. **What is abstention here?** Routing away from automatic acceptance; the classifier prediction itself remains visible.
-3. **What dataset is used?** The scikit-learn Wisconsin Diagnostic Breast Cancer dataset, 569 rows and 30 numeric features.
-4. **How is the data split?** Stratified 60/20/20, with a fresh split and refit for each of 30 fixed seeds.
-5. **Why is test data held out?** To avoid using final evaluation cases to fit models, normalization, or thresholds.
-6. **What classifier is used?** A 300-tree Random Forest.
-7. **How is uncertainty estimated?** Standard deviation of malignant probabilities across 30 bootstrap Random Forest members.
-8. **Is that a probability of error?** No. It is a predictive disagreement signal and is not calibrated as an error probability.
-9. **What does the Isolation Forest score mean?** Larger values indicate more unusual cases after negating scikit-learn's normality score.
-10. **How is anomaly detection evaluated?** A synthetic feature shift on held-out cases, not real deployment drift.
-11. **What is consequence?** A design-assumption value attached to the predicted class; the prompt says benign predictions receive greater consequence.
-12. **Are the consequence values clinical costs?** No. The source values were unavailable, so 0/1 is explicitly logged as an assumption.
-13. **Why normalize on validation?** To keep the test partition untouched while mapping U and A into comparable bounded ranges.
-14. **How are thresholds chosen?** The validation risk's 70th and 90th percentiles.
-15. **What are the three routes?** Automatic at or below t70, Assisted above t70 through t90, Human Review above t90.
-16. **Can an explanation change the model decision?** No. It reads a frozen record after prediction and routing are complete.
-17. **How are explanations generated?** Deterministic templates; no live LLM result is claimed.
-18. **What does the checker test?** Prediction, routing, risk tier and score wording, caveats, disclaimer, and overconfident clinical language.
-19. **What does a fault-detection rate mean?** Detection on the defined injected faults only; it is not broad proof of explanation truthfulness.
-20. **Does the project establish fairness?** No. The dataset has no demographic attributes.
-21. **What if uncertainty-only beats the full system?** Report that negative result; do not claim every component improves accuracy.
-22. **How is workload measured?** Assisted and Human Review case counts/fractions are reported separately; their unweighted sum is review workload, not staff time.
-23. **What is the contribution?** Integration, the three-level policy, negative-aware ablation, grounded non-mutating explanations, and coverage/workload analysis.
-24. **What is required to reproduce a table?** The locked environment, `make reproduce`, its run ID, saved split cache, CSV/JSON output, and seeds/configuration.
-25. **Is the system suitable for diagnosis?** No. It is a research prototype with no clinical validation and must not be used for real diagnosis.
+1. **What problem does RAA address?** It studies when a model result can be returned automatically and when assistance or human review is needed.
+2. **What is abstention here?** Routing away from Automatic; the classifier's lean can still be shown as an unverified estimate.
+3. **What datasets are used?** WDBC supports the paper-aligned experiment. UCI Mammographic Mass supports the user-facing report-input model.
+4. **How many cases are in the app dataset?** 961 mammographic masses: 516 benign and 445 malignant labels.
+5. **What inputs affect the app model?** Age, mass shape, margin (edge), and density from a mammogram report. BI-RADS is excluded because UCI marks it non-predictive.
+6. **Do symptoms or family history affect its prediction?** No. They are included in a requested report as context; the training data has no corresponding fields.
+7. **What does the classifier predict?** The benign or malignant severity label recorded for a mammographic mass, not a person's diagnosis.
+8. **How is the app data split?** One fixed stratified 60/20/20 split with seed 42: 576 TRAIN, 192 validation, 193 TEST.
+9. **How are missing report fields handled?** TRAIN-only imputation is applied to run the pipeline, and any incomplete user report is routed to Human Review.
+10. **What happens without a mammogram report?** The app returns Human Review and no benign/malignant estimate.
+11. **How is uncertainty estimated?** Standard deviation of malignant-class scores across 30 bootstrap Random Forest members.
+12. **Is that a probability of error?** No. It is a disagreement signal, not a calibrated error probability.
+13. **What does the anomaly score mean?** Larger values indicate inputs more unusual relative to the training data, based on Isolation Forest.
+14. **Are consequence values clinical costs?** No. The paper specifies 0.4 for a predicted malignant class and 1.0 for predicted benign; these remain design assumptions.
+15. **How is the combined risk computed?** R = 0.5U + 0.2A + 0.3C using normalized uncertainty, anomaly, and consequence components.
+16. **How are default routes selected?** Validation p70 and p90 risk thresholds give Automatic, Assisted, and Human Review.
+17. **How does the app explain an individual output?** It replaces one field at a time with a common TRAIN value and reports how the malignant-class score changes. This is model sensitivity, not a causal explanation.
+18. **Can the LLM change a prediction?** No. It is called only when a report is requested and writes a short paragraph; model output and routing remain deterministic.
+19. **Where does the report LLM run?** On the local computer through Ollama. The app does not call a hosted language model.
+20. **What are the held-out app metrics?** Accuracy 73.1%, malignant sensitivity 61.8%, benign specificity 82.7%, AUROC 0.810.
+21. **How reliable was the Automatic tier?** Its held-out error rate was 20.0%; 10 of 34 malignant false negatives were Automatic. This is unsuitable for health decisions.
+22. **Does the project establish fairness?** No. The datasets and experiments do not establish demographic fairness.
+23. **What is the contribution?** Integrating classification, risk signals, a three-level route, and explanations while reporting the coverage/error trade-off honestly.
+24. **How are WDBC tables reproduced?** Run make reproduce in the locked environment; outputs are stored by run ID under results/runs.
+25. **Is the app suitable for diagnosis?** No. It estimates a historical dataset label, has limited held-out sensitivity, and has no clinical validation.
 
 ## Claims not to make
 
-- No fairness or clinical safety claim.
-- No calibrated probability-of-error claim for ensemble disagreement.
-- No real-world anomaly detection claim from a synthetic stress test.
-- No validated live-LLM explanation claim.
-- No claim that every component improves accuracy or that the base algorithms are novel.
-- No numeric result until a logged run has generated it.
+- Do not describe an app result as a person's diagnosis.
+- Do not say symptom answers drive the model output.
+- Do not claim clinical safety, fairness, or deployment readiness.
+- Do not call disagreement a calibrated probability of error.
+- Do not claim real-world anomaly performance from synthetic shifts.
+- Do not claim the LLM report is validated or can change routing.
+- Do not claim each RAA component improves classifier accuracy.
 
 ## How numbers are produced
 
-The experiment command and configuration are saved with each run ID. `per_split.csv` contains 30 split-level estimates; `metrics.json` contains split means, standard deviations, bootstrap 95% intervals, and pooled case metrics. Ablation differences are paired by seed. Stress AUROC is evaluated on clean versus synthetic shifted held-out cases. Checker rates are computed over the enumerated injected faults and clean templates.
+The WDBC experiment outputs are versioned under results/runs/ and include 30 splits, ablations, stress tests, and explanation-checker results. The app model uses the fixed seed-42 UCI split; its held-out metrics, data hash, and model manifest are under results/mammographic_mass/. The app displays those saved values. No user-submitted inputs are written to either results directory.

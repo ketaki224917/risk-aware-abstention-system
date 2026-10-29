@@ -262,3 +262,20 @@ Done: Diagnosed that Streamlit accepted IPv4 only while localhost resolves to IP
 Evidence: netstat showed [::1]:8501 LISTENING. HTTP checks returned 200 for http://localhost:8501/, http://[::1]:8501/, and health at http://[::1]:8501/_stcore/health. Direct IPv4 http://127.0.0.1:8501/ is unavailable by design.
 Files: Makefile, README.md, docs/state/DECISIONS.md, docs/state/ENVIRONMENT.md, docs/state/HANDOFF.md, docs/state/TODO.md.
 Notes: Binding remains local-only. The app server is currently started in the background.
+
+
+### 2026-10-29 - P4.1v-y - Report-based app model, interface, and report flow
+Done: Added the public UCI Mammographic Mass data and a separate saved RAA model using age and mammogram report shape, margin, and density. Replaced the Human Review-only landing screen with the dark questionnaire and an honest mass-label estimate; no report means Human Review/no class estimate and incomplete report fields force Human Review. The local Ollama writer runs only after a report request. Updated documentation, added the dataset/model ADR, and preserved the original Wisconsin paper experiment and its artifacts.
+Evidence: `make mammography-artifact` built `results/mammographic_mass/model_bundle.joblib` from 576 TRAIN rows with imputation/encoding fit on TRAIN, route thresholds fit on validation, and metrics on a held-out TEST of 193. TEST accuracy 73.1%, malignant sensitivity 61.8%, benign specificity 82.7%, malignant AUROC 0.810; p70/p90 Automatic error 20.0% (26/130). `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 75 files formatted.
+Files: UCI source files, `src/raa/mammography.py`, app and report modules, `results/mammographic_mass/`, tests, README and research documentation/state.
+
+### 2026-10-29 - P4.1aa - Complete basic health inputs and requested report
+Done: Added height, weight, and gender alongside age, family/medical history, and the four symptom questions. The fields appear in the requested in-memory report and are provided to the local LLM only after the report button is selected. Only age plus mammogram report shape, margin, and density affect the saved model and RAA pipeline; the unsupported answers stay context-only.
+Evidence: `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 75 files already formatted. The app tests cover the revised field counts, report context, model output, and privacy.
+Files: `src/raa/app/health_intake.py`, `src/raa/app/copy.py`, `src/raa/app/report.py`, `src/raa/explain/llm_adapter.py`, `tests/test_ui.py`, `tests/test_report.py`, `tests/test_results_page.py`, README and state documentation.
+
+
+### 2026-10-29 - P4.1z - Restart and verify updated localhost app
+Done: Stopped the previously running Streamlit process only after confirming its command line, then relaunched the updated app hidden and bound exclusively to IPv6 loopback.
+Evidence: `http://localhost:8501/` -> HTTP 200; `http://[::1]:8501/_stcore/health` -> HTTP 200 with body `ok`; current landing page and updated question counts are covered by Streamlit AppTest. Full regression: `make test` -> 42 passed; `make lint` -> all checks passed.
+Files: Makefile launch target is unchanged; the updated app and state files are included in this task.

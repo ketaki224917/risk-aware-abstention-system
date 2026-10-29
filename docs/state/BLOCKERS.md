@@ -6,8 +6,10 @@
   - Needed from the author: confirm whether to retain the journal values as the originally published experiment and label the source-aligned run separately as an independent reproduction.
   - Recommended wording: report the published values as the original experiment and the source-aligned values as an independent reproduction. See docs/state/RECONCILIATION.md.
 
-- [OPEN 2026-10-27] DATA-001 - A suitable labeled dataset is required before the four-question intake can produce any cancer estimate. The public Duke BRCA screening table matches only age bands, family history, prior biopsy/surgery, and lump/nipple-discharge symptoms; it has 37/987 cancer outcomes and the seed-42 held-out prototype had sensitivity 0/7 and ROC-AUC 0.487. It is not an appropriate model for a real user's current diagnosis.
-  - Needed: an approved, de-identified dataset with compatible user-answer fields and confirmed outcome labels, enough positive cases for stable independent validation, and a defined target. Until then the intake should return Human Review with no predicted class.
+- [OPEN 2026-10-29] DATA-001 - A compatible labeled dataset for symptom/history-only predictions remains unavailable.
+  - The app now uses the public UCI Mammographic Mass data for age and mammogram report findings (shape, margin, density). Symptoms and family history are context only; without a report the app returns Human Review with no class estimate.
+  - The UCI model's held-out malignant sensitivity is 61.8% and its Automatic-tier error rate is 20.0%. It is not suitable for health decisions.
+  - Needed to make symptom answers affect class prediction: a compatible, sufficiently sized, correctly labeled dataset plus independent validation. Do not generate synthetic labels or present symptoms as model inputs while unsupported.
 
 ## Resolved environment issue
 

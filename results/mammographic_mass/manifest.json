@@ -1,0 +1,18 @@
+{
+  "artifact": "model_bundle.joblib",
+  "artifact_version": 1,
+  "dataset": "UCI Mammographic Mass",
+  "dataset_sha256": "072051c896fb14f8f25c64eed30ba1333290af41e6c9ffad4e1ca573daa865a8",
+  "doi": "10.24432/C53K6Z",
+  "excluded_input": "BI-RADS; UCI identifies it as non-predictive.",
+  "license": "CC BY 4.0",
+  "metrics_file": "metrics.json",
+  "model_features": [
+    "Age",
+    "Shape",
+    "Margin",
+    "Density"
+  ],
+  "scikit_learn_version": "1.9.1",
+  "source_url": "https://archive.ics.uci.edu/ml/machine-learning-databases/mammographic-masses/mammographic_masses.data"
+}

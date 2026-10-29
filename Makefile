@@ -1,4 +1,4 @@
-.PHONY: setup test lint reproduce ablate stress explain-eval demo-artifact app all
+.PHONY: setup test lint reproduce ablate stress explain-eval demo-artifact mammography-artifact app all
 
 UV ?= uv
 
@@ -29,8 +29,14 @@ demo-artifact:
 results/demo/model_bundle.joblib:
 	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_demo_artifact
 
-app: results/demo/model_bundle.joblib
+app: results/mammographic_mass/model_bundle.joblib
 	$(UV) --cache-dir .tools/uv-cache run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=::1
 
 all: test lint reproduce
 
+
+mammography-artifact:
+	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_mammography_artifact
+
+results/mammographic_mass/model_bundle.joblib:
+	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_mammography_artifact

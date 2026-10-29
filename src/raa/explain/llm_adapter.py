@@ -1,7 +1,4 @@
-"""Local-only LLM status summary for the questionnaire intake.
-
-The prompt is fixed and contains no user answers or model-derived cancer class.
-"""
+"""Local-only language generation for user-requested prediction reports."""
 
 from __future__ import annotations
 
@@ -14,109 +11,67 @@ from urllib.request import Request, urlopen
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
 DEFAULT_MODEL = "qwen2.5:1.5b"
-SUMMARY_TIMEOUT_SECONDS = 45.0
-PROHIBITED_TERMS = (
-    "cancer",
-    "malignant",
-    "benign",
-    "diagnos",
-    "medical",
-    "doctor",
+REPORT_TIMEOUT_SECONDS = 45.0
+PROHIBITED_REPORT_PHRASES = (
+    "you have",
+    "confirmed cancer",
+    "diagnosed with",
     "treatment",
-    "screening",
     "recommend",
-    "advice",
     "should",
-    "likely",
-    "probability",
-    "risk score",
-    "positive",
-    "negative",
+    "must",
     "consult",
-    "seek care",
-    "contact",
-    "professional",
-    "specialist",
-    "clinician",
-    "physician",
-    "provider",
-    "referral",
-    "follow-up",
-    "urgent",
+    "doctor",
+    "seek medical",
     "emergency",
+    "urgent",
 )
 
 
 class LLMUnavailableError(RuntimeError):
-    """Raised when the local LLM is unavailable or returns unsafe/unusable text."""
+    """Raised if local report text cannot be generated safely."""
 
 
 @dataclass(frozen=True)
-class LocalSummary:
+class LocalReportNarrative:
+    """Short model-generated paragraph stored inside a deterministic report."""
+
     text: str
-    model: str
 
 
 def configured_model() -> str:
-    """Return the local Ollama model name, without accepting a remote endpoint."""
+    """Return the installed local model name; remote endpoints cannot be configured."""
     return os.environ.get("OLLAMA_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
 
 
-def _validate_summary(text: str) -> str:
-    cleaned = re.sub(r"\s+", " ", text).strip()
-    normalized = cleaned.casefold()
-    has_review = "human review" in normalized
-    no_prediction = any(
-        phrase in normalized
-        for phrase in (
-            "no prediction",
-            "no class estimate",
-            "did not produce a class estimate",
-            "did not make a prediction",
-            "no class prediction",
-        )
-    )
-    contains_prohibited_claim = any(term in normalized for term in PROHIBITED_TERMS)
-    if (
-        not cleaned
-        or len(cleaned) > 600
-        or not has_review
-        or not no_prediction
-        or contains_prohibited_claim
-    ):
-        raise LLMUnavailableError("The local model did not return a safe, status-only explanation.")
-    return cleaned
-
-
-def generate_intake_status_summary(*, timeout: float = SUMMARY_TIMEOUT_SECONDS) -> LocalSummary:
-    """Ask the local Ollama model to explain the fixed abstention status only.
-
-    Questionnaire answers, ages, symptoms, and model features are intentionally
-    not accepted as arguments and are never included in the request.
-    """
+def generate_prediction_narrative(
+    facts: dict[str, object], *, timeout: float = REPORT_TIMEOUT_SECONDS
+) -> LocalReportNarrative:
+    """Generate 2-3 report sentences from structured result facts using local Ollama."""
     model = configured_model()
+    expected_output = str(facts.get("model_output", "")).casefold()
+    expected_route = str(facts.get("route", "")).casefold()
     payload = {
         "model": model,
         "stream": False,
-        "options": {"temperature": 0, "num_predict": 100},
+        "options": {"temperature": 0, "num_predict": 180},
         "messages": [
             {
                 "role": "system",
                 "content": (
-                    "You write a brief status explanation for a nonclinical research software "
-                    "report. Do not make or infer predictions. Do not give medical information, "
-                    "advice, or recommendations."
+                    "Write a short, plain-language paragraph for a software result report. "
+                    "Use only the supplied facts. Do not diagnose, recommend actions, change "
+                    "the model output, or add medical claims. The output is a mammographic "
+                    "mass-label estimate, not a person's diagnosis."
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    "Using only these fixed facts, write one or two short sentences: the "
-                    "software returned Human Review because its current model cannot assess the "
-                    "questionnaire inputs; no class estimate or prediction was produced. Do not "
-                    "mention diseases, diagnoses, symptoms, clinical actions, or advice. Do not "
-                    "add any other claims. The output must include the words Human Review and "
-                    "that no prediction or class estimate was produced."
+                    "Summarize these facts in 2 or 3 sentences. Preserve the exact model output "
+                    "and route. State that health details outside the mammogram fields are report "
+                    "context only. Do not add advice or new numbers. Facts: "
+                    + json.dumps(facts, ensure_ascii=True, sort_keys=True)
                 ),
             },
         ],
@@ -130,11 +85,22 @@ def generate_intake_status_summary(*, timeout: float = SUMMARY_TIMEOUT_SECONDS) 
     try:
         with urlopen(request, timeout=timeout) as response:
             body = json.loads(response.read().decode("utf-8"))
-        text = body["message"]["content"]
-        return LocalSummary(text=_validate_summary(text), model=model)
+        text = re.sub(r"\s+", " ", body["message"]["content"]).strip()
+        normalized = text.casefold()
+        if (
+            not text
+            or len(text) > 900
+            or not expected_output
+            or not expected_route
+            or expected_output not in normalized
+            or expected_route not in normalized
+            or any(phrase in normalized for phrase in PROHIBITED_REPORT_PHRASES)
+        ):
+            raise LLMUnavailableError("The local model returned an unusable report paragraph.")
+        return LocalReportNarrative(text=text)
     except LLMUnavailableError:
         raise
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, KeyError, TypeError) as error:
         raise LLMUnavailableError(
-            "The local Ollama model could not be reached or returned an invalid response."
+            "The local Ollama model could not generate the report paragraph."
         ) from error

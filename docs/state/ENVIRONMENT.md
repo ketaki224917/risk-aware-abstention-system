@@ -46,3 +46,11 @@
 - Explicit theme settings live in .streamlit/config.toml: dark base, #0B1220 background, #142034 secondary background, #F8FAFC text, and cyan primary action color.
 - The app applies contrast overrides for text, form labels, dropdowns, alerts, and focus outlines in src/raa/app/streamlit_app.py.
 - Restart Streamlit after changing config.toml so the theme is loaded from the project root.
+
+
+## UCI mammogram questionnaire app (2026-10-29)
+
+- The default app loads `results/mammographic_mass/model_bundle.joblib`; it does not retrain on page load.
+- Launch with `make app` and open `http://localhost:8501`. Streamlit binds to IPv6 loopback `::1` only.
+- The form collects age, height, weight, gender, family/medical history, and four symptoms. A benign/malignant mass-label estimate requires report shape, margin, and density. The local Ollama report writer runs only after an explicit request.
+- After adding height, weight, and gender, `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 75 files already formatted. The updated localhost app was restarted and verified: root HTTP 200 and `/_stcore/health` HTTP 200 with body `ok`.

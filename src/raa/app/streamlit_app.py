@@ -9,44 +9,13 @@ from dataclasses import dataclass
 import numpy as np
 import streamlit as st
 
-from raa.app.copy import (
-    BANNER,
-    GLOSSARY,
-    INPUT_HELP,
-    INTAKE_AGE_ERROR,
-    INTAKE_AGE_LABEL,
-    INTAKE_BASIC_LABEL,
-    INTAKE_GENDER_LABEL,
-    INTAKE_GENDER_OPTIONS,
-    INTAKE_HEIGHT_LABEL,
-    INTAKE_HISTORY_OPTIONS,
-    INTAKE_HISTORY_QUESTION,
-    INTAKE_INTRO,
-    INTAKE_LLM_FALLBACK,
-    INTAKE_LLM_NOTE,
-    INTAKE_MEASUREMENTS_ERROR,
-    INTAKE_MISSING,
-    INTAKE_MODEL_LIMIT,
-    INTAKE_REASON,
-    INTAKE_REPORT_LABEL,
-    INTAKE_RESULT,
-    INTAKE_SCOPE,
-    INTAKE_SUBMIT,
-    INTAKE_SYMPTOM_OPTIONS,
-    INTAKE_SYMPTOM_QUESTIONS,
-    INTAKE_SYMPTOMS_LABEL,
-    INTAKE_TITLE,
-    INTAKE_WEIGHT_LABEL,
-    LIMITS,
-    PRIVACY,
-)
+from raa.app.copy import GLOSSARY, INPUT_HELP, LIMITS, PRIVACY
 from raa.app.demo_assets import DemoArtifact, load_demo_artifact, load_paper_results
 from raa.app.examples import ExampleCase, select_example_cases
-from raa.app.report import build_intake_report
+from raa.app.health_intake import APP_TITLE, render_mammography_intake
 from raa.config import load_config
 from raa.data import BreastCancerData, DataSplit, load_breast_cancer_data, stratified_split
 from raa.explain.checker import check_explanation
-from raa.explain.llm_adapter import LLMUnavailableError, generate_intake_status_summary
 from raa.explain.record import DecisionRecord
 from raa.explain.templates import generate_explanation
 from raa.inference import (
@@ -588,205 +557,11 @@ def render_visual_style() -> None:
     )
 
 
-def render_health_questionnaire() -> None:
-    """Collect basic details and symptom answers without making unsupported predictions."""
-    st.header(INTAKE_TITLE)
-    st.write(INTAKE_INTRO)
-    st.info(INTAKE_MODEL_LIMIT)
-    st.caption(INTAKE_LLM_NOTE)
-    with st.container(border=True):
-        st.subheader(INTAKE_BASIC_LABEL)
-        age_col, height_col, weight_col = st.columns(3)
-        with age_col:
-            age = st.number_input(
-                INTAKE_AGE_LABEL,
-                min_value=1,
-                max_value=120,
-                value=None,
-                step=1,
-                format="%d",
-                placeholder="Age",
-                key="intake_age",
-                required=True,
-            )
-        with height_col:
-            height = st.number_input(
-                INTAKE_HEIGHT_LABEL,
-                min_value=50,
-                max_value=250,
-                value=None,
-                step=1,
-                placeholder="Height",
-                key="intake_height",
-                required=True,
-            )
-        with weight_col:
-            weight = st.number_input(
-                INTAKE_WEIGHT_LABEL,
-                min_value=1.0,
-                max_value=300.0,
-                value=None,
-                step=0.1,
-                format="%.1f",
-                placeholder="Weight",
-                key="intake_weight",
-                required=True,
-            )
-
-        gender_col, history_col = st.columns(2)
-        with gender_col:
-            gender = st.selectbox(
-                INTAKE_GENDER_LABEL,
-                options=INTAKE_GENDER_OPTIONS,
-                index=None,
-                placeholder="Select an option",
-                key="intake_gender",
-            )
-        with history_col:
-            history = st.selectbox(
-                INTAKE_HISTORY_QUESTION,
-                options=INTAKE_HISTORY_OPTIONS,
-                index=None,
-                placeholder="Select an option",
-                key="intake_history",
-            )
-
-        st.divider()
-        st.subheader(INTAKE_SYMPTOMS_LABEL)
-        st.caption("Choose Yes, No, or Not sure for each question.")
-        symptom_answers: dict[str, str | None] = {}
-        symptom_columns = st.columns(2)
-        for index, (answer_key, question, short_label) in enumerate(INTAKE_SYMPTOM_QUESTIONS):
-            with symptom_columns[index % 2]:
-                symptom_answers[answer_key] = st.selectbox(
-                    question,
-                    options=INTAKE_SYMPTOM_OPTIONS,
-                    index=None,
-                    placeholder=f"{short_label}: select an option",
-                    key=f"intake_{answer_key}",
-                )
-
-    current_answers: dict[str, str | float | int | None] = {
-        "age": age,
-        "height_cm": height,
-        "weight_kg": weight,
-        "gender": gender,
-        "history": history,
-        **symptom_answers,
-    }
-    if st.button(INTAKE_SUBMIT, type="primary"):
-        st.session_state.pop("intake_submission", None)
-        if any(answer is None for answer in current_answers.values()):
-            st.error(INTAKE_MISSING)
-            return
-        if not np.isfinite(float(age)) or not float(age).is_integer() or not 1 <= age <= 120:
-            st.error(INTAKE_AGE_ERROR)
-            return
-        if not 50 <= height <= 250 or not 1 <= weight <= 300:
-            st.error(INTAKE_MEASUREMENTS_ERROR)
-            return
-
-        report_answers = {
-            "age": str(int(age)),
-            "height_cm": str(int(height)),
-            "weight_kg": f"{float(weight):g}",
-            "gender": str(gender),
-            "history": str(history),
-            **{key: str(value) for key, value in symptom_answers.items()},
-        }
-        try:
-            with st.spinner("Drafting a status explanation with the local LLM..."):
-                local_summary = generate_intake_status_summary()
-            summary = local_summary.text
-            source = f"Local Ollama model: {local_summary.model} (exploratory, not evaluated)"
-            generated_by_llm = True
-        except LLMUnavailableError:
-            summary = INTAKE_LLM_FALLBACK
-            source = "Fixed safe fallback (local LLM unavailable or summary rejected)"
-            generated_by_llm = False
-        report = build_intake_report(
-            report_answers,
-            explanation=summary,
-            explanation_source=source,
-        )
-        st.session_state["intake_submission"] = {
-            "answers": current_answers,
-            "summary": summary,
-            "source": source,
-            "generated_by_llm": generated_by_llm,
-            "report": report,
-        }
-
-    submission = st.session_state.get("intake_submission")
-    if submission is None or submission["answers"] != current_answers:
-        return
-    st.error(INTAKE_RESULT)
-    st.info(INTAKE_REASON)
-    st.caption(INTAKE_SCOPE)
-    st.subheader("LLM explanation")
-    st.write(submission["summary"])
-    if submission["generated_by_llm"]:
-        st.caption(
-            f"Generated locally by {submission['source']}. The LLM did not receive your answers "
-            "and cannot change the result."
-        )
-    else:
-        st.warning(
-            "The local LLM was unavailable or returned text that failed the safety checks. "
-            "This report uses a fixed explanation instead."
-        )
-    st.download_button(
-        INTAKE_REPORT_LABEL,
-        data=submission["report"],
-        file_name="risk_aware_intake_result_report.txt",
-        mime="text/plain",
-        key="intake_report_download",
-    )
-
-
 def main() -> None:
-    st.set_page_config(
-        page_title="Risk-Aware Abstention",
-        page_icon="\U0001f9ed",
-        layout="wide",
-    )
+    st.set_page_config(page_title=APP_TITLE, page_icon="\U0001fa7a", layout="wide")
     render_visual_style()
-    st.title("Risk-Aware Abstention")
-    st.warning(BANNER)
-    st.caption(PRIVACY)
-    st.sidebar.caption("Health answers stay local and are not used by the current model.")
-    mode = st.sidebar.radio(
-        "Choose a mode",
-        (
-            INTAKE_TITLE,
-            "Guided entry",
-            "Upload CSV",
-            "What-if",
-            "Example cases",
-            "Why abstain?",
-        ),
-        index=0,
-    )
-    if mode == INTAKE_TITLE:
-        render_health_questionnaire()
-        return
-    try:
-        state = load_demo_state()
-    except (FileNotFoundError, ValueError) as error:
-        st.error(str(error))
-        st.stop()
-    if mode == "Example cases":
-        render_examples(state)
-    elif mode == "Guided entry":
-        render_guided_entry(state)
-    elif mode == "Upload CSV":
-        render_csv_batch(state)
-    elif mode == "What-if":
-        render_what_if(state)
-    elif mode == "Why abstain?":
-        render_why_abstain()
-    else:
-        st.info("Choose a mode from the sidebar.")
+    st.title(APP_TITLE)
+    render_mammography_intake()
 
 
 if __name__ == "__main__":

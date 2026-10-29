@@ -147,3 +147,31 @@ Context: The app was bound only to IPv4 127.0.0.1. On this Windows machine, loca
 Options considered: Keep the IPv4-only bind and ask the user to choose an IP URL; bind to all interfaces; or bind specifically to IPv6 loopback so browsers that resolve localhost to ::1 can connect while the app remains local-only.
 Decision and why: Use --server.address=::1 in Makefile and startup instructions. Verification showed http://localhost:8501 and http://[::1]:8501 return HTTP 200. Do not bind to 0.0.0.0 or a LAN address.
 Consequences / how to reverse: Use http://localhost:8501 as the app URL. Direct IPv4 127.0.0.1 is not a listener. Revisit only if the target machine lacks IPv6 loopback; any replacement must remain bound to loopback.
+
+
+## ADR-025: Use UCI Mammographic Mass for report-based app estimates [DECISION] Date: 2026-10-29 Status: active
+
+Context: The user asked for actual benign/malignant model output from ordinary health and breast-symptom questions. WDBC inputs are microscope measurements, and the Duke BRCA candidate's rare follow-up outcomes did not support those questionnaire predictions. Fabricated symptom-to-label data would create false medical claims.
+
+Evidence: The [official UCI Mammographic Mass dataset page](https://archive.ics.uci.edu/dataset/161/mammographic+mass) documents 961 records (516 benign, 445 malignant), with age, shape, margin, density, and severity. UCI marks BI-RADS assessment as non-predictive. The data is CC BY 4.0. The seed-42 split is TRAIN 576 / validation 192 / TEST 193. Held-out TEST results are accuracy 0.7306, malignant sensitivity 0.6180, benign specificity 0.8269, malignant AUROC 0.8102, Automatic coverage 0.6736, and Automatic-tier error 0.20 (26/130). There were 34 false negatives, 10 in Automatic and 24 routed away.
+
+Decision and why: Add a separate user-facing model using age plus report findings (shape, margin, density), with BI-RADS excluded; keep the WDBC paper experiment and its result artifacts unchanged. Fit median/mode imputation and categorical encoding on TRAIN only. Fit classifier/ensemble/anomaly models on TRAIN, and component normalization/p70/p90 thresholds on validation. Save the bundle and metrics under results/mammographic_mass/. If no report is supplied, return Human Review without a class estimate. If any report field is Not sure, run the fitted pipeline on TRAIN-imputed input but force Human Review. Symptoms and history remain report context because the dataset has no such fields. Explanations use one-field substitutions to TRAIN-typical values and are described only as sensitivity checks.
+
+Consequences / how to reverse: The app estimates the dataset's mammographic-mass severity label, not a person's diagnosis. Its sensitivity and Automatic-tier error are too weak for health decisions; the UI/report disclose these limits. A symptom-only classifier remains unsupported. Replace this path only with compatible, sufficiently sized, correctly labeled data and independent validation; never synthesize target labels.
+
+## ADR-026: Keep the user app focused and the LLM report-only [DECISION] Date: 2026-10-29 Status: active
+
+Context: The user asked for a simple dark interface titled “Risk Aware Abstention System”, with health questions, an explanation, and an LLM-generated report, and asked to remove the example-first and extraneous explanations from the screen.
+
+Decision and why: Use one questionnaire page with age, family/medical history, four symptom questions, and optional mammogram report fields. Hide example, WDBC feature-entry, batch, and exploratory navigation from the user-facing page; keep WDBC code/results separate for the paper experiment. Show result explanations, RAA signals, a concise model-limits expander, and no research-prototype banner at the top. Call the local Ollama report writer only after the user selects Generate prediction report. It receives the entered answers and structured result facts on the same computer, cannot set the prediction/route, and its output is included only in a user-requested in-memory report. The report includes deterministic model facts and a fallback paragraph when Ollama is unavailable.
+
+Consequences / how to reverse: Symptoms and history do not affect class predictions; the page says so. Answers are not written to disk by the app, and no hosted LLM endpoint is used. This supersedes the user-facing scope of ADR-020, ADR-022, and ADR-023, but preserves their original history.
+
+
+## ADR-027: Collect basic health details as report context [DECISION] Date: 2026-10-29 Status: active
+
+Context: The user asked for age, height, weight, gender, general breast-health history, and four symptom questions before receiving an RAA result. The selected UCI Mammographic Mass dataset contains age and mammogram mass findings, but it contains no height, weight, gender, family-history, medical-history, or symptom predictors.
+
+Decision and why: Ask age, height, weight, gender, family history, previous breast condition/biopsy/treatment, and the four symptom questions. Only age plus shape, margin, and density from a mammogram report enter the saved classifier-to-risk pipeline. The other answers are labeled report context and cannot change the predicted class or score. They are sent to the local Ollama writer only after an explicit report request and are included in the downloadable report. Without a mammogram report, return Human Review with no class estimate.
+
+Consequences / how to reverse: The form gathers the requested ordinary-language information and generates an honest estimate only when model-compatible report fields are supplied. It does not claim symptoms or body measurements affect classification. Use a dataset that contains those predictors and suitable pathology labels, followed by independent validation, before connecting them to the class prediction.

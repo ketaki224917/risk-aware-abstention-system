@@ -37,3 +37,10 @@ The baseline has 6 errors (3 FN, 3 FP), matching the journal paper. The policy a
 The stress test follows the journal's signed 3σ shift on 8 randomly chosen features per case, clipped at zero. Exact feature/sign RNG details are not specified in the paper; the deterministic seed is an implementation choice. The shift results are synthetic and do not establish real-world OOD performance. Checker fault detection describes only the tested, rule-based fault set and is not a live-LLM reliability estimate.
 
 See [the paper reconciliation](state/RECONCILIATION.md), [limitations](limitations.md), and [source map](state/SOURCE_MAP.md). The result is a methodological benchmark, not clinical evidence.
+
+
+## Mammographic Mass app model (separate from the paper run)
+
+The user-facing app model uses the public UCI Mammographic Mass dataset (961 rows; 516 benign and 445 malignant severity labels). Its seed-42 split is 576 TRAIN, 192 validation, 193 TEST. The held-out TEST results are accuracy 73.1%, malignant sensitivity 61.8%, benign specificity 82.7%, and malignant AUROC 0.810. With the configured p70/p90 risk thresholds, 130/193 TEST cases were Automatic and 26/130 (20.0%) were incorrect. The 34 malignant false negatives included 10 Automatic and 24 routed to Assisted or Human Review.
+
+The metrics are saved in results/mammographic_mass/metrics.json; the model, preprocessing, and threshold values are in results/mammographic_mass/model_bundle.joblib. They describe one historical single-source split and do not establish clinical performance. The app estimates the mammographic mass label from age, shape, margin, and density. Symptoms/family history do not change its estimate. See data/README.md and the UCI dataset page: https://archive.ics.uci.edu/dataset/161/mammographic+mass.

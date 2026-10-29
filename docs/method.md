@@ -31,3 +31,13 @@ Inference produces an immutable `DecisionRecord` containing the predicted class,
 The reproducible run writes pooled and split-level classifier/selective metrics, decision-level error counts, confidence/uncertainty/anomaly/risk error-ranking AUROC, ECE, Brier score, paired ablations, risk-coverage sweeps, sensitivity grids, stress AUROC and escalation behavior, explanation fault results, tables, and figures. The main seed-42 split has its own metrics and records. Outputs are under `results/runs/<run-id>/`; environment and source fingerprints are stored in `metrics.json`.
 
 See [the source map](state/SOURCE_MAP.md) for how the journal paper and five background references inform the implementation. Paper targets are comparisons, never tuning objectives.
+
+
+
+## User-facing mammography model
+
+The questionnaire model uses the UCI Mammographic Mass dataset (961 masses; target severity is benign or malignant). It is separate from the WDBC paper-reproduction experiment. The app asks age, height, weight, gender, family/medical history, and four symptoms. Its estimate uses only age at the mammogram plus mass shape, margin, and density read from the report. Height, weight, gender, symptoms, and history are report context only because this dataset has no such predictors. The UCI repository identifies BI-RADS as non-predictive; it is excluded.
+
+A fixed seed-42 stratified 60/20/20 split has 576 TRAIN, 192 validation, and 193 TEST rows. The transformer is fitted on TRAIN only: median imputation for age, most-frequent imputation for categorical fields, and one-hot encoding for shape, margin, and density. The Random Forest, 30-member bootstrap disagreement ensemble, and Isolation Forest fit TRAIN; uncertainty scaling and p70/p90 route thresholds use validation. TEST metrics are saved in results/mammographic_mass/metrics.json.
+
+If a user selects Not sure, the saved TRAIN-only transformer fills the field and the classifier-to-risk path still runs, but the route is set to Human Review because the report is incomplete. Without a mammogram report the app does not estimate a class. Per-field explanations compare the score with one field replaced by its common TRAIN reference; these are model-sensitivity checks, not causal explanations. The local language model is invoked only when a report is requested and cannot change the output or route.
