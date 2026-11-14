@@ -1,0 +1,59 @@
+{
+  "dataset": "BrEaST clinical metadata (candidate only; not used by the app)",
+  "source": "https://www.cancerimagingarchive.net/wp-content/uploads/BrEaST-Lesions-USG-clinical-data-Dec-15-2023.xlsx",
+  "doi": "10.7937/9WKK-Q141",
+  "paper_doi": "10.1038/s41597-024-02984-z",
+  "license": "CC BY 4.0",
+  "sha256": "89a8874496a6f1f93960390b963f7369b90f7e72ee08a738f2d17e37f5eff8bf",
+  "rows": 256,
+  "classification_counts": {
+    "benign": 154,
+    "malignant": 98,
+    "normal": 4
+  },
+  "biopsy_confirmed_rows": 197,
+  "follow_up_confirmed_rows": 55,
+  "binary_rows": 252,
+  "binary_class_counts": {
+    "benign": 154,
+    "malignant": 98
+  },
+  "binary_field_missing_counts": {
+    "Age": 41,
+    "Signs": 45,
+    "Symptoms": 94
+  },
+  "complete_age_signs_symptoms_rows": 132,
+  "complete_case_class_counts": {
+    "benign": 76,
+    "malignant": 56
+  },
+  "recorded_sign_values": {
+    "breast scar": 5,
+    "not available": 46,
+    "no": 147,
+    "nipple retraction": 3,
+    "palpable": 58,
+    "skin retraction": 4,
+    "peau d`orange": 1,
+    "warmth": 4,
+    "redness": 3
+  },
+  "recorded_symptom_values": {
+    "family history of breast/ovarian cancer": 22,
+    "not available": 98,
+    "nipple discharge": 7,
+    "no": 113,
+    "HRT/hormonal contraception": 17,
+    "personal history of breast cancer": 3,
+    "breast injury": 1
+  },
+  "compatibility_findings": [
+    "All cases are adult women examined with breast ultrasound; this is a selected lesion cohort.",
+    "The Signs field records physician-observed findings, not separate self-reported answers.",
+    "The Symptoms field is an aggregated multi-select field and is missing for many cases.",
+    "The data do not include height or weight and do not represent gender diversity.",
+    "Four separate user symptom answers cannot be matched directly to this dataset's fields."
+  ],
+  "decision": "Do not use this small, incomplete, ultrasound-selected dataset to claim proper symptom-only predictions. The application continues to return Human Review without compatible mammogram report findings."
+}

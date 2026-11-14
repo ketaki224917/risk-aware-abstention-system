@@ -82,3 +82,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1ab Generate the requested prediction report as a formatted Word `.docx` download and verify its OOXML content.
 
 - [x] P4.1ac Restart localhost with the Word report change and verify the IPv6 loopback health/root endpoints.
+
+- [x] P4.1ad Audit BrEaST questionnaire-data candidate; keep it out of user inference because its fields and cohort do not support the requested symptom-only model.
+- [!] P4.1ae Build a questionnaire-driven malignant/benign model from suitable labeled data; blocked by DATA-001. Do not use synthetic labels as real predictions.
+- [x] P4.1af Reproduce complete report input through Streamlit AppTest; confirm class output and Human Review conditions.

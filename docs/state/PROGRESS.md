@@ -291,3 +291,13 @@ Files: `src/raa/app/docx_report.py`, `src/raa/app/health_intake.py`, `tests/test
 Done: Restarted Streamlit after adding DOCX download and confirmed it still binds only to IPv6 loopback.
 Evidence: `http://localhost:8501/` -> HTTP 200; `http://localhost:8501/_stcore/health` -> HTTP 200 with body `ok`; current app root is served by the updated D: project.
 Files: app runtime only; launch configuration continues to use `::1`.
+
+### 2026-11-14 — P4.1ad — Audit questionnaire-compatible dataset candidate
+Done: Downloaded the official BrEaST clinical metadata workbook to D:, preserved it with its CC BY 4.0 source details, and added a reproducible schema/completeness audit. The candidate is not connected to user inference because it does not match the intake fields and has substantial missingness. No synthetic labels were created.
+Evidence: `python scripts/audit_breast_symptom_candidate.py` → 256 rows (154 benign, 98 malignant, 4 normal); among 252 binary-label rows, age missing 41, Signs missing 45, Symptoms missing 94; 132 complete rows (76 benign, 56 malignant). Direct saved-model check on two compatible report inputs returned benign (score 0.180) and malignant (score 0.918); the in-memory Word report contained the matching result and passed ZIP/XML checks (4,296 bytes). A focused pytest attempt could not run because the D:-only embedded Python has no pytest installed; the existing project venv points to an inaccessible C: Python, so no C: runtime was used.
+Files: `data/breast_lesions_usg_clinical.xlsx`, `data/README.md`, `scripts/audit_breast_symptom_candidate.py`, `results/br_east_candidate_audit/audit.json`, `README.md`, and state files.
+Notes: The current app remains dynamic when mammogram report features are supplied. General health answers alone intentionally return Human Review because the saved classifier was not trained on them. DOCX generation remains per user submission.
+### 2026-11-14 — P4.1af — Reproduce Human Review routing
+Done: Reproduced the user-facing form with complete mammogram report fields using Streamlit AppTest. The app returned Automatic with a benign model lean and no exceptions. Human Review is expected when no report is supplied or a report field is Not sure; symptom answers are context only.
+Evidence: D:-only AppTest smoke script at D:\Temp\raa-app-runtime\apptest_complete_input.py -> Automatic - the model leans benign; exceptions: 0. The localhost health endpoint remained HTTP 200.
+Files: project state only; no user-facing code changed.

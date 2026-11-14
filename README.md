@@ -1,4 +1,4 @@
-# Risk Aware Abstention System
+﻿# Risk Aware Abstention System
 
 This project demonstrates classification, uncertainty, anomaly scoring, consequence-weighted risk, and Automatic / Assisted / Human Review routing. Its original WDBC paper experiment is preserved separately from the user-facing mammogram report estimator.
 
@@ -29,6 +29,10 @@ The seed-42 split has 576 TRAIN, 192 validation, and 193 held-out TEST records. 
 
 Build or rebuild the saved model with `make mammography-artifact`. The data source, feature schema, split, and model hash are in `results/mammographic_mass/manifest.json`.
 
+## Questionnaire-only dataset check
+
+I audited the public BrEaST ultrasound clinical metadata as a possible source for symptom-driven predictions. It has 256 selected ultrasound cases, but only 132 benign/malignant rows have age, signs, and symptoms all recorded. Its signs are clinician-observed and its symptoms are stored in one aggregated field, so they do not match the app's separate self-reported questions. The app does not use this candidate or synthetic labels; without a mammogram report it returns Human Review. Dataset details and the reproducible completeness audit are in `data/README.md` and `results/br_east_candidate_audit/audit.json`.
+
 ## Reproduce the paper experiment
 
 `make reproduce` runs the original WDBC experiment and writes split metrics, ablations, sensitivity tables, risk-coverage results, synthetic-shift analyses, explanation-checker results, and figures under `results/runs/<run-id>/`. It is kept separate from the mammography input model.
@@ -56,7 +60,7 @@ Run raa-20261026-paper-aligned-01 used 30 stratified splits (seeds 0-29), for 3,
 | Automatic coverage | 70.41% | 70.7% |
 | Automatic-case errors | 13/2,408 (0.54%) | 17/2,419 (0.70%) |
 | Baseline false negatives routed away | 73/86 (84.9%) | 70/86 (81.4%) |
-| Isolation Forest stress AUROC | 0.912 Ã‚Â± 0.020 | 0.911 Ã‚Â± 0.019 |
+| Isolation Forest stress AUROC | 0.912 Ãƒâ€šÃ‚Â± 0.020 | 0.911 Ãƒâ€šÃ‚Â± 0.019 |
 | Explanation checker | 570/570 injected faults detected; 0/114 clean false positives | All listed faults detected |
 
 The pooled baseline error count matches the paper, while several policy and synthetic-shift results differ. The independent run is reported as its own result; parameters were not tuned to force agreement. See [the reconciliation](docs/state/RECONCILIATION.md), [method](docs/method.md), [results](docs/results.md), and [limitations](docs/limitations.md).

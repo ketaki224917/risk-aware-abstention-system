@@ -1,4 +1,4 @@
-# Environment
+﻿# Environment
 
 ## Active D: project environment
 
@@ -64,3 +64,8 @@
 
 
 - Updated Word-download app re-launched at `http://localhost:8501`; root and health returned HTTP 200, health body `ok`. The process binds to IPv6 loopback only.
+
+## Questionnaire candidate audit (2026-11-14)
+
+- BrEaST metadata is stored at `data/breast_lesions_usg_clinical.xlsx` (CC BY 4.0); run `python scripts/audit_breast_symptom_candidate.py` to create `results/br_east_candidate_audit/audit.json`.
+- The candidate is not used by the app. The D:-only Python 3.13 embedded runtime ran the audit and model/DOCX smoke check. A focused pytest run was unavailable because pytest is not installed in that D: runtime; the existing project venv references Python on C:. Runtime, cache, and temporary output stayed on D:.

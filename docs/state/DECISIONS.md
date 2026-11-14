@@ -184,3 +184,13 @@ Context: The user asked for the requested prediction report in Word format. The 
 Decision and why: Generate a `.docx` package in memory with the deterministic prediction, RAA route, model explanation, submitted answers, held-out dataset metrics, and limits. Keep the local LLM responsible only for the short summary paragraph. The download button returns the Word MIME type and `.docx` filename; do not write the report to the project or temporary files during normal app use. Use the Python standard library OOXML writer so app startup needs no additional dependency.
 
 Consequences / how to reverse: The user can open the result in Word without converting a text file. The report content is not stored by the app unless the user chooses to download it.
+
+## ADR-029: Do not connect the BrEaST candidate to symptom-only predictions [DECISION] Date: 2026-11-14 Status: active
+
+Context: The user reported that questionnaire-only submissions produce the same Human Review result and requested real, input-dependent benign/malignant outputs. The app's existing UCI model accepts age and mammogram report shape, margin, and density; it does not learn from symptoms, family history, height, weight, or gender. A symptom-compatible labeled candidate was needed before considering changes.
+
+Evidence: The official BrEaST clinical workbook is licensed CC BY 4.0 and contains 256 adult female ultrasound cases: 154 benign, 98 malignant, and 4 normal. Among the 252 benign/malignant rows, age is unavailable for 41, physician-observed Signs for 45, and the aggregated Symptoms field for 94. Only 132 rows have all three fields. The cohort is selected for ultrasound examination; Signs are clinician-observed and Symptoms are not the app's four separate self-reported questions. Height, weight, and gender variation are absent. The reproducible audit is `scripts/audit_breast_symptom_candidate.py` with output `results/br_east_candidate_audit/audit.json`.
+
+Decision and why: Keep the real UCI mammogram model as the only user-facing classifier. Keep symptom and health answers as report context. Without model-compatible mammogram findings, continue to return Human Review with no class estimate. Do not synthesize labels or describe a simulation as a proper cancer prediction. A new questionnaire model requires an adequately sized dataset with matched user-reported inputs and outcome labels, plus independent validation.
+
+Consequences / how to reverse: Changing only the symptom answers will not change the class result. Changing valid mammogram report fields does change the saved model's classification and risk. The DOCX report is produced per submitted result when requested. Revisit only after suitable labeled data are available and evaluated.
