@@ -4,14 +4,27 @@ This project demonstrates classification, uncertainty, anomaly scoring, conseque
 
 ## Run the local app
 
-Requirements: Python 3.11+, uv 0.13.5, and GNU Make.
+Requirements: Python 3.11+, uv, and GNU Make (or run directly with `uv`).
 
+### Using Make
 ```sh
 make setup
 make app
 ```
 
-Open http://localhost:8501. The dark app loads a saved model and does not train while the page loads. The server binds to IPv6 loopback (::1), so it is reachable only on this computer.
+### Using Windows PowerShell / Command Prompt directly
+```powershell
+uv --cache-dir .tools/uv-cache sync --all-groups --locked
+uv --cache-dir .tools/uv-cache run streamlit run src/raa/app/streamlit_app.py --server.headless=true --browser.gatherUsageStats=false --server.address=::1
+```
+
+### Running tests and lint checks
+```powershell
+uv --cache-dir .tools/uv-cache run pytest -q
+uv --cache-dir .tools/uv-cache run ruff check .
+```
+
+Open http://localhost:8501 or http://[::1]:8501. The dark app loads a saved model and does not train while the page loads. The server binds to IPv6 loopback (::1), so it is reachable only on this computer.
 
 ## User questions and result
 
