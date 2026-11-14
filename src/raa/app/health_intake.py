@@ -1,4 +1,4 @@
-"""Simple questionnaire interface backed by UCI mammogram report features."""
+"""Simple report-entry interface backed by the saved UCI mammography RAA model."""
 
 from __future__ import annotations
 
@@ -9,19 +9,33 @@ import numpy as np
 import streamlit as st
 
 from raa.app.copy import (
-    INTAKE_HISTORY_OPTIONS,
-    INTAKE_SYMPTOM_OPTIONS,
-    INTAKE_SYMPTOM_QUESTIONS,
+    AGE_LABEL,
+    DENSITY_CHOICES,
+    DENSITY_HELP,
+    DENSITY_QUESTION,
+    INPUT_HELP,
+    INPUT_INTRO,
+    MARGIN_CHOICES,
+    MARGIN_HELP,
+    MARGIN_QUESTION,
+    MODEL_INPUTS_COPY,
+    NO_ESTIMATE_COPY,
     PRIVACY,
+    REPORT_DETAILS_NOTE,
+    REPORT_HAS_MASS,
+    REPORT_NO_MASS,
+    REPORT_STATUS_LABEL,
+    REPORT_STATUS_OPTIONS,
+    SHAPE_CHOICES,
+    SHAPE_HELP,
+    SHAPE_QUESTION,
+    UNKNOWN_REPORT_VALUE,
 )
 from raa.app.docx_report import build_prediction_report_docx
 from raa.app.report import build_prediction_report
 from raa.explain.llm_adapter import LLMUnavailableError, generate_prediction_narrative
 from raa.mammography import (
     DEFAULT_ARTIFACT_DIR,
-    DENSITY_CODES,
-    MARGIN_CODES,
-    SHAPE_CODES,
     MammographyArtifact,
     explain_mammography_case,
     load_mammography_artifact,
@@ -47,37 +61,37 @@ def _report_code(label: str | None, options: dict[str, int]) -> int | None:
 
 
 def _current_answers() -> dict[str, Any]:
+    """Collect only the fields needed to run or report this model."""
+    status = st.session_state.get("health_report_status")
+    has_mass = status == REPORT_HAS_MASS
     return {
-        "age": st.session_state.get("health_age"),
-        "height_cm": st.session_state.get("health_height_cm"),
-        "weight_kg": st.session_state.get("health_weight_kg"),
-        "gender": st.session_state.get("health_gender"),
-        "family_history": st.session_state.get("health_family_history"),
-        "medical_history": st.session_state.get("health_medical_history"),
-        "report_available": st.session_state.get("health_report_available"),
-        "shape": st.session_state.get("health_shape"),
-        "margin": st.session_state.get("health_margin"),
-        "density": st.session_state.get("health_density"),
-        **{key: st.session_state.get(f"health_{key}") for key, _, _ in INTAKE_SYMPTOM_QUESTIONS},
+        "report_status": status,
+        "age": st.session_state.get("health_age") if has_mass else None,
+        "shape": st.session_state.get("health_shape") if has_mass else None,
+        "margin": st.session_state.get("health_margin") if has_mass else None,
+        "density": st.session_state.get("health_density") if has_mass else None,
     }
 
 
 def _render_form() -> dict[str, Any]:
-    st.write(
-        "Answer the health questions. If you have a mammogram report, enter its mass findings."
-    )
-    st.caption(
-        "Age and mammogram findings affect the model estimate. "
-        "Height, weight, gender, symptoms, and history are included as report context."
-    )
+    st.write(INPUT_INTRO)
+    st.caption(INPUT_HELP)
     with st.expander("Privacy"):
         st.write(PRIVACY)
+
     with st.container(border=True):
-        st.subheader("Basic health")
-        basics_left, basics_right = st.columns(2)
-        with basics_left:
+        st.subheader("Mammogram report")
+        status = st.selectbox(
+            REPORT_STATUS_LABEL,
+            options=REPORT_STATUS_OPTIONS,
+            index=None,
+            placeholder="Choose an answer",
+            key="health_report_status",
+        )
+        if status == REPORT_HAS_MASS:
+            st.info(REPORT_DETAILS_NOTE)
             st.number_input(
-                "Age when the mammogram was taken (years)",
+                AGE_LABEL,
                 min_value=1,
                 max_value=120,
                 value=None,
@@ -85,112 +99,30 @@ def _render_form() -> dict[str, Any]:
                 placeholder="Age",
                 key="health_age",
             )
-        with basics_right:
             st.selectbox(
-                "Gender",
-                options=("Woman", "Man", "Non-binary", "Prefer not to say"),
+                SHAPE_QUESTION,
+                options=(UNKNOWN_REPORT_VALUE, *SHAPE_CHOICES),
                 index=None,
-                placeholder="Choose an answer",
-                key="health_gender",
+                placeholder="Choose the report wording",
+                help=SHAPE_HELP,
+                key="health_shape",
             )
-        basics_left, basics_right = st.columns(2)
-        with basics_left:
-            st.number_input(
-                "Height (cm)",
-                min_value=50,
-                max_value=250,
-                value=None,
-                step=1,
-                placeholder="Height",
-                key="health_height_cm",
+            st.selectbox(
+                MARGIN_QUESTION,
+                options=(UNKNOWN_REPORT_VALUE, *MARGIN_CHOICES),
+                index=None,
+                placeholder="Choose the report wording",
+                help=MARGIN_HELP,
+                key="health_margin",
             )
-        with basics_right:
-            st.number_input(
-                "Weight (kg)",
-                min_value=10,
-                max_value=350,
-                value=None,
-                step=1,
-                placeholder="Weight",
-                key="health_weight_kg",
+            st.selectbox(
+                DENSITY_QUESTION,
+                options=(UNKNOWN_REPORT_VALUE, *DENSITY_CHOICES),
+                index=None,
+                placeholder="Choose the report wording",
+                help=DENSITY_HELP,
+                key="health_density",
             )
-        st.selectbox(
-            "Has a close family member had breast cancer?",
-            options=INTAKE_HISTORY_OPTIONS,
-            index=None,
-            placeholder="Choose Yes, No, or Not sure",
-            key="health_family_history",
-        )
-        st.selectbox(
-            "Have you had a previous breast condition, biopsy, or treatment?",
-            options=INTAKE_HISTORY_OPTIONS,
-            index=None,
-            placeholder="Choose Yes, No, or Not sure",
-            key="health_medical_history",
-        )
-
-        st.divider()
-        st.subheader("Breast health questions")
-        st.caption("Choose Yes, No, or Not sure for each question.")
-        columns = st.columns(2)
-        for index, (key, question, _) in enumerate(INTAKE_SYMPTOM_QUESTIONS):
-            with columns[index % 2]:
-                st.selectbox(
-                    question,
-                    options=INTAKE_SYMPTOM_OPTIONS,
-                    index=None,
-                    placeholder="Choose an answer",
-                    key=f"health_{key}",
-                )
-
-        st.divider()
-        report_available = st.selectbox(
-            "Do you have a mammogram report with a mass finding?",
-            options=("Yes", "No"),
-            index=None,
-            placeholder="Choose Yes or No",
-            key="health_report_available",
-        )
-        if report_available == "Yes":
-            st.markdown("**Find these details in the report**")
-            st.caption(
-                "If the report does not give a clear value, select Not sure. "
-                "The model uses age and these three report fields."
-            )
-            shape_options = ("Not sure", *SHAPE_CODES)
-            margin_options = ("Not sure", *MARGIN_CODES)
-            density_options = ("Not sure", *DENSITY_CODES)
-            left, middle, right = st.columns(3)
-            with left:
-                st.selectbox(
-                    "Mass shape",
-                    options=shape_options,
-                    index=None,
-                    placeholder="Choose a report value",
-                    help="Round, oval, lobulated, or irregular.",
-                    key="health_shape",
-                )
-            with middle:
-                st.selectbox(
-                    "Mass edge (margin)",
-                    options=margin_options,
-                    index=None,
-                    placeholder="Choose a report value",
-                    help=(
-                        "The report may say circumscribed, microlobulated, obscured, "
-                        "ill-defined, or spiculated."
-                    ),
-                    key="health_margin",
-                )
-            with right:
-                st.selectbox(
-                    "Mass density",
-                    options=density_options,
-                    index=None,
-                    placeholder="Choose a report value",
-                    help="High, similar to nearby tissue, low, or mostly fat-containing.",
-                    key="health_density",
-                )
 
     return _current_answers()
 
@@ -200,28 +132,27 @@ def _prediction_facts(
     record: Any | None,
     explanations: tuple[str, ...],
 ) -> dict[str, Any]:
+    if record is not None:
+        reason = record.referral_reason
+    elif answers.get("report_status") == REPORT_NO_MASS:
+        reason = "The report does not describe a mammographic mass"
+    else:
+        reason = "No compatible mammogram mass report was supplied"
     return {
         "model_output": record.predicted_label.title()
         if record is not None
         else "No class estimate",
         "route": record.level.value if record is not None else "Human Review",
         "risk_score": f"{record.risk:.3f}" if record is not None else "not computed",
-        "risk_reason": record.referral_reason
-        if record is not None
-        else "No mammogram report was provided",
+        "risk_reason": reason,
         "explanations": list(explanations),
+        "report_status": answers.get("report_status"),
         "age": answers.get("age"),
-        "height_cm": answers.get("height_cm"),
-        "weight_kg": answers.get("weight_kg"),
-        "gender": answers.get("gender"),
         "report_findings": {
             "shape": answers.get("shape"),
-            "margin": answers.get("margin"),
+            "edge": answers.get("margin"),
             "density": answers.get("density"),
         },
-        "family_history": answers.get("family_history"),
-        "medical_history": answers.get("medical_history"),
-        "symptoms": {short: answers.get(key) for key, _, short in INTAKE_SYMPTOM_QUESTIONS},
     }
 
 
@@ -235,7 +166,7 @@ def _render_report(submission: dict[str, Any]) -> None:
         except LLMUnavailableError:
             narrative = (
                 f"The model output is {facts['model_output']} and the RAA route is "
-                f"{facts['route']}. The explanation and scores below are the recorded model output."
+                f"{facts['route']}. The report lists the supplied model-compatible fields."
             )
         report = build_prediction_report(
             answers=submission["answers"],
@@ -265,11 +196,11 @@ def _render_prediction(submission: dict[str, Any]) -> None:
     record = submission["record"]
     if record is None:
         st.error("\U0001f534 Human Review - no benign/malignant estimate")
-        st.write(
-            "Symptoms and history alone do not match the model's training data. "
-            "No class estimate was produced."
-        )
-        st.caption("A clinician should interpret symptoms and any mammogram findings.")
+        st.write(NO_ESTIMATE_COPY)
+        if submission["answers"].get("report_status") == REPORT_NO_MASS:
+            st.caption("The entered report did not describe a mass for this model to assess.")
+        else:
+            st.caption("The app needs the report details before it can run its saved model.")
         _render_report(submission)
         return
 
@@ -287,9 +218,9 @@ def _render_prediction(submission: dict[str, Any]) -> None:
     st.caption("This estimates a mammographic mass label. It is not a diagnosis.")
     if record.estimated_feature_count:
         st.info(
-            f"{record.measured_feature_count} of 4 inputs measured; "
+            f"{record.measured_feature_count} of 4 model inputs measured; "
             f"{record.estimated_feature_count} estimated from TRAIN data. "
-            "The route is Human Review because report details are incomplete."
+            "Incomplete report details require Human Review."
         )
     for warning in record.input_warnings:
         st.warning(warning)
@@ -314,7 +245,7 @@ def _render_prediction(submission: dict[str, Any]) -> None:
         st.caption(
             f"Automatic through {record.automatic_threshold:.3f}; "
             f"Assisted through {record.assisted_threshold:.3f}; "
-            f"above that is Human Review."
+            "above that is Human Review."
         )
         st.latex(r"R = 0.5U + 0.2A + 0.3C")
         st.caption(
@@ -323,11 +254,7 @@ def _render_prediction(submission: dict[str, Any]) -> None:
         )
 
     with st.expander("About this model"):
-        st.write(
-            "It was trained on UCI's Mammographic Mass dataset using age, mass shape, "
-            "mass edge, and density from mammogram records. Symptoms and family history are "
-            "included in the report but do not change the model score."
-        )
+        st.write(MODEL_INPUTS_COPY)
         test = _load_evaluation()["test"]
         automatic_false_negatives = (
             test["malignant_false_negatives"] - test["malignant_false_negatives_routed_away"]
@@ -348,7 +275,7 @@ def _render_prediction(submission: dict[str, Any]) -> None:
 
 
 def render_mammography_intake() -> None:
-    """Render the single user-facing questionnaire and prediction result."""
+    """Render the single user-facing report-entry questionnaire."""
     try:
         artifact = _load_model()
     except (FileNotFoundError, ValueError) as error:
@@ -359,37 +286,33 @@ def render_mammography_intake() -> None:
     if st.button("Get result", type="primary", key="health_submit"):
         st.session_state.pop("health_submission", None)
         st.session_state.pop("prediction_report", None)
-        required = (
-            "age",
-            "height_cm",
-            "weight_kg",
-            "gender",
-            "family_history",
-            "medical_history",
-            "report_available",
-            *[key for key, _, _ in INTAKE_SYMPTOM_QUESTIONS],
-        )
-        if any(answers.get(key) is None for key in required):
-            st.error("Complete the basic health questions and choose an answer for each symptom.")
-            return
-        if not float(answers["age"]).is_integer():
-            st.error("Enter age as a whole number of years.")
-            return
-        if answers["report_available"] == "Yes" and any(
-            answers.get(key) is None for key in ("shape", "margin", "density")
-        ):
-            st.error("Choose a report value or Not sure for shape, edge, and density.")
+
+        status = answers.get("report_status")
+        if status is None:
+            st.error("Choose whether the mammogram report describes a mass.")
             return
 
-        if answers["report_available"] == "No":
+        if status != REPORT_HAS_MASS:
             record = None
             explanations: tuple[str, ...] = ()
         else:
+            if answers.get("age") is None or any(
+                answers.get(key) is None for key in ("shape", "margin", "density")
+            ):
+                st.error(
+                    "Enter the scan age and choose a report option for shape, edge, and density. "
+                    "Select Not sure / not listed when a report detail is unclear."
+                )
+                return
+            if not float(answers["age"]).is_integer():
+                st.error("Enter age as a whole number of years.")
+                return
+
             values = {
                 "Age": int(answers["age"]),
-                "Shape": _report_code(answers["shape"], SHAPE_CODES),
-                "Margin": _report_code(answers["margin"], MARGIN_CODES),
-                "Density": _report_code(answers["density"], DENSITY_CODES),
+                "Shape": _report_code(answers["shape"], SHAPE_CHOICES),
+                "Margin": _report_code(answers["margin"], MARGIN_CHOICES),
+                "Density": _report_code(answers["density"], DENSITY_CHOICES),
             }
             try:
                 record = predict_mammography_case(values, artifact)
@@ -397,6 +320,7 @@ def render_mammography_intake() -> None:
             except ValueError as error:
                 st.error(str(error))
                 return
+
         st.session_state["health_submission"] = {
             "answers": answers,
             "record": record,

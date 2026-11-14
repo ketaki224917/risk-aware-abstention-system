@@ -69,8 +69,9 @@ def generate_prediction_narrative(
                 "role": "user",
                 "content": (
                     "Summarize these facts in 2 or 3 sentences. Preserve the exact model output "
-                    "and route. State that health details outside the mammogram fields are report "
-                    "context only. Do not add advice or new numbers. Facts: "
+                    "and route. State that only age, shape, edge, and density "
+                    "from the mammogram report are model "
+                    "inputs. Do not add advice or new numbers. Facts: "
                     + json.dumps(facts, ensure_ascii=True, sort_keys=True)
                 ),
             },

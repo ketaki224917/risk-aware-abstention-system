@@ -69,7 +69,7 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [~] P4.1q Train a model compatible with age, symptoms, family history, and medical history (no suitable symptom-only dataset; see DATA-001).
 - [~] P4.1r Bright, responsive styling (superseded by the requested dark theme).
 - [x] P4.1s Local LLM report, revised to report-only generation in P4.1x.
-- [x] P4.1t Dark, high-contrast questionnaire; current form retains four symptom questions and compatible report inputs.
+- [x] P4.1t Dark, high-contrast intake; the current form uses compatible mammogram-report inputs only (supersedes the original symptom-question wording).
 - [x] P4.1u IPv6 loopback binding for localhost.
 - [x] P4.1v Add public UCI Mammographic Mass data and separate saved RAA model; fit preprocessing on TRAIN and record untouched seed-42 TEST metrics.
 - [x] P4.1w Replace the default UI with a dark, plain-language questionnaire; use age and mammogram report fields, explain model sensitivity and route, and return Human Review when no report is available or report details are incomplete.
@@ -86,3 +86,4 @@ Status: `[ ]` todo, `[>]` doing, `[x]` done, `[!]` blocked, `[~]` dropped (with 
 - [x] P4.1ad Audit BrEaST questionnaire-data candidate; keep it out of user inference because its fields and cohort do not support the requested symptom-only model.
 - [!] P4.1ae Build a questionnaire-driven malignant/benign model from suitable labeled data; blocked by DATA-001. Do not use synthetic labels as real predictions.
 - [x] P4.1af Reproduce complete report input through Streamlit AppTest; confirm class output and Human Review conditions.
+- [x] P4.1ag Replace non-model symptom/context questions with age and three plain-language mammogram-report inputs; verify each affects saved-model output and RAA routes.

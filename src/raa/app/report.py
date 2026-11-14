@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from raa.app.copy import MODEL_INPUTS_COPY
 from raa.explain.record import DecisionRecord
 
 DATASET_SOURCE = "UCI Mammographic Mass, DOI 10.24432/C53K6Z"
@@ -49,31 +50,17 @@ def build_prediction_report(
             *(
                 [f"- {text}" for text in explanations]
                 if explanations
-                else [
-                    "No model explanation was generated because no mammogram report was supplied."
-                ]
+                else ["No explanation was generated because compatible report details were absent."]
             ),
             "",
             "INPUTS",
-            f"Age at mammogram: {answers.get('age')}",
-            f"Height (cm): {answers.get('height_cm')}",
-            f"Weight (kg): {answers.get('weight_kg')}",
-            f"Gender: {answers.get('gender')}",
+            f"Report status: {answers.get('report_status') or 'Not supplied'}",
+            f"Age at mammogram: {answers.get('age') or 'Not supplied'}",
             f"Mass shape: {answers.get('shape') or 'Not supplied'}",
             f"Mass edge: {answers.get('margin') or 'Not supplied'}",
             f"Mass density: {answers.get('density') or 'Not supplied'}",
-            f"Family history: {answers.get('family_history')}",
-            f"Previous breast condition, biopsy, or treatment: {answers.get('medical_history')}",
-            "Symptoms:",
         ]
     )
-    symptom_names = {
-        "symptom_lump": "New lump",
-        "symptom_swelling": "Breast swelling",
-        "symptom_skin_changes": "Skin changes",
-        "symptom_nipple_changes": "Nipple changes",
-    }
-    lines.extend(f"- {label}: {answers.get(key)}" for key, label in symptom_names.items())
     test = evaluation.get("test", {})
     if isinstance(test, dict):
         automatic_false_negatives = int(test.get("malignant_false_negatives", 0)) - int(
@@ -96,10 +83,11 @@ def build_prediction_report(
         [
             "",
             "LIMITS",
-            "The model estimates the benign/malignant severity label of a mammographic mass "
-            "from age, shape, edge, and density. Symptoms and history are included for context "
-            "and do not change the model score. This is not a diagnosis. The source dataset is "
-            "small, older, and from one collection.",
+            MODEL_INPUTS_COPY
+            + (
+                " This is not a diagnosis. The source dataset is small, older, "
+                "and from one collection."
+            ),
             f"Dataset source: {DATASET_SOURCE}",
             "Answers are not saved by the app. This report exists only in memory for download.",
         ]

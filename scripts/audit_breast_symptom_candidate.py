@@ -1,8 +1,9 @@
-﻿"""Check whether BrEaST metadata supports the app's requested questionnaire inputs.
+"""Check whether BrEaST metadata supports the app's requested questionnaire inputs.
 
 Run with the project environment:
     python scripts/audit_breast_symptom_candidate.py
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -39,9 +40,7 @@ def _read_first_sheet() -> list[dict[str, str]]:
     with ZipFile(DATA_PATH) as workbook:
         workbook_xml = ET.fromstring(workbook.read("xl/workbook.xml"))
         relationships_xml = ET.fromstring(workbook.read("xl/_rels/workbook.xml.rels"))
-        relationships = {
-            item.attrib["Id"]: item.attrib["Target"] for item in relationships_xml
-        }
+        relationships = {item.attrib["Id"]: item.attrib["Target"] for item in relationships_xml}
         sheet = workbook_xml.find("main:sheets/main:sheet", NS)
         if sheet is None:
             raise ValueError("Workbook has no worksheet.")
@@ -116,9 +115,7 @@ def audit() -> dict[str, object]:
         "sha256": hashlib.sha256(DATA_PATH.read_bytes()).hexdigest(),
         "rows": len(rows),
         "classification_counts": dict(total_classes),
-        "biopsy_confirmed_rows": sum(
-            row["Verification"] == "confirmed by biopsy" for row in rows
-        ),
+        "biopsy_confirmed_rows": sum(row["Verification"] == "confirmed by biopsy" for row in rows),
         "follow_up_confirmed_rows": sum(
             row["Verification"] == "confirmed by follow-up care" for row in rows
         ),
@@ -130,11 +127,14 @@ def audit() -> dict[str, object]:
         "recorded_sign_values": dict(sign_values),
         "recorded_symptom_values": dict(symptom_values),
         "compatibility_findings": [
-            "All cases are adult women examined with breast ultrasound; this is a selected lesion cohort.",
-            "The Signs field records physician-observed findings, not separate self-reported answers.",
+            "All cases are adult women examined with breast ultrasound; "
+            "this is a selected lesion cohort.",
+            "The Signs field records physician-observed findings, "
+            "not separate self-reported answers.",
             "The Symptoms field is an aggregated multi-select field and is missing for many cases.",
             "The data do not include height or weight and do not represent gender diversity.",
-            "Four separate user symptom answers cannot be matched directly to this dataset's fields.",
+            "Four separate user symptom answers cannot be matched "
+            "directly to this dataset's fields.",
         ],
         "decision": (
             "Do not use this small, incomplete, ultrasound-selected dataset to claim proper "
@@ -149,15 +149,19 @@ def main() -> None:
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"Saved {OUTPUT_PATH.relative_to(PROJECT_ROOT)}")
-    print(json.dumps({
-        "rows": result["rows"],
-        "classification_counts": result["classification_counts"],
-        "binary_field_missing_counts": result["binary_field_missing_counts"],
-        "complete_age_signs_symptoms_rows": result["complete_age_signs_symptoms_rows"],
-        "complete_case_class_counts": result["complete_case_class_counts"],
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "rows": result["rows"],
+                "classification_counts": result["classification_counts"],
+                "binary_field_missing_counts": result["binary_field_missing_counts"],
+                "complete_age_signs_symptoms_rows": result["complete_age_signs_symptoms_rows"],
+                "complete_case_class_counts": result["complete_case_class_counts"],
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":
     main()
-

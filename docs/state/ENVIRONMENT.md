@@ -52,7 +52,7 @@
 
 - The default app loads `results/mammographic_mass/model_bundle.joblib`; it does not retrain on page load.
 - Launch with `make app` and open `http://localhost:8501`. Streamlit binds to IPv6 loopback `::1` only.
-- The form collects age, height, weight, gender, family/medical history, and four symptoms. A benign/malignant mass-label estimate requires report shape, margin, and density. The local Ollama report writer runs only after an explicit request.
+- The form asks whether the mammogram report describes a mass, then collects scan age, shape, margin, and density from that report; these four fields feed the classifier. It does not collect symptoms or demographic details. The local report writer runs only after an explicit request.
 - After adding height, weight, and gender, `make test` -> 42 passed; `make lint` -> all checks passed; `ruff format --check .` -> 75 files already formatted. The updated localhost app was restarted and verified: root HTTP 200 and `/_stcore/health` HTTP 200 with body `ok`.
 
 

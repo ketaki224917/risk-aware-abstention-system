@@ -15,9 +15,9 @@ Open http://localhost:8501. The dark app loads a saved model and does not train 
 
 ## User questions and result
 
-The form asks age, height, weight, gender, family history, prior breast condition/biopsy/treatment, and four symptom questions. If the user has a mammogram report, the app also asks for mass shape, edge (margin), and density in plain language.
+The form first asks whether a mammogram report describes a mass. If yes, it asks for scan age, mass shape, mass edge, and density. The three report categories use plain-language choices alongside the terms found in reports.
 
-The model uses only age and the three mammogram report findings. Height, weight, gender, symptoms, and history are report context only and do not change the estimate. Without a mammogram report, the result is Human Review with no benign/malignant estimate. If any report field is marked Not sure, the saved TRAIN-only imputer completes the model input and the RAA route is set to Human Review.
+All four answered fields feed the saved classifier and RAA pipeline. The app no longer asks symptom, family-history, height, weight, or gender questions because the training data has no matching predictors. If the report is unavailable or does not describe a mass, the result is Human Review with no class estimate. If a report detail is marked Not sure / not listed, TRAIN-only imputation lets the pipeline run and the case is routed to Human Review.
 
 The result separates the model's mass-label estimate from the RAA route. It explains the estimate with one-field sensitivity checks and shows disagreement, unusualness, consequence, risk, and validation thresholds. The local language model runs only when the user requests a report; inputs are not sent to a hosted service or saved automatically.
 
@@ -31,7 +31,7 @@ Build or rebuild the saved model with `make mammography-artifact`. The data sour
 
 ## Questionnaire-only dataset check
 
-I audited the public BrEaST ultrasound clinical metadata as a possible source for symptom-driven predictions. It has 256 selected ultrasound cases, but only 132 benign/malignant rows have age, signs, and symptoms all recorded. Its signs are clinician-observed and its symptoms are stored in one aggregated field, so they do not match the app's separate self-reported questions. The app does not use this candidate or synthetic labels; without a mammogram report it returns Human Review. Dataset details and the reproducible completeness audit are in `data/README.md` and `results/br_east_candidate_audit/audit.json`.
+I audited the public BrEaST ultrasound clinical metadata as a possible source for symptom-driven predictions. It has 256 selected ultrasound cases, but only 132 benign/malignant rows have age, signs, and symptoms all recorded. Its signs are clinician-observed and its symptoms are stored in one aggregated field, so they do not match the four report fields supported by the saved mammogram model. The app does not use this candidate or synthetic labels; it asks only for compatible report findings. Dataset details and the reproducible completeness audit are in `data/README.md` and `results/br_east_candidate_audit/audit.json`.
 
 ## Reproduce the paper experiment
 
@@ -39,7 +39,7 @@ I audited the public BrEaST ultrasound clinical metadata as a possible source fo
 
 ```mermaid
 flowchart LR
-    Q[User answers + mammogram report] --> F[Age, shape, margin, density]
+    Q[Report availability + report details] --> F[Age, shape, margin, density]
     F --> P[Saved Random Forest]
     P --> U[Disagreement] --> R[Weighted RAA risk]
     P --> A[Unusualness] --> R
@@ -87,9 +87,9 @@ flowchart LR
 
 **0:00-0:15:** Explain the project: it produces a model lean and a separate Automatic, Assisted, or Human Review route.
 
-**0:15-0:35:** Enter age, family and previous breast history, and the four symptom answers. Point out that symptom and history responses are report context, not model predictors.
+**0:15-0:35:** Choose whether the report describes a mass. The four model inputs are scan age, report shape, edge, and density.
 
-**0:35-0:55:** Select that a mammogram report is available and enter its shape, edge, and density. The model estimate and route update from those actual report fields.
+**0:35-0:55:** Enter the report's shape, edge, and density using the plain-language choices. The model estimate and route update from the four supported inputs.
 
 **0:55-1:15:** Explain the one-field score comparisons, uncertainty, unusualness, consequence, and risk thresholds. Missing report fields are imputed from TRAIN and force Human Review.
 
@@ -98,7 +98,7 @@ flowchart LR
 ## Claim boundaries and privacy
 
 - The model estimates the dataset's mammographic mass severity label; it does not diagnose a person.
-- Height, weight, gender, symptoms, and history do not change the model score. Without mammogram report details, the app returns Human Review without a class estimate.
+- The app asks only for fields used by the saved model. Without a report describing a mass, it returns Human Review without a class estimate.
 - On the seed-42 test split, malignant sensitivity was 61.8%; the Automatic tier error rate was 20.0%. This is unsuitable for real health decisions.
 - The separate WDBC paper experiment remains the source of the original research results. Those values are not from the mammography input model.
 - No fairness, clinical safety, or deployment claim is supported.

@@ -2,6 +2,14 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
+from raa.app.copy import (
+    MARGIN_CHOICES,
+    REPORT_HAS_MASS,
+    REPORT_NO_MASS,
+    REPORT_UNAVAILABLE,
+    SHAPE_CHOICES,
+    UNKNOWN_REPORT_VALUE,
+)
 from raa.explain.llm_adapter import LocalReportNarrative
 from raa.mammography import (
     DEFAULT_ARTIFACT_DIR,
@@ -17,20 +25,13 @@ def _app_path() -> Path:
 
 def _completed_report_case() -> AppTest:
     app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
+    app.selectbox[0].set_value(REPORT_HAS_MASS)
+    app.run()
     app.number_input[0].set_value(58)
-    app.number_input[1].set_value(165)
-    app.number_input[2].set_value(64)
     app.run()
     for widget, value in zip(
-        app.selectbox[:8],
-        ("Woman", "Yes", "No", "Yes", "No", "No", "No", "Yes"),
-        strict=True,
-    ):
-        widget.set_value(value)
-    app.run()
-    for widget, value in zip(
-        app.selectbox[8:],
-        ("Irregular", "Spiculated (spiky edge)", "High"),
+        app.selectbox[1:],
+        ("Irregular (uneven)", "Spiky edge (spiculated)", "High"),
         strict=True,
     ):
         widget.set_value(value)
@@ -39,12 +40,12 @@ def _completed_report_case() -> AppTest:
     return app
 
 
-def test_landing_page_is_the_user_questionnaire_and_uses_requested_title():
+def test_landing_page_asks_only_model_relevant_report_questions():
     app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
     assert not app.exception
     assert [title.value for title in app.title] == ["Risk Aware Abstention System"]
-    assert len(app.number_input) == 3
-    assert len(app.selectbox) == 8
+    assert len(app.number_input) == 0
+    assert len(app.selectbox) == 1
     assert not app.sidebar.radio
     rendered = " ".join(
         [item.value for item in app.title]
@@ -55,6 +56,12 @@ def test_landing_page_is_the_user_questionnaire_and_uses_requested_title():
     )
     assert "Research prototype" not in rendered
     assert "Example cases" not in rendered
+    assert "symptoms" not in rendered.lower()
+
+    app.selectbox[0].set_value(REPORT_HAS_MASS)
+    app.run()
+    assert len(app.number_input) == 1
+    assert len(app.selectbox) == 4
 
 
 def test_complete_mammogram_report_runs_model_and_explains_prediction():
@@ -71,44 +78,39 @@ def test_complete_mammogram_report_runs_model_and_explains_prediction():
     assert not app.get("download_button")
 
 
-def test_no_mammogram_report_returns_human_review_without_class_estimate():
+def test_no_compatible_report_returns_human_review_without_class_estimate():
     app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
-    app.number_input[0].set_value(42)
-    app.number_input[1].set_value(170)
-    app.number_input[2].set_value(72)
-    app.run()
-    for widget, value in zip(
-        app.selectbox[:8],
-        ("Woman", "Not sure", "No", "Yes", "No", "No", "No", "No"),
-        strict=True,
-    ):
-        widget.set_value(value)
+    app.selectbox[0].set_value(REPORT_UNAVAILABLE)
     app.button[0].click().run(timeout=90)
     assert not app.exception
     assert any("Human Review" in item.value for item in app.error)
-    assert any("No class estimate was produced" in item.value for item in app.markdown)
+    assert any(
+        "No benign/malignant class estimate was produced" in item.value for item in app.markdown
+    )
 
 
-def test_unknown_report_fields_are_estimated_but_forced_to_human_review():
+def test_report_with_no_mass_returns_human_review_without_class_estimate():
     app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
+    app.selectbox[0].set_value(REPORT_NO_MASS)
+    app.button[0].click().run(timeout=90)
+    assert not app.exception
+    assert any("Human Review" in item.value for item in app.error)
+    assert any("did not describe a mass" in item.value for item in app.caption)
+
+
+def test_unknown_report_fields_are_imputed_but_forced_to_human_review():
+    app = AppTest.from_file(str(_app_path()), default_timeout=90).run()
+    app.selectbox[0].set_value(REPORT_HAS_MASS)
+    app.run()
     app.number_input[0].set_value(58)
-    app.number_input[1].set_value(165)
-    app.number_input[2].set_value(64)
     app.run()
-    for widget, value in zip(
-        app.selectbox[:8],
-        ("Woman", "Yes", "No", "No", "No", "No", "No", "Yes"),
-        strict=True,
-    ):
-        widget.set_value(value)
-    app.run()
-    for widget in app.selectbox[8:]:
-        widget.set_value("Not sure")
+    for widget in app.selectbox[1:]:
+        widget.set_value(UNKNOWN_REPORT_VALUE)
     app.run()
     app.button[0].click().run(timeout=90)
     assert not app.exception
     assert any("Human Review" in item.value for item in app.error)
-    assert any("1 of 4 inputs measured" in item.value for item in app.info)
+    assert any("1 of 4 model inputs measured" in item.value for item in app.info)
     assert any("incomplete findings require Human Review" in item.value for item in app.warning)
 
 
@@ -130,23 +132,51 @@ def test_report_is_only_generated_after_button_and_download_contains_prediction(
     )
     report_button.click().run()
     assert len(calls) == 1
+    assert calls[0]["report_findings"]["shape"] == "Irregular (uneven)"
     assert not app.exception
     assert any(button.label == "Download Word report" for button in app.get("download_button"))
     assert any("Your report is ready." in item.value for item in app.success)
 
 
-def test_saved_model_responds_to_report_inputs_and_routes_missing_data_to_review():
+def test_every_model_question_changes_a_real_inference_signal():
     artifact = load_mammography_artifact()
-    malignant_case = {"Age": 58, "Shape": 4, "Margin": 5, "Density": 1}
-    benign_case = {"Age": 43, "Shape": 1, "Margin": 1, "Density": 3}
-    malignant = predict_mammography_case(malignant_case, artifact)
-    benign = predict_mammography_case(benign_case, artifact)
-    incomplete = predict_mammography_case(
-        {"Age": 58, "Shape": 4, "Margin": None, "Density": 1}, artifact
+    base = {"Age": 46, "Shape": 1, "Margin": 1, "Density": 3}
+    baseline = predict_mammography_case(base, artifact)
+    alternatives = (
+        ("Age", 60),
+        ("Shape", SHAPE_CHOICES["Irregular (uneven)"]),
+        ("Margin", MARGIN_CHOICES["Spiky edge (spiculated)"]),
+        ("Density", 1),
     )
-    assert malignant.predicted_label == "malignant"
-    assert benign.predicted_label == "benign"
-    assert malignant.risk != benign.risk
-    assert incomplete.level is DecisionLevel.HUMAN_REVIEW
-    assert incomplete.estimated_feature_count == 1
-    assert incomplete.predicted_label in {"malignant", "benign"}
+    for feature, value in alternatives:
+        changed = predict_mammography_case({**base, feature: value}, artifact)
+        assert (
+            changed.malignant_probability != baseline.malignant_probability
+            or changed.risk != baseline.risk
+            or changed.level is not baseline.level
+        )
+
+
+def test_saved_model_covers_all_three_real_raa_routes():
+    artifact = load_mammography_artifact()
+    examples = (
+        (
+            {"Age": 46, "Shape": 1, "Margin": 1, "Density": 3},
+            DecisionLevel.AUTOMATIC,
+            "benign",
+        ),
+        (
+            {"Age": 55, "Shape": 4, "Margin": 3, "Density": 3},
+            DecisionLevel.ASSISTED,
+            "malignant",
+        ),
+        (
+            {"Age": 65, "Shape": 3, "Margin": 3, "Density": 3},
+            DecisionLevel.HUMAN_REVIEW,
+            "malignant",
+        ),
+    )
+    for values, expected_level, expected_lean in examples:
+        record = predict_mammography_case(values, artifact)
+        assert record.level is expected_level
+        assert record.predicted_label == expected_lean

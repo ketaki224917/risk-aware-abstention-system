@@ -3,6 +3,7 @@ from io import BytesIO
 from xml.etree import ElementTree
 from zipfile import ZipFile
 
+from raa.app.copy import MARGIN_CHOICES, REPORT_HAS_MASS, SHAPE_CHOICES
 from raa.app.docx_report import build_prediction_report_docx
 from raa.app.report import build_prediction_report
 from raa.mammography import (
@@ -12,42 +13,39 @@ from raa.mammography import (
 )
 
 
-def test_prediction_report_contains_model_result_context_and_results_metrics():
+def test_prediction_report_contains_model_result_and_only_relevant_inputs():
     artifact = load_mammography_artifact()
     answers = {
+        "report_status": REPORT_HAS_MASS,
         "age": 58,
-        "height_cm": 165,
-        "weight_kg": 64,
-        "gender": "Woman",
-        "shape": "Irregular",
-        "margin": "Spiculated (spiky edge)",
+        "shape": "Irregular (uneven)",
+        "margin": "Spiky edge (spiculated)",
         "density": "High",
-        "family_history": "Yes",
-        "medical_history": "No",
-        "symptom_lump": "Yes",
-        "symptom_swelling": "No",
-        "symptom_skin_changes": "No",
-        "symptom_nipple_changes": "Not sure",
     }
-    values = {"Age": 58, "Shape": 4, "Margin": 5, "Density": 1}
+    values = {
+        "Age": 58,
+        "Shape": SHAPE_CHOICES[answers["shape"]],
+        "Margin": MARGIN_CHOICES[answers["margin"]],
+        "Density": 1,
+    }
     record = predict_mammography_case(values, artifact)
     metrics = json.loads((DEFAULT_ARTIFACT_DIR / "metrics.json").read_text(encoding="utf-8"))
     report = build_prediction_report(
         answers=answers,
         record=record,
-        explanations=("Margin pushed the score toward malignant.",),
+        explanations=("Mass edge moved the score toward malignant.",),
         narrative="The model output is Malignant and the route is Automatic.",
         evaluation=metrics,
     )
     assert report.startswith("RISK AWARE ABSTENTION SYSTEM - PREDICTION REPORT")
     assert "Model output: Malignant" in report
     assert f"Risk-aware route: {record.level.value}" in report
-    assert "Height (cm): 165" in report
-    assert "Weight (kg): 64" in report
-    assert "Gender: Woman" in report
-    assert "New lump: Yes" in report
-    assert "Nipple changes: Not sure" in report
-    assert f"Malignant sensitivity: {metrics['test']['sensitivity_malignant']:.1%}" in report
+    assert "Age at mammogram: 58" in report
+    assert "Mass shape: Irregular (uneven)" in report
+    assert "Mass edge: Spiky edge (spiculated)" in report
+    assert "Mass density: High" in report
+    assert "Height (cm)" not in report
+    assert "Symptoms:" not in report
     assert "This is not a diagnosis." in report
     docx = build_prediction_report_docx(report)
     with ZipFile(BytesIO(docx)) as archive:
@@ -64,4 +62,5 @@ def test_prediction_report_contains_model_result_context_and_results_metrics():
     assert "Risk Aware Abstention System" in word_text
     assert "Prediction report" in word_text
     assert "Model output" in word_text and "Malignant" in word_text
-    assert "Height (cm)" in word_text and "Gender" in word_text
+    assert "Age at mammogram" in word_text
+    assert "Height (cm)" not in word_text

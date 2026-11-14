@@ -7,10 +7,10 @@
   - Recommended wording: report the published values as the original experiment and the source-aligned values as an independent reproduction. See docs/state/RECONCILIATION.md.
 
 - [OPEN 2026-10-29] DATA-001 - A compatible labeled dataset for symptom/history-only predictions remains unavailable.
-  - The app now uses the public UCI Mammographic Mass data for age and mammogram report findings (shape, margin, density). Symptoms and family history are context only; without a report the app returns Human Review with no class estimate.
+  - The app now uses the public UCI Mammographic Mass data for age and mammogram report findings (shape, margin, density). Its form collects those four supported inputs only; symptom/history-only prediction remains unsupported. Without a report describing a mass the app returns Human Review with no class estimate.
   - The UCI model's held-out malignant sensitivity is 61.8% and its Automatic-tier error rate is 20.0%. It is not suitable for health decisions.
   - The BrEaST candidate was audited: 256 ultrasound-selected adult women, but only 132 of 252 benign/malignant rows have age, physician-observed signs, and symptoms all available; its symptom field is aggregated, not the app's four separate questions. It is not connected.
-  - Needed to make symptom answers affect class prediction: a sufficiently sized dataset with matched user-reported inputs and verified benign/malignant outcomes, plus independent validation. Do not generate synthetic labels or present symptoms as supported model inputs.
+  - Needed only if a future version is to predict from symptoms/history: a sufficiently sized dataset with matched user-reported inputs and verified benign/malignant outcomes, plus independent validation. Do not generate synthetic labels or present symptoms as supported model inputs.
 
 ## Resolved environment issue
 

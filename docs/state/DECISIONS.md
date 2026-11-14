@@ -168,7 +168,7 @@ Decision and why: Use one questionnaire page with age, family/medical history, f
 Consequences / how to reverse: Symptoms and history do not affect class predictions; the page says so. Answers are not written to disk by the app, and no hosted LLM endpoint is used. This supersedes the user-facing scope of ADR-020, ADR-022, and ADR-023, but preserves their original history.
 
 
-## ADR-027: Collect basic health details as report context [DECISION] Date: 2026-10-29 Status: active
+## ADR-027: Collect basic health details as report context [DECISION] Date: 2026-10-29 Status: superseded by ADR-030
 
 Context: The user asked for age, height, weight, gender, general breast-health history, and four symptom questions before receiving an RAA result. The selected UCI Mammographic Mass dataset contains age and mammogram mass findings, but it contains no height, weight, gender, family-history, medical-history, or symptom predictors.
 
@@ -185,7 +185,7 @@ Decision and why: Generate a `.docx` package in memory with the deterministic pr
 
 Consequences / how to reverse: The user can open the result in Word without converting a text file. The report content is not stored by the app unless the user chooses to download it.
 
-## ADR-029: Do not connect the BrEaST candidate to symptom-only predictions [DECISION] Date: 2026-11-14 Status: active
+## ADR-029: Do not connect the BrEaST candidate to symptom-only predictions [DECISION] Date: 2026-11-14 Status: superseded for app input scope by ADR-030
 
 Context: The user reported that questionnaire-only submissions produce the same Human Review result and requested real, input-dependent benign/malignant outputs. The app's existing UCI model accepts age and mammogram report shape, margin, and density; it does not learn from symptoms, family history, height, weight, or gender. A symptom-compatible labeled candidate was needed before considering changes.
 
@@ -194,3 +194,16 @@ Evidence: The official BrEaST clinical workbook is licensed CC BY 4.0 and contai
 Decision and why: Keep the real UCI mammogram model as the only user-facing classifier. Keep symptom and health answers as report context. Without model-compatible mammogram findings, continue to return Human Review with no class estimate. Do not synthesize labels or describe a simulation as a proper cancer prediction. A new questionnaire model requires an adequately sized dataset with matched user-reported inputs and outcome labels, plus independent validation.
 
 Consequences / how to reverse: Changing only the symptom answers will not change the class result. Changing valid mammogram report fields does change the saved model's classification and risk. The DOCX report is produced per submitted result when requested. Revisit only after suitable labeled data are available and evaluated.
+
+
+## ADR-030: Ask only model-supported mammogram report inputs [DECISION] Date: 2026-11-14 Status: active
+
+Context: The user pointed out that symptom questions were displayed even though they could not affect inference. The available symptom-compatible candidate data were insufficient and mismatched (ADR-029). The saved UCI Mammographic Mass artifact accepts age, shape, margin, and density.
+
+Options considered: Keep unsupported symptom questions as context; connect an inadequately matched/small dataset; or replace those questions with the saved model's actual input fields and explain how a user can answer them.
+
+Decision and why: Remove symptom, family-history, height, weight, and gender collection. Ask whether a mammogram report describes a mass, then ask age at the scan and report categories for shape, edge/margin, and density, with lay-friendly labels paired with report terms. Feed all four values into the existing saved classifier, uncertainty, anomaly, consequence, risk, decision, and explanation pipeline. If there is no compatible report or any report category is unclear, route to Human Review; unclear fields may be imputed only to execute the pipeline, never to claim a complete case. Keep all answers in memory and do not fabricate findings.
+
+Evidence: Saved-artifact inference checks show that changing each of the four accepted fields changes at least one real model output/risk signal; held-out input profiles cover Automatic, Assisted, and Human Review. UI tests exercise the complete-report and incomplete-report paths.
+
+Consequences / how to reverse: The interface makes clear that the user must copy values from an actual mammogram report; it is not a symptom questionnaire and does not predict an individual's diagnosis. Reintroduce symptom inputs only after obtaining matched, adequately sized, pathology-labeled data and independently validating that model.

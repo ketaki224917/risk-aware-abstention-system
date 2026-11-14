@@ -2,19 +2,19 @@
 
 ## Two-minute explanation
 
-Risk-Aware Abstention combines a classifier with disagreement, unusualness, a consequence term, a risk score, and three routes: Automatic, Assisted, or Human Review. The original WDBC paper-aligned experiment remains separate from the user-facing app. The app collects age, height, weight, gender, family/medical history, and four symptoms, then accepts mass shape, edge, and density from a mammogram report. It shows the model's benign/malignant mass-label lean, the RAA route, and one-field sensitivity checks that explain how report fields changed the model score. Height, weight, gender, symptoms, and history appear as report context but do not affect the classifier. Missing report details force Human Review; without a report there is no class estimate. The held-out malignant sensitivity is 61.8% and Automatic-tier error is 20.0%, so the model is not suitable for health decisions. The local language model writes only the optional report summary and cannot change the class or route.
+Risk-Aware Abstention combines a classifier with disagreement, unusualness, a consequence term, a risk score, and three routes: Automatic, Assisted, or Human Review. The original WDBC paper-aligned experiment remains separate from the user-facing app. For the app, a compatible mammogram report supplies four actual model inputs: age at the scan, mass shape, edge, and density. The app shows a benign/malignant mammographic-mass label estimate, the separate RAA route, and one-field sensitivity checks. Missing or unclear report details lead to Human Review; without a report describing a mass there is no class estimate. The held-out malignant sensitivity is 61.8% and Automatic-tier error is 20.0%, so the model is not suitable for health decisions. The optional local report writer cannot change the class or route.
 
 ## Ten-minute walkthrough
 
-1. Open the dark app at localhost:8501 and point out the title and the health questions.
-2. Explain that height, weight, gender, symptoms, and history are collected as report context only.
-3. Enter age and mammogram report shape, edge, and density; submit and read the model lean and separate RAA route.
+1. Open the dark app at localhost:8501 and point out the report-availability question.
+2. Select that the mammogram report describes a mass, then enter scan age and the report's shape, edge, and density using the friendly labels.
+3. Submit and read the model lean, explanation, and separate RAA route; confirm each of the four inputs reaches the saved model.
 4. Show the one-field sensitivity checks and explain that they describe model behavior, not causes.
 5. Open How the RAA route was chosen; describe disagreement, unusualness, consequence, weighted risk, and p70/p90 thresholds.
 6. Open About this model and read held-out sensitivity and Automatic-tier error before discussing limits.
 7. Generate a report and point out that the local language model writes prose only; deterministic result facts are included in the download.
 8. Show the UCI model artifacts in results/mammographic_mass and distinguish them from the original WDBC results in results/runs.
-9. Close with the no-diagnosis boundary and the remaining lack of a symptom-compatible labeled dataset.
+9. Close with the no-diagnosis boundary and the dataset's limited held-out performance.
 
 ## Likely questions and answers
 
@@ -23,7 +23,7 @@ Risk-Aware Abstention combines a classifier with disagreement, unusualness, a co
 3. **What datasets are used?** WDBC supports the paper-aligned experiment. UCI Mammographic Mass supports the user-facing report-input model.
 4. **How many cases are in the app dataset?** 961 mammographic masses: 516 benign and 445 malignant labels.
 5. **What inputs affect the app model?** Age, mass shape, margin (edge), and density from a mammogram report. BI-RADS is excluded because UCI marks it non-predictive.
-6. **Do symptoms or family history affect its prediction?** No. They are included in a requested report as context; the training data has no corresponding fields.
+6. **Why does the form ask for mammogram-report details instead of symptoms?** Those four fields are the available model inputs in the labeled dataset; the dataset has no symptom or family-history predictors.
 7. **What does the classifier predict?** The benign or malignant severity label recorded for a mammographic mass, not a person's diagnosis.
 8. **How is the app data split?** One fixed stratified 60/20/20 split with seed 42: 576 TRAIN, 192 validation, 193 TEST.
 9. **How are missing report fields handled?** TRAIN-only imputation is applied to run the pipeline, and any incomplete user report is routed to Human Review.
@@ -47,7 +47,7 @@ Risk-Aware Abstention combines a classifier with disagreement, unusualness, a co
 ## Claims not to make
 
 - Do not describe an app result as a person's diagnosis.
-- Do not say symptom answers drive the model output.
+- Do not describe this mammographic-mass label estimate as a prediction of a person's diagnosis.
 - Do not claim clinical safety, fairness, or deployment readiness.
 - Do not call disagreement a calibrated probability of error.
 - Do not claim real-world anomaly performance from synthetic shifts.
