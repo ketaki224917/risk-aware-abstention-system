@@ -1,7 +1,7 @@
 # HANDOFF
 
 Updated: 2026-11-14 | Session #: 15 | Current task: P4.1ag model-supported intake | Status: complete. The dark local form now collects only saved-model inputs from a mammogram report.
-Last commit: 967fde0 [P4.1ag] Replace unsupported symptom questions with model inputs.
+Last completed task commit: 374d078574ab [P4.1ag] Replace unsupported symptom questions with model inputs.
 
 ## Do next (exact)
 
