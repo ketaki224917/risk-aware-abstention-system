@@ -22,6 +22,7 @@ from sklearn.preprocessing import OneHotEncoder
 from raa.config import load_config
 from raa.data import stratified_split
 from raa.explain.record import DecisionRecord
+from raa.explain.separate_explanations import DualExplanation, generate_dual_explanation
 from raa.pipeline import DecisionSystem, fit_system
 from raa.risk.policy import DecisionLevel
 
@@ -291,6 +292,30 @@ def predict_mammography_case(
         measured_feature_count=int(measured.sum()),
         estimated_feature_count=missing,
         input_warnings=tuple(warnings),
+    )
+
+
+def explain_mammography_case_dual(
+    values: dict[str, float | int | None],
+    record: DecisionRecord,
+    artifact: MammographyArtifact,
+) -> DualExplanation:
+    """Return decoupled explanations for the class leaning and routing tier with diagnostics."""
+
+    def malignant_score(row: NDArray[np.float64]) -> float:
+        transformed = np.asarray(artifact.preprocessor.transform(row.reshape(1, -1)))
+        classes = np.asarray(artifact.system.classifier.classes_)
+        malignant_index = int(np.flatnonzero(classes == 0)[0])
+        return float(artifact.system.classifier.predict_proba(transformed)[0, malignant_index])
+
+    weights = {"uncertainty": 0.5, "anomaly": 0.2, "consequence": 0.3}
+    return generate_dual_explanation(
+        feature_names=FEATURE_NAMES,
+        raw_values=values,
+        reference_values=artifact.reference_values,
+        predict_proba_func=malignant_score,
+        record=record,
+        weights=weights,
     )
 
 

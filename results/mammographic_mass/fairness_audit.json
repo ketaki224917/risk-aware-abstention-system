@@ -1,0 +1,413 @@
+{
+  "dataset_name": "UCI Mammographic Mass Dataset",
+  "evaluation_split": "Held-out TEST split (seed 42, 20% sample)",
+  "total_evaluated": 193,
+  "fairness_gap_statement": "CRITICAL DEMOGRAPHIC FAIRNESS GAP:\nThe evaluated subgroups are derived strictly from clinical and radiological features (patient scan age and mammographic tissue density). The UCI Mammographic Mass dataset contains NO demographic attributes such as race, ethnicity, socioeconomic status, geographic region, primary language, or scanner hardware vendor. While feature-based groupings reveal behavioral heterogeneity and error clustering across anatomical phenotypes, THEY DO NOT ESTABLISH DEMOGRAPHIC FAIRNESS OR HEALTH EQUITY. No claims of demographic parity, equalized odds, or fairness across human identity groups can be justified from this dataset. Deploying this system requires prospective auditing across representative, multi-ethnic, multi-center cohorts.",
+  "subgroups": [
+    {
+      "group_name": "Overall Benchmark Cohort",
+      "feature_dimension": "Population Baseline",
+      "n_samples": 193,
+      "cohort_share": 1.0,
+      "malignant_count": 89,
+      "malignant_prevalence": 0.46113989637305697,
+      "baseline_error_rate": 0.2694300518134715,
+      "baseline_error_ci": {
+        "low": 0.21178773433061013,
+        "high": 0.3360717433769217
+      },
+      "malignant_sensitivity": 0.6179775280898876,
+      "malignant_sensitivity_ci": {
+        "low": 0.5141411986237105,
+        "high": 0.7120508525003197
+      },
+      "benign_specificity": 0.8269230769230769,
+      "benign_specificity_ci": {
+        "low": 0.7429326899825907,
+        "high": 0.8876225783123445
+      },
+      "automatic_share": 0.6735751295336787,
+      "assisted_share": 0.16062176165803108,
+      "human_review_share": 0.16580310880829016,
+      "overall_referral_rate": 0.32642487046632124,
+      "referral_rate_ci": {
+        "low": 0.26421974962732864,
+        "high": 0.3954048010064313
+      },
+      "automatic_tier_error_rate": 0.2,
+      "automatic_tier_error_ci": {
+        "low": 0.1402994885932959,
+        "high": 0.27692144812336295
+      },
+      "false_negatives_total": 34,
+      "false_negatives_routed_away": 24,
+      "false_negative_catch_rate": 0.7058823529411765,
+      "sample_limitations": "Evaluated on 193 records with fixed seed."
+    },
+    {
+      "group_name": "Age < 50 (Premenopausal / Younger)",
+      "feature_dimension": "Patient Age",
+      "n_samples": 72,
+      "cohort_share": 0.37305699481865284,
+      "malignant_count": 14,
+      "malignant_prevalence": 0.19444444444444445,
+      "baseline_error_rate": 0.25,
+      "baseline_error_ci": {
+        "low": 0.1643905122547895,
+        "high": 0.3609350740434394
+      },
+      "malignant_sensitivity": 0.14285714285714285,
+      "malignant_sensitivity_ci": {
+        "low": 0.040093921271464966,
+        "high": 0.39941379496970353
+      },
+      "benign_specificity": 0.896551724137931,
+      "benign_specificity_ci": {
+        "low": 0.7921189700751577,
+        "high": 0.951718592576371
+      },
+      "automatic_share": 0.6805555555555556,
+      "assisted_share": 0.1388888888888889,
+      "human_review_share": 0.18055555555555555,
+      "overall_referral_rate": 0.3194444444444444,
+      "referral_rate_ci": {
+        "low": 0.22325610278261976,
+        "high": 0.43392348732165664
+      },
+      "automatic_tier_error_rate": 0.1836734693877551,
+      "automatic_tier_error_ci": {
+        "low": 0.09976341062070308,
+        "high": 0.3135760260289987
+      },
+      "false_negatives_total": 12,
+      "false_negatives_routed_away": 8,
+      "false_negative_catch_rate": 0.6666666666666666,
+      "sample_limitations": "Relatively low malignant prevalence; lower sample count."
+    },
+    {
+      "group_name": "Age 50-64 (Screening Core Age)",
+      "feature_dimension": "Patient Age",
+      "n_samples": 67,
+      "cohort_share": 0.3471502590673575,
+      "malignant_count": 29,
+      "malignant_prevalence": 0.43283582089552236,
+      "baseline_error_rate": 0.29850746268656714,
+      "baseline_error_ci": {
+        "low": 0.20231511276602715,
+        "high": 0.41655213743643765
+      },
+      "malignant_sensitivity": 0.6896551724137931,
+      "malignant_sensitivity_ci": {
+        "low": 0.5076986576690685,
+        "high": 0.8272438325551679
+      },
+      "benign_specificity": 0.7105263157894737,
+      "benign_specificity_ci": {
+        "low": 0.5524286232424794,
+        "high": 0.8299672217151693
+      },
+      "automatic_share": 0.746268656716418,
+      "assisted_share": 0.16417910447761194,
+      "human_review_share": 0.08955223880597014,
+      "overall_referral_rate": 0.2537313432835821,
+      "referral_rate_ci": {
+        "low": 0.16487913818578948,
+        "high": 0.3692919453950009
+      },
+      "automatic_tier_error_rate": 0.26,
+      "automatic_tier_error_ci": {
+        "low": 0.15871527493552393,
+        "high": 0.39553157264848837
+      },
+      "false_negatives_total": 9,
+      "false_negatives_routed_away": 7,
+      "false_negative_catch_rate": 0.7777777777777778,
+      "sample_limitations": "Central screening age cohort with balanced classes."
+    },
+    {
+      "group_name": "Age >= 65 (Older / Postmenopausal)",
+      "feature_dimension": "Patient Age",
+      "n_samples": 51,
+      "cohort_share": 0.26424870466321243,
+      "malignant_count": 43,
+      "malignant_prevalence": 0.8431372549019608,
+      "baseline_error_rate": 0.2549019607843137,
+      "baseline_error_ci": {
+        "low": 0.15545768156582296,
+        "high": 0.3886828183844375
+      },
+      "malignant_sensitivity": 0.7209302325581395,
+      "malignant_sensitivity_ci": {
+        "low": 0.5730897131812113,
+        "high": 0.8325338621376251
+      },
+      "benign_specificity": 0.875,
+      "benign_specificity_ci": {
+        "low": 0.5291118177871464,
+        "high": 0.9775825085499433
+      },
+      "automatic_share": 0.5686274509803921,
+      "assisted_share": 0.19607843137254902,
+      "human_review_share": 0.23529411764705882,
+      "overall_referral_rate": 0.43137254901960786,
+      "referral_rate_ci": {
+        "low": 0.3050123610790954,
+        "high": 0.5673469789069776
+      },
+      "automatic_tier_error_rate": 0.13793103448275862,
+      "automatic_tier_error_ci": {
+        "low": 0.05497439964111964,
+        "high": 0.30558993720352023
+      },
+      "false_negatives_total": 12,
+      "false_negatives_routed_away": 8,
+      "false_negative_catch_rate": 0.6666666666666666,
+      "sample_limitations": "Higher cancer prevalence; higher baseline risk."
+    },
+    {
+      "group_name": "Dense Breast Tissue (Codes 1 & 2)",
+      "feature_dimension": "Radiological Density",
+      "n_samples": 18,
+      "cohort_share": 0.09326424870466321,
+      "malignant_count": 6,
+      "malignant_prevalence": 0.3333333333333333,
+      "baseline_error_rate": 0.3888888888888889,
+      "baseline_error_ci": {
+        "low": 0.2030524657216362,
+        "high": 0.613809583977621
+      },
+      "malignant_sensitivity": 0.5,
+      "malignant_sensitivity_ci": {
+        "low": 0.18761630648265054,
+        "high": 0.8123836935173494
+      },
+      "benign_specificity": 0.6666666666666666,
+      "benign_specificity_ci": {
+        "low": 0.39062208887279953,
+        "high": 0.8618799089087867
+      },
+      "automatic_share": 0.7222222222222222,
+      "assisted_share": 0.16666666666666666,
+      "human_review_share": 0.1111111111111111,
+      "overall_referral_rate": 0.2777777777777778,
+      "referral_rate_ci": {
+        "low": 0.12499753379553993,
+        "high": 0.5087265656029746
+      },
+      "automatic_tier_error_rate": 0.38461538461538464,
+      "automatic_tier_error_ci": {
+        "low": 0.17709707797762575,
+        "high": 0.6447710848733431
+      },
+      "false_negatives_total": 3,
+      "false_negatives_routed_away": 1,
+      "false_negative_catch_rate": 0.3333333333333333,
+      "sample_limitations": "Dense tissue can mask lesions, increasing mammographic difficulty; small sample in Code 1."
+    },
+    {
+      "group_name": "Non-Dense / Fatty Tissue (Codes 3 & 4)",
+      "feature_dimension": "Radiological Density",
+      "n_samples": 162,
+      "cohort_share": 0.8393782383419689,
+      "malignant_count": 80,
+      "malignant_prevalence": 0.49382716049382713,
+      "baseline_error_rate": 0.2654320987654321,
+      "baseline_error_ci": {
+        "low": 0.20344235053066584,
+        "high": 0.33828864640798073
+      },
+      "malignant_sensitivity": 0.6375,
+      "malignant_sensitivity_ci": {
+        "low": 0.5281079450222215,
+        "high": 0.7342920693555084
+      },
+      "benign_specificity": 0.8292682926829268,
+      "benign_specificity_ci": {
+        "low": 0.733582609118571,
+        "high": 0.8954840533294116
+      },
+      "automatic_share": 0.6728395061728395,
+      "assisted_share": 0.14814814814814814,
+      "human_review_share": 0.17901234567901234,
+      "overall_referral_rate": 0.3271604938271605,
+      "referral_rate_ci": {
+        "low": 0.25964541230352883,
+        "high": 0.402682690703895
+      },
+      "automatic_tier_error_rate": 0.1834862385321101,
+      "automatic_tier_error_ci": {
+        "low": 0.12203674360446605,
+        "high": 0.2664858728069233
+      },
+      "false_negatives_total": 29,
+      "false_negatives_routed_away": 22,
+      "false_negative_catch_rate": 0.7586206896551724,
+      "sample_limitations": "Most common radiological category in this dataset; lesions have higher contrast."
+    },
+    {
+      "group_name": "Younger (<50) & Dense Tissue",
+      "feature_dimension": "Age x Density Intersection",
+      "n_samples": 9,
+      "cohort_share": 0.046632124352331605,
+      "malignant_count": 2,
+      "malignant_prevalence": 0.2222222222222222,
+      "baseline_error_rate": 0.3333333333333333,
+      "baseline_error_ci": {
+        "low": 0.1205838183869109,
+        "high": 0.6457978644196036
+      },
+      "malignant_sensitivity": 0.0,
+      "malignant_sensitivity_ci": {
+        "low": 0.0,
+        "high": 0.6576197724933469
+      },
+      "benign_specificity": 0.8571428571428571,
+      "benign_specificity_ci": {
+        "low": 0.4868721707256811,
+        "high": 0.9743203756552565
+      },
+      "automatic_share": 0.6666666666666666,
+      "assisted_share": 0.1111111111111111,
+      "human_review_share": 0.2222222222222222,
+      "overall_referral_rate": 0.3333333333333333,
+      "referral_rate_ci": {
+        "low": 0.1205838183869109,
+        "high": 0.6457978644196036
+      },
+      "automatic_tier_error_rate": 0.3333333333333333,
+      "automatic_tier_error_ci": {
+        "low": 0.09677141110578041,
+        "high": 0.700006684861608
+      },
+      "false_negatives_total": 2,
+      "false_negatives_routed_away": 1,
+      "false_negative_catch_rate": 0.5,
+      "sample_limitations": "Small sub-cohort (n < 40); wide confidence intervals limits statistical conclusions."
+    },
+    {
+      "group_name": "Younger (<50) & Non-Dense",
+      "feature_dimension": "Age x Density Intersection",
+      "n_samples": 56,
+      "cohort_share": 0.29015544041450775,
+      "malignant_count": 10,
+      "malignant_prevalence": 0.17857142857142858,
+      "baseline_error_rate": 0.23214285714285715,
+      "baseline_error_ci": {
+        "low": 0.1409937910920862,
+        "high": 0.35768153215010856
+      },
+      "malignant_sensitivity": 0.2,
+      "malignant_sensitivity_ci": {
+        "low": 0.05668215145437519,
+        "high": 0.5098375284633583
+      },
+      "benign_specificity": 0.8913043478260869,
+      "benign_specificity_ci": {
+        "low": 0.7696217135574916,
+        "high": 0.9526685414190106
+      },
+      "automatic_share": 0.6964285714285714,
+      "assisted_share": 0.10714285714285714,
+      "human_review_share": 0.19642857142857142,
+      "overall_referral_rate": 0.30357142857142855,
+      "referral_rate_ci": {
+        "low": 0.19900325085369447,
+        "high": 0.43335865285724834
+      },
+      "automatic_tier_error_rate": 0.15384615384615385,
+      "automatic_tier_error_ci": {
+        "low": 0.07247472376982099,
+        "high": 0.29729463648926696
+      },
+      "false_negatives_total": 8,
+      "false_negatives_routed_away": 6,
+      "false_negative_catch_rate": 0.75,
+      "sample_limitations": "Moderate sub-cohort size."
+    },
+    {
+      "group_name": "Older (>=65) & Dense Tissue",
+      "feature_dimension": "Age x Density Intersection",
+      "n_samples": 4,
+      "cohort_share": 0.02072538860103627,
+      "malignant_count": 2,
+      "malignant_prevalence": 0.5,
+      "baseline_error_rate": 0.5,
+      "baseline_error_ci": {
+        "low": 0.15003898915214947,
+        "high": 0.8499610108478506
+      },
+      "malignant_sensitivity": 0.5,
+      "malignant_sensitivity_ci": {
+        "low": 0.09453120573423074,
+        "high": 0.9054687942657693
+      },
+      "benign_specificity": 0.5,
+      "benign_specificity_ci": {
+        "low": 0.09453120573423074,
+        "high": 0.9054687942657693
+      },
+      "automatic_share": 0.5,
+      "assisted_share": 0.5,
+      "human_review_share": 0.0,
+      "overall_referral_rate": 0.5,
+      "referral_rate_ci": {
+        "low": 0.15003898915214947,
+        "high": 0.8499610108478506
+      },
+      "automatic_tier_error_rate": 0.5,
+      "automatic_tier_error_ci": {
+        "low": 0.09453120573423074,
+        "high": 0.9054687942657693
+      },
+      "false_negatives_total": 1,
+      "false_negatives_routed_away": 0,
+      "false_negative_catch_rate": 0.0,
+      "sample_limitations": "Clinically rare subgroup; high variance in error estimation."
+    },
+    {
+      "group_name": "Older (>=65) & Non-Dense",
+      "feature_dimension": "Age x Density Intersection",
+      "n_samples": 45,
+      "cohort_share": 0.23316062176165803,
+      "malignant_count": 40,
+      "malignant_prevalence": 0.8888888888888888,
+      "baseline_error_rate": 0.24444444444444444,
+      "baseline_error_ci": {
+        "low": 0.1423547943377172,
+        "high": 0.3867338005702035
+      },
+      "malignant_sensitivity": 0.725,
+      "malignant_sensitivity_ci": {
+        "low": 0.5716504419378943,
+        "high": 0.8389198375233267
+      },
+      "benign_specificity": 1.0,
+      "benign_specificity_ci": {
+        "low": 0.5655175352168251,
+        "high": 1.0
+      },
+      "automatic_share": 0.5777777777777777,
+      "assisted_share": 0.17777777777777778,
+      "human_review_share": 0.24444444444444444,
+      "overall_referral_rate": 0.4222222222222222,
+      "referral_rate_ci": {
+        "low": 0.289687024672703,
+        "high": 0.5669921129079686
+      },
+      "automatic_tier_error_rate": 0.11538461538461539,
+      "automatic_tier_error_ci": {
+        "low": 0.04003244623610615,
+        "high": 0.2897590321171364
+      },
+      "false_negatives_total": 11,
+      "false_negatives_routed_away": 8,
+      "false_negative_catch_rate": 0.7272727272727273,
+      "sample_limitations": "High malignancy prevalence in fatty tissue."
+    }
+  ],
+  "methodology": {
+    "uncertainty_method": "Wilson score interval with continuity correction (alpha=0.05, 95% confidence).",
+    "abstention_policy": "Validation 70th / 90th percentile thresholds on composite risk R.",
+    "fairness_boundary": "Feature-based subgroups demonstrate error distributions across clinical features, not demographic equity."
+  }
+}

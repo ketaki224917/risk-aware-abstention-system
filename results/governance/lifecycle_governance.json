@@ -1,0 +1,22 @@
+{
+  "accountability_matrix": {
+    "model_owner": "Lead ML Research Engineer (responsible for code integrity, reproducible builds, and split hygiene)",
+    "safety_officer": "Clinical Safety Officer (responsible for consequence matrix, threshold sign-off, and claim boundaries)",
+    "governance_lead": "Information Governance Lead (responsible for privacy compliance and audit logs)"
+  },
+  "transparency_protocol": {
+    "explanation_guarantee": "Every inference produces twin grounded explanations (Class influence vs Routing risk) before action.",
+    "rule_checker": "Rule-based regex engine verifies that outputs contain zero ungrounded clinical claims or diagnosis promises.",
+    "audit_logging": "Immutable DecisionRecord captures model weights, thresholds, input values, and component scores."
+  },
+  "privacy_and_security": {
+    "network_isolation": "Inference and web UI run strictly on IPv6 loopback (::1). Zero external network egress.",
+    "data_persistence": "Zero database or disk storage of patient intake responses. Ephemeral memory-only execution.",
+    "phi_minimization": "System collects no direct identifiers (name, date of birth, NHS/MRN number)."
+  },
+  "lifecycle_management": {
+    "drift_monitoring": "Anomaly Isolation Forest acts as an in-line sentinel for covariate shift.",
+    "recalibration_triggers": "Model requires re-benchmarking if validation risk distribution drifts by >10% Wasserstein distance.",
+    "decommissioning_criteria": "Retire model immediately if data source is deprecated or hardware scanners change imaging physics."
+  }
+}

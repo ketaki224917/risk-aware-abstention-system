@@ -1,0 +1,19 @@
+{
+  "model_name": "Risk-Aware Abstention Mammographic Mass Decision Agent",
+  "model_version": "1.0.0-rc",
+  "architecture_overview": "Composite ensemble: 300-tree Scikit-Learn RandomForestClassifier primary predictor; 30-member bootstrap ensemble for predictive disagreement (U); 200-tree IsolationForest for novelty scoring (A); asymmetric consequence weighting (C); validation percentile routing policy.",
+  "intended_use": "Secondary triage prioritization and educational demonstration. Assisting clinical workflows by routing high-confidence cases to Automatic processing while escalating borderline cases.",
+  "out_of_scope_uses": "Standalone autonomous medical diagnosis, emergency patient discharge, direct patient self-diagnosis without qualified radiologist review.",
+  "relevant_factors": "Patient age, mass shape, mass margin, radiological breast tissue density. NOT trained on symptoms, family history, breast implants, or non-mass lesions.",
+  "performance_metrics": {
+    "Held-out Test Accuracy": "73.1% (seed 42 split)",
+    "Malignant Sensitivity": "61.8%",
+    "Benign Specificity": "82.7%",
+    "AUROC": "0.810",
+    "Automatic Tier Coverage": "67.4% (130/193 cases at p70)",
+    "Automatic Tier Error Rate": "20.0%",
+    "Malignant False Negatives in Auto": "10 of 34 total test false negatives"
+  },
+  "ethical_considerations": "High error rate in Automatic tier (20%) reflects dataset limitations and confirms this prototype must never be used for actual patient care. Explanations are strictly grounded and rule-checked.",
+  "caveats_and_recommendations": "The model demonstrates the abstention *architecture*, not clinical efficacy. Any clinical application requires prospective multi-center trial validation on modern full-field digital mammography (FFDM) or tomosynthesis (DBT) data."
+}

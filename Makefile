@@ -1,4 +1,4 @@
-.PHONY: setup test lint reproduce ablate stress explain-eval demo-artifact mammography-artifact app all
+.PHONY: setup test lint reproduce ablate stress explain-eval demo-artifact mammography-artifact app all governance fairness-audit workload-sim llm-eval
 
 UV ?= uv
 
@@ -40,3 +40,15 @@ mammography-artifact:
 
 results/mammographic_mass/model_bundle.joblib:
 	$(UV) --cache-dir .tools/uv-cache run python -m raa.app.prepare_mammography_artifact
+
+governance:
+	$(UV) --cache-dir .tools/uv-cache run python -c "from raa.governance import export_governance_artifacts; export_governance_artifacts()"
+
+fairness-audit:
+	$(UV) --cache-dir .tools/uv-cache run python -c "from raa.eval.fairness_audit import save_fairness_audit; save_fairness_audit()"
+
+workload-sim:
+	$(UV) --cache-dir .tools/uv-cache run python -c "from raa.eval.workload_simulation import save_workload_simulation; save_workload_simulation()"
+
+llm-eval:
+	$(UV) --cache-dir .tools/uv-cache run python -c "from raa.explain.llm_evaluation import save_llm_report_evaluation; save_llm_report_evaluation()"

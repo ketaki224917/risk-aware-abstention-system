@@ -1,0 +1,11 @@
+{
+  "dataset_name": "UCI Mammographic Mass Dataset",
+  "doi_or_url": "https://archive.ics.uci.edu/dataset/161/mammographic+mass (DOI: 10.24432/C53K6Z)",
+  "motivation": "Collected to evaluate machine learning methods for discriminating benign from malignant mammographic masses based on BI-RADS attributes and patient age.",
+  "composition": "961 instances (516 benign, 445 malignant). Features: Age (integer), Shape (1-4), Margin (1-5), Density (1-4), BI-RADS assessment (1-5, excluded in this system as non-predictive).",
+  "collection_process": "Collected at the Institute of Radiology, Charit\u00e9 - University Medicine Berlin, between Autumn 2003 and Summer 2006. Ground truth established via needle core biopsy histopathology or at least one year of benign radiological follow-up.",
+  "preprocessing_and_cleaning": "Missing values (represented as '?') imputed using statistics fitted on TRAIN splits only (median for Age, mode for categorical). BI-RADS column excluded to prevent label leakage. Severity mapped to 0 (malignant) and 1 (benign) to align with project safety conventions.",
+  "uses_and_limitations": "SUITABLE ONLY for methodological research and software prototypes. NOT suitable for clinical deployment. Single-institution older dataset with small sample size and no demographic or racial diversity metadata.",
+  "distribution_and_licensing": "Creative Commons Attribution 4.0 International (CC BY 4.0).",
+  "maintenance_plan": "Static archived academic dataset. No ongoing updates from originating institution. Local pipeline maintains cryptographic SHA-256 verification hash."
+}

@@ -1,0 +1,11 @@
+{
+  "dataset_name": "Wisconsin Diagnostic Breast Cancer (WDBC)",
+  "doi_or_url": "https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic",
+  "motivation": "Created by Dr. William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian (1995) to predict malignancy directly from digitized images of fine needle aspirate (FNA) cell nuclei.",
+  "composition": "569 samples (212 malignant, 357 benign). 30 continuous real-valued features computing 10 nuclear characteristics (radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, fractal dimension) across mean, standard error, and 'worst'.",
+  "collection_process": "Digitized micrographs of FNA glass slides from breast mass patients at the University of Wisconsin Hospitals, Madison. Cell boundaries determined via X-window program (Xcyt).",
+  "preprocessing_and_cleaning": "Standardized feature scaling fitted strictly on training splits. No missing values in original WDBC.",
+  "uses_and_limitations": "Benchmark dataset for algorithmic verification only. Extremely high signal-to-noise ratio untypical of routine screening. Completely lacks patient demographic variables.",
+  "distribution_and_licensing": "Public domain / open research use.",
+  "maintenance_plan": "Archival benchmark; preserved in Scikit-Learn standard distribution."
+}

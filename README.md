@@ -1,4 +1,4 @@
-﻿# Risk Aware Abstention System
+# Risk Aware Abstention System
 
 This project demonstrates classification, uncertainty, anomaly scoring, consequence-weighted risk, and Automatic / Assisted / Human Review routing. Its original WDBC paper experiment is preserved separately from the user-facing mammogram report estimator.
 
@@ -120,10 +120,26 @@ flowchart LR
 ## Project map
 
 - **src/raa/mammography.py**: UCI data loader, train-only preprocessing, saved mammogram classifier, RAA decisions, and local sensitivity explanations.
+- **src/raa/agent_ethics.py**: Syllabus-aligned utility-based decision agent and tripartite ethics framework (Utilitarian, Deontological, Virtue Ethics).
+- **src/raa/governance.py**: Comprehensive AI Impact Assessment, risk register, dataset datasheets (UCI & WDBC), model cards, and lifecycle governance protocols.
+- **src/raa/eval/fairness_audit.py**: Feature-based subgroup fairness audit, Wilson 95% CIs, and explicit demographic fairness gap disclosure.
+- **src/raa/explain/separate_explanations.py**: Separated explanations for class influence vs triage routing, with permutation fidelity and stability metrics.
+- **src/raa/explain/llm_evaluation.py**: Systematic evaluation harness comparing LLM narratives against deterministic templates for grounding, hallucination, and clinical language.
+- **src/raa/eval/workload_simulation.py**: Human review capacity sweep (10%-90%), offline policy simulations, and explicit human evaluation claim boundaries.
 - **src/raa/app/health_intake.py**: dark questionnaire, result rendering, and user-requested report flow.
 - **data/mammographic_masses.data**: UCI Mammographic Mass source data; license/source notes are in data/README.md.
-- **results/mammographic_mass/**: saved model bundle, manifest, held-out metrics.
+- **results/mammographic_mass/**: saved model bundle, manifest, held-out metrics, fairness audit.
+- **results/governance/**: exported JSON risk registers, datasheets, model cards, lifecycle governance.
+- **results/workload_simulation/**: validation capacity sweep and offline reviewer policy simulation results.
+- **results/llm_report_eval/**: deterministic template vs LLM comparative evaluation results.
 - **results/runs/**: separate WDBC paper-aligned experiment artifacts.
+- **docs/**: in-depth architectural and ethical analyses:
+  - [Agent & Ethics Analysis](docs/agent_and_ethics_analysis.md)
+  - [AI Impact Assessment](docs/ai_impact_assessment.md)
+  - [Fairness Audit & Demographic Gap](docs/fairness_audit.md)
+  - [Separate Class vs Route Explanations](docs/separate_explanations.md)
+  - [LLM Report Evaluation](docs/llm_report_evaluation.md)
+  - [Human Review & Workload Evaluation](docs/human_review_evaluation.md)
 - **docs/state/**: project status, decisions, blockers, reconciliation, and source map.
 
 ## Report generation

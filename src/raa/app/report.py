@@ -6,6 +6,7 @@ from datetime import datetime
 
 from raa.app.copy import MODEL_INPUTS_COPY
 from raa.explain.record import DecisionRecord
+from raa.explain.separate_explanations import DualExplanation
 
 DATASET_SOURCE = "UCI Mammographic Mass, DOI 10.24432/C53K6Z"
 
@@ -18,6 +19,7 @@ def build_prediction_report(
     narrative: str,
     evaluation: dict[str, object],
     generated_at: datetime | None = None,
+    dual_explanation: DualExplanation | None = None,
 ) -> str:
     """Return a report string; no file is created or written by this function."""
     timestamp = (generated_at or datetime.now().astimezone()).astimezone()
@@ -52,6 +54,37 @@ def build_prediction_report(
                 if explanations
                 else ["No explanation was generated because compatible report details were absent."]
             ),
+        ]
+    )
+    if dual_explanation is not None:
+        lines.extend(
+            [
+                "",
+                "ROUTE EXPLANATION (WHY THIS TRIAGE ROUTE WAS CHOSEN)",
+                dual_explanation.route_explanation.summary_narrative,
+                f"Primary risk driver: {dual_explanation.route_explanation.primary_risk_driver}",
+                *[
+                    f"- {c.component_name}: raw={c.raw_value:.3f}, "
+                    f"weighted={c.weighted_contribution:.3f} "
+                    f"({c.percentage_of_risk:.1f}% of composite risk)"
+                    for c in dual_explanation.route_explanation.risk_components
+                ],
+                "",
+                "EXPLANATION DIAGNOSTICS",
+                (
+                    f"- Stability: "
+                    f"{'PASSED' if dual_explanation.diagnostics.stability_passed else 'FLAGGED'} "
+                    f"({dual_explanation.diagnostics.stability_note})"
+                ),
+                (
+                    f"- Fidelity: "
+                    f"{'PASSED' if dual_explanation.diagnostics.fidelity_passed else 'FLAGGED'} "
+                    f"({dual_explanation.diagnostics.fidelity_note})"
+                ),
+            ]
+        )
+    lines.extend(
+        [
             "",
             "INPUTS",
             f"Report status: {answers.get('report_status') or 'Not supplied'}",

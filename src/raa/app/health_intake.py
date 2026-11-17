@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 import streamlit as st
 
+from raa.agent_ethics import get_agent_architecture, get_ethics_perspectives, get_task_environment
 from raa.app.copy import (
     AGE_LABEL,
     DENSITY_CHOICES,
@@ -33,11 +34,15 @@ from raa.app.copy import (
 )
 from raa.app.docx_report import build_prediction_report_docx
 from raa.app.report import build_prediction_report
+from raa.eval.fairness_audit import FAIRNESS_GAP_STATEMENT, run_fairness_audit
+from raa.eval.workload_simulation import HUMAN_REVIEW_CLAIM_BOUNDARY, run_workload_simulation
 from raa.explain.llm_adapter import LLMUnavailableError, generate_prediction_narrative
+from raa.governance import get_lifecycle_governance, get_model_card_mammography, get_risk_register
 from raa.mammography import (
     DEFAULT_ARTIFACT_DIR,
     MammographyArtifact,
     explain_mammography_case,
+    explain_mammography_case_dual,
     load_mammography_artifact,
     predict_mammography_case,
 )
@@ -49,6 +54,16 @@ APP_TITLE = "Risk Aware Abstention System"
 @st.cache_data
 def _load_evaluation() -> dict[str, Any]:
     return json.loads((DEFAULT_ARTIFACT_DIR / "metrics.json").read_text(encoding="utf-8"))
+
+
+@st.cache_data
+def _load_fairness_report() -> Any:
+    return run_fairness_audit(on_test_split_only=True)
+
+
+@st.cache_data
+def _load_workload_report() -> Any:
+    return run_workload_simulation()
 
 
 @st.cache_resource(show_spinner="Loading the saved model...")
@@ -174,6 +189,7 @@ def _render_report(submission: dict[str, Any]) -> None:
             explanations=submission["explanations"],
             narrative=narrative,
             evaluation=_load_evaluation(),
+            dual_explanation=submission.get("dual_explanation"),
         )
         st.session_state["prediction_report"] = {
             "answers": submission["answers"],
@@ -190,6 +206,149 @@ def _render_report(submission: dict[str, Any]) -> None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             key="prediction_report_download",
         )
+
+
+def _render_agent_and_ethics() -> None:
+    """Render the syllabus-aligned utility agent and ethics analysis."""
+    with st.expander("Syllabus-Aligned Agent & Ethics Analysis"):
+        st.markdown("### Utility-Based Decision Agent Specification")
+        arch = get_agent_architecture()
+        env = get_task_environment()
+        st.write(
+            f"**Agent Taxonomy:** `{arch.agent_type}`. Rather than maximizing raw accuracy, "
+            "the agent optimizes an explicit clinical utility function balancing false negative "
+            "harm against clinical human review capacity."
+        )
+        st.markdown(
+            "**Formal Decision Policy:** "
+            r"$\pi(\mathbf{x}) = \text{Automatic if } R \le t_{70} \text{ else } "
+            r"(\text{Assisted if } R \le t_{90} \text{ else Human Review})$"
+        )
+        st.caption(env.performance_measure)
+
+        st.markdown("#### PEAS Task Environment")
+        st.table(
+            [
+                {
+                    "PEAS Dimension": "Performance Measure",
+                    "Specification": env.performance_measure[:100] + "...",
+                },
+                {"PEAS Dimension": "Environment", "Specification": env.environment[:100] + "..."},
+                {"PEAS Dimension": "Actuators", "Specification": env.actuators},
+                {"PEAS Dimension": "Sensors", "Specification": env.sensors},
+            ]
+        )
+
+        st.markdown("#### Tripartite Ethics Evaluation")
+        ethics = get_ethics_perspectives()
+        cols = st.columns(3)
+        for col, key in zip(cols, ("utilitarian", "deontological", "virtue_ethics"), strict=True):
+            pers = ethics[key]
+            with col, st.container(border=True):
+                st.markdown(f"**{pers.framework_name}**")
+                st.caption(f"*Core Principle:* {pers.core_principle}")
+                st.write(pers.agent_manifestation)
+                st.info(f"**Trade-off:** {pers.concrete_tradeoff}")
+
+
+def _render_governance_section() -> None:
+    """Render the AI Impact Assessment, Risk Register, and Model Card highlights."""
+    with st.expander("AI Impact Assessment & Risk Register"):
+        st.markdown("### Concise AI Safety Risk Register")
+        register = get_risk_register()
+        reg_rows = [
+            {
+                "ID": item.risk_id,
+                "Foreseeable Harm": item.foreseeable_harm[:80] + "...",
+                "Severity": item.pre_mitigation_severity,
+                "Key Mitigation": item.mitigations[0],
+                "Owner": item.responsible_owner.split("&")[0].strip(),
+                "Residual Risk": item.residual_risk[:35] + "...",
+            }
+            for item in register
+        ]
+        st.table(reg_rows)
+
+        st.markdown("### Model Card & Datasheet Summary")
+        card = get_model_card_mammography()
+        gov = get_lifecycle_governance()
+        st.write(f"**Model Name:** {card.model_name} (v{card.model_version})")
+        st.write(f"**Intended Use:** {card.intended_use}")
+        st.write(f"**Out-of-Scope:** {card.out_of_scope_uses}")
+        st.caption(f"Governance Privacy: {gov['privacy_and_security']['network_isolation']}")
+
+
+def _render_fairness_section() -> None:
+    """Render the subgroup fairness audit and explicit demographic fairness gap."""
+    with st.expander("Subgroup Fairness Audit & Demographic Gap"):
+        st.error(FAIRNESS_GAP_STATEMENT)
+        report = _load_fairness_report()
+        st.write(
+            f"Evaluated on {report.total_evaluated} held-out cases with "
+            "Wilson 95% Confidence Intervals."
+        )
+        table_rows = []
+        for sub in report.subgroups[:6]:
+            elo, ehi = sub.baseline_error_ci.low, sub.baseline_error_ci.high
+            err_ci = f"{sub.baseline_error_rate:.1%} [{elo:.1%}-{ehi:.1%}]"
+            slo, shi = sub.malignant_sensitivity_ci.low, sub.malignant_sensitivity_ci.high
+            sens_ci = (
+                f"{sub.malignant_sensitivity:.1%} [{slo:.1%}-{shi:.1%}]"
+                if not np.isnan(sub.malignant_sensitivity)
+                else "N/A"
+            )
+            table_rows.append(
+                {
+                    "Subgroup": sub.group_name,
+                    "N": sub.n_samples,
+                    "Malignant Prev": f"{sub.malignant_prevalence:.1%}",
+                    "Error Rate [95% CI]": err_ci,
+                    "Sensitivity [95% CI]": sens_ci,
+                    "FN Catch Rate": f"{sub.false_negative_catch_rate:.1%}"
+                    if not np.isnan(sub.false_negative_catch_rate)
+                    else "N/A",
+                }
+            )
+        st.table(table_rows)
+        st.caption(
+            "Notice: In younger patients (<50), malignant prevalence is lower and raw sensitivity "
+            "drops, but RAA abstention catches ~67% of missed malignancies and routes them "
+            "for human verification."
+        )
+
+
+def _render_workload_section() -> None:
+    """Render the human review workload capacity sweep and offline simulation."""
+    with st.expander("Human Review Workload & Capacity Simulation"):
+        st.warning(HUMAN_REVIEW_CLAIM_BOUNDARY)
+        sim = _load_workload_report()
+        st.markdown("### Validation Capacity Sweep (Cases Reviewed per 100)")
+        sweep_rows = []
+        for row in sim.capacity_sweep:
+            sweep_rows.append(
+                {
+                    "Capacity Budget": f"{row.capacity_per_100:.0f}%",
+                    "Percentiles": (
+                        f"p{row.automatic_percentile:.0f} / p{row.assisted_percentile:.1f}"
+                    ),
+                    "Automatic Cases": f"{row.automatic_count} ({row.automatic_share:.1%})",
+                    "Assisted": f"{row.assisted_count} ({row.assisted_share:.1%})",
+                    "Human Review": f"{row.human_review_count} ({row.human_review_share:.1%})",
+                    "Auto Tier Error": f"{row.automatic_tier_error_rate:.1%}",
+                    "FN Catch Rate": f"{row.false_negative_catch_rate:.1%}",
+                }
+            )
+        st.table(sweep_rows)
+
+        st.markdown("### Offline Review Policy Simulations")
+        for pol in sim.offline_policy_simulations:
+            st.markdown(f"**{pol.policy_name}**")
+            st.write(
+                f"• Reviewer model: *{pol.reviewer_model_assumed}* | "
+                f"Net error rate: **{pol.net_system_error_rate:.1%}** | "
+                f"Unreviewed false negatives: **{pol.unreviewed_false_negatives}** | "
+                f"Workload: {pol.workload_case_count} cases"
+            )
 
 
 def _render_prediction(submission: dict[str, Any]) -> None:
@@ -225,33 +384,61 @@ def _render_prediction(submission: dict[str, Any]) -> None:
     for warning in record.input_warnings:
         st.warning(warning)
 
+    dual = submission.get("dual_explanation")
     st.subheader("Why the model leaned this way")
-    for explanation in submission["explanations"]:
-        st.write(f"- {explanation}")
+    if dual is not None:
+        st.caption("Class Explanation - why the model leaned Benign or Malignant:")
+        st.write(dual.class_explanation.summary_narrative)
+        for attrib in dual.class_explanation.feature_attributions:
+            st.write(f"- {attrib.summary_text}")
+        with st.container(border=True):
+            st.caption("Explanation Verification Diagnostics:")
+            d_cols = st.columns(2)
+            d_cols[0].write(
+                f"• Stability: {'PASSED' if dual.diagnostics.stability_passed else 'FLAGGED'} "
+                f"({dual.diagnostics.stability_note})"
+            )
+            d_cols[1].write(
+                f"• Fidelity: {'PASSED' if dual.diagnostics.fidelity_passed else 'FLAGGED'} "
+                f"({dual.diagnostics.fidelity_note})"
+            )
+    else:
+        for explanation in submission["explanations"]:
+            st.write(f"- {explanation}")
 
     with st.expander("How the RAA route was chosen"):
+        if dual is not None:
+            st.caption("Route Explanation - why this triage route was chosen:")
+            st.write(dual.route_explanation.summary_narrative)
+            st.markdown(
+                f"**Primary risk contributor:** `{dual.route_explanation.primary_risk_driver}`"
+            )
+
         st.caption(
             "Risk signals used by the route; these are model scores, not cancer probabilities."
         )
-        columns = st.columns(3)
-        for column, title, value in zip(
-            columns,
-            ("Model disagreement", "Unusualness", "Cost of error"),
-            (record.uncertainty, record.anomaly, record.consequence),
-            strict=True,
-        ):
-            column.progress(int(np.clip(value, 0, 1) * 100), text=f"{title}: {value:.2f}")
-        st.progress(int(np.clip(record.risk, 0, 1) * 100), text=f"Combined risk: {record.risk:.3f}")
-        st.caption(
-            f"Automatic through {record.automatic_threshold:.3f}; "
-            f"Assisted through {record.assisted_threshold:.3f}; "
-            "above that is Human Review."
-        )
-        st.latex(r"R = 0.5U + 0.2A + 0.3C")
-        st.caption(
-            "The thresholds and consequence values are project settings. "
-            "The model score is not a calibrated chance of cancer."
-        )
+
+    columns = st.columns(3)
+    for column, title, value in zip(
+        columns,
+        ("Model disagreement", "Unusualness", "Cost of error"),
+        (record.uncertainty, record.anomaly, record.consequence),
+        strict=True,
+    ):
+        column.progress(int(np.clip(value, 0, 1) * 100), text=f"{title}: {value:.2f}")
+    st.progress(int(np.clip(record.risk, 0, 1) * 100), text=f"Combined risk: {record.risk:.3f}")
+    st.caption(
+        f"Automatic through {record.automatic_threshold:.3f}; "
+        f"Assisted through {record.assisted_threshold:.3f}; "
+        "above that is Human Review."
+    )
+    st.latex(r"R = 0.5U + 0.2A + 0.3C")
+
+    # The 4 comprehensive academic and governance additions
+    _render_agent_and_ethics()
+    _render_governance_section()
+    _render_fairness_section()
+    _render_workload_section()
 
     with st.expander("About this model"):
         st.write(MODEL_INPUTS_COPY)
@@ -295,6 +482,7 @@ def render_mammography_intake() -> None:
         if status != REPORT_HAS_MASS:
             record = None
             explanations: tuple[str, ...] = ()
+            dual_explanation = None
         else:
             if answers.get("age") is None or any(
                 answers.get(key) is None for key in ("shape", "margin", "density")
@@ -317,6 +505,7 @@ def render_mammography_intake() -> None:
             try:
                 record = predict_mammography_case(values, artifact)
                 explanations = explain_mammography_case(values, record, artifact)
+                dual_explanation = explain_mammography_case_dual(values, record, artifact)
             except ValueError as error:
                 st.error(str(error))
                 return
@@ -325,6 +514,7 @@ def render_mammography_intake() -> None:
             "answers": answers,
             "record": record,
             "explanations": explanations,
+            "dual_explanation": dual_explanation if status == REPORT_HAS_MASS else None,
         }
 
     submission = st.session_state.get("health_submission")

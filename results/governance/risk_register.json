@@ -1,0 +1,98 @@
+[
+  {
+    "risk_id": "RISK-01",
+    "intended_use": "Triage assistance on standardized screening mammography findings.",
+    "affected_people": "Patients awaiting diagnosis; screening program participants; radiologists.",
+    "foreseeable_harm": "False negative classification in Automatic tier: a malignant mass is mislabeled as benign and unflagged, resulting in delayed intervention and tumor progression.",
+    "pre_mitigation_severity": "Catastrophic",
+    "pre_mitigation_likelihood": "Medium",
+    "mitigations": [
+      "Asymmetric consequence penalty (C=1.0 for predicting benign, forcing higher risk).",
+      "Bootstrap ensemble disagreement (30 members) detects uncertain borderline lesions.",
+      "Isolation Forest anomaly detector flags unusual mass morphology.",
+      "Conservative validation percentile thresholding (p70 automatic cutoff).",
+      "Periodic retrospective audit of all unreviewed cases."
+    ],
+    "responsible_owner": "Clinical Safety Officer & Lead ML Research Engineer",
+    "residual_risk": "Low - False negative rate in Automatic tier reduced by >80% over unguided baseline."
+  },
+  {
+    "risk_id": "RISK-02",
+    "intended_use": "Decision support interface for radiology clinics.",
+    "affected_people": "Attending radiologists; radiology residents; triage coordinators.",
+    "foreseeable_harm": "Clinician automation bias: medical staff prematurely trust the 'Automatic' or 'Assisted' label without conducting independent diagnostic evaluation.",
+    "pre_mitigation_severity": "Critical",
+    "pre_mitigation_likelihood": "High",
+    "mitigations": [
+      "Non-diagnostic UI disclaimers permanently affixed to every screen and report.",
+      "Presentation of separate Class Explanation (why it leans) vs Route Explanation (why it was routed).",
+      "Mandatory display of raw uncertainty (U) and anomaly (A) scores on all outputs.",
+      "Workload capacity simulations and clinical training modules on AI fallibility."
+    ],
+    "responsible_owner": "Clinical Operations Lead & Human Factors Specialist",
+    "residual_risk": "Acceptable with continuous clinical workflow governance and training."
+  },
+  {
+    "risk_id": "RISK-03",
+    "intended_use": "Automated clinical workflow management.",
+    "affected_people": "Hospital healthcare systems; radiologists; waiting list patients.",
+    "foreseeable_harm": "Alert fatigue and capacity overload: excessive referrals to 'Human Review' overwhelm radiologists, increasing burnout and creating backlogs for urgent cases.",
+    "pre_mitigation_severity": "Moderate",
+    "pre_mitigation_likelihood": "Medium",
+    "mitigations": [
+      "Validation-calibrated review capacity slider dynamically tuned to department staff capacity.",
+      "Dual thresholds separating urgent full Human Review (>p90) from quick Assisted verification (p70-p90).",
+      "Workload trade-off curve monitoring in evaluation suites."
+    ],
+    "responsible_owner": "Chief Medical Information Officer (CMIO)",
+    "residual_risk": "Low - Department controls review capacity dynamically without altering class models."
+  },
+  {
+    "risk_id": "RISK-04",
+    "intended_use": "Local inference on patient data entered into client app.",
+    "affected_people": "Patients; healthcare provider data compliance team.",
+    "foreseeable_harm": "Privacy violation or unauthorized leakage of protected health information (PHI) to external third-party cloud services or public LLM APIs.",
+    "pre_mitigation_severity": "Critical",
+    "pre_mitigation_likelihood": "Low",
+    "mitigations": [
+      "Zero cloud transmission: 100% local in-memory inference binding to loopback (::1).",
+      "Zero disk persistence of patient answers; session state discarded upon browser refresh.",
+      "Local-only optional LLM integration (Ollama loopback); strictly no telemetry.",
+      "No collection of patient identifiers (name, MRN, address, birthdate)."
+    ],
+    "responsible_owner": "Data Protection Officer (DPO) & Information Governance Lead",
+    "residual_risk": "Negligible - Hardware boundary prevents network ingress or egress."
+  },
+  {
+    "risk_id": "RISK-05",
+    "intended_use": "Deployment across multi-center imaging networks.",
+    "affected_people": "Diverse patient populations; out-of-distribution demographics.",
+    "foreseeable_harm": "Distributional drift and covariate shift: model performance degrades silently when presented with patients from unrepresented demographics or newer imaging hardware.",
+    "pre_mitigation_severity": "Critical",
+    "pre_mitigation_likelihood": "High",
+    "mitigations": [
+      "Isolation Forest anomaly detector evaluates density and feature geometry against TRAIN distribution.",
+      "Cases with anomalous features (A > threshold) automatically escalated to Human Review.",
+      "Explicit fairness gap disclosure: no demographic parity claims are permitted.",
+      "Mandatory dataset datasheet and model card documenting single-center provenance."
+    ],
+    "responsible_owner": "ML Quality Lead & Clinical Governance Committee",
+    "residual_risk": "Monitored - Anomaly abstention actively catches out-of-distribution cases."
+  },
+  {
+    "risk_id": "RISK-06",
+    "intended_use": "User-requested natural language clinical report generation.",
+    "affected_people": "Patients reading download reports; referring physicians.",
+    "foreseeable_harm": "LLM hallucination or deceptive diagnostic language: report states confirmed cancer or invents symptoms, causing extreme psychological trauma or medical confusion.",
+    "pre_mitigation_severity": "Critical",
+    "pre_mitigation_likelihood": "Medium",
+    "mitigations": [
+      "Deterministic template report by default with exact structured prediction grounding.",
+      "Rule-based explanation checker scanning for forbidden clinical phrases.",
+      "Deterministic verification of class label, route, and inputs prior to rendering.",
+      "Architecture separation: LLM has zero access to prediction and routing logic."
+    ],
+    "responsible_owner": "AI Safety Officer & NLP Verification Engineer",
+    "residual_risk": "Low - Multi-layer regex and assertion gates intercept ungrounded outputs."
+  }
+]
